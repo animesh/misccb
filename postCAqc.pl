@@ -6,7 +6,6 @@
 use TIGR::Foundation;
 use AMOS::AmosLib;
 use Statistics::Descriptive;
-use File::Spec;
 
 use strict;
 
@@ -16,7 +15,7 @@ my $fixlib     = "/local/asmg/work/mpop/Tools/asmQC/fixlib.pl";
 my $nucmer     = "/usr/local/common/nucmer";
 my $showtiling = "/usr/local/common/show-tiling";
 
-my $VERSION = '$Revision: 1.6 $ ';
+my $VERSION = '$Revision: 1.5 $ ';
 my $HELP = q~
     postCAqc -f frg -a asm [-i inserts | -d dstmap ] [-r reference [-circ]]
     
@@ -69,18 +68,8 @@ if (! defined $outfile){
 }
 
 $asmfile =~ /(.*)\.asm$/;
-
-my $tmprefix  = "tmp";
-my $tmpdir    = $base->getTempDir();
-my $tmpctg    = File::Spec->catfile($tmpdir, $tmprefix.'.ctg');
-my $tmpfasta  = File::Spec->catfile($tmpdir, $tmprefix.'.fasta');
-my $tmpnucctg = File::Spec->catfile($tmpdir, $tmprefix.'.nuc.ctg');
-my $tmpdelta  = File::Spec->catfile($tmpdir, $tmprefix.'.delta');
-my $tmplibqc  = File::Spec->catfile($tmpdir, $tmprefix.'.lib.qc');
-
 my $asmprefix = $1;
-my $tmpasmqc  = File::Spec->catfile($tmpdir, $asmprefix.'.qc');
-
+my $tmprefix = "tmp";
 my $cmd;
 
 my $loglevel = $base->getDebugLevel();
@@ -90,7 +79,7 @@ if (defined $asmfile){
     $base->logLocal("Running $cmd", 1);
     system("$cmd");
 } else {
-    system("touch $tmpasmqc");
+    system("touch $asmprefix.qc");
 }
 
 if (defined $fastafile){
@@ -98,7 +87,7 @@ if (defined $fastafile){
 # making .ctg file
 
     if (defined $asmfile){
-	$cmd = "$ca2ctg -i $asmfile -f $frgfile > $tmpctg 2>/dev/null";
+	$cmd = "$ca2ctg -i $asmfile -f $frgfile > $tmprefix.ctg 2>/dev/null";
 	$base->logLocal("Running $cmd", 1);
 	system($cmd);
     }
@@ -106,8 +95,8 @@ if (defined $fastafile){
 # making a reads.fasta file from the .frg file
     $base->logLocal("Creating read file", 1);
     open(FRG, $frgfile) || $base->bail("Cannot open $frgfile: $!\n");
-    open(RDS, ">$tmpfasta") || 
-	$base->bail("Cannot open $tmpfasta:$!\n");
+    open(RDS, ">$tmprefix.fasta") || 
+	$base->bail("Cannot open $tmprefix.fasta:$!\n");
     while (my $record = getRecord(\*FRG)){
 	my ($type, $fields, $recs) = parseRecord($record);
 	if ($type ne "FRG"){
@@ -126,33 +115,33 @@ if (defined $fastafile){
     
     close(RDS);
     
-    $cmd = "$nucmer $fastafile $tmpfasta -p $tmprefix >/dev/null 2>/dev/null";
+    $cmd = "$nucmer $fastafile $tmprefix.fasta -p $tmprefix >/dev/null 2>/dev/null";
     $base->logLocal("Running $cmd", 1);
     system($cmd);
-    $cmd = "$showtiling -t $tmpnucctg $tmpdelta >/dev/null";
+    $cmd = "$showtiling -t $tmprefix.nuc.ctg $tmprefix.delta >/dev/null";
     $base->logLocal("Running $cmd", 1);
     system($cmd);
-    $cmd = "cat $tmpnucctg >> $tmpctg";
+    $cmd = "cat $tmprefix.nuc.ctg >> $tmprefix.ctg";
     $base->logLocal("Running $cmd", 1);
     system($cmd);
 
     if ($loglevel < 2){ # only  erase temps for normal log level
 	$base->logLocal("Removing temporary files");
-	unlink($tmpnucctg);
-	unlink($tmpdelta);
-	unlink($tmpfasta);
+	unlink("$tmprefix.nuc.ctg");
+	unlink("$tmprefix.delta");
+	unlink("$tmprefix.cluster");
 	unlink("$tmprefix.mgaps");
 	unlink("$tmprefix.ntref");
-	unlink("$tmprefix.cluster");
+	unlink("$tmprefix.fasta");
     }
 
-    $cmd = "$fixlib -f $frgfile -c $tmpctg -o $tmplibqc";
+    $cmd = "$fixlib -f $frgfile -c $tmprefix.ctg -o $tmprefix.lib.qc";
 } else {
     if (! defined $asmfile){
 	$base->bail("An asmfile (-a) must be provided unless a reference (-r) is specified");
     }
     # just run fixlib
-    $cmd = "$fixlib -f $frgfile -a $asmfile -o $tmplibqc";
+    $cmd = "$fixlib -f $frgfile -a $asmfile -o $tmprefix.lib.qc";
 }
 
 if (defined $insertfile){
@@ -168,16 +157,16 @@ if (defined $circular){
 $base->logLocal("Running $cmd", 1);
 system("$cmd >/dev/null 2>&1");
 
-$cmd = "cat $tmpasmqc $tmplibqc > $outfile";
+$cmd = "cat $asmprefix.qc $tmprefix.lib.qc > $outfile";
 $base->logLocal("Running $cmd", 1);
 system($cmd);
 
 if ($loglevel < 2){
     $base->logLocal("Cleaning up some more", 1);
-    unlink($tmpasmqc);
-    unlink($tmplibqc);
+    unlink("$asmprefix.qc");
+    unlink("$tmprefix.lib.qc");
     if (defined $fastafile){
-	unlink($tmpctg);
+	unlink("$tmprefix.ctg");
     }
 }
 

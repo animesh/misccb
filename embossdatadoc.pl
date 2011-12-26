@@ -140,6 +140,7 @@ while ($source =~ m"[\/][*][^*]*[*]+([^\/*][^*]*[*]+)*[\/]"gos) {
 	    print "Data type $name\n";
 	    print $OFILE "<hr><h2>Data type ".srsdref($name)."</h2>\n";
 	    $srest = $frest;
+	    if($frest =~ /<(.*)>/) {print "bad HTML tag <$1>\n"}
 	    $frest =~ s/\n\n/\n<p>\n/gos;
 	    print $OFILE "$frest\n";
 
@@ -204,6 +205,7 @@ while ($source =~ m"[\/][*][^*]*[*]+([^\/*][^*]*[*]+)*[\/]"gos) {
 
 	    print $OFILE "<h2>Static data type $name</h2>\n";
 	    $srest = $frest;
+	    if($frest =~ /<(.*)>/) {print "bad HTML tag <$1>\n"}
 	    $frest =~ s/\n\n/\n<p>\n/gos;
 	    print $OFILE "$frest\n";
 
@@ -264,6 +266,7 @@ while ($source =~ m"[\/][*][^*]*[*]+([^\/*][^*]*[*]+)*[\/]"gos) {
 	    print "Typedef data type $name\n";
 	    print $OFILE "<h2>Typedef data type $name</h2>\n";
 	    $srest = $frest;
+	    if($frest =~ /<(.*)>/) {print "bad HTML tag <$1>\n"}
 	    $frest =~ s/\n\n/\n<p>\n/gos;
 	    print $OFILE "$frest\n";
 
@@ -272,6 +275,10 @@ while ($source =~ m"[\/][*][^*]*[*]+([^\/*][^*]*[*]+)*[\/]"gos) {
 	    print SRS "MO $pubout\n";
 	    print SRS "LB $lib\n";
 	    print SRS "XX\n";
+
+	    if(!defined($dtypedefname)) {
+		print STDERR "dtypedefname undefined for $infile\n";
+	    }
 
 	    if ($dtypedefname ne $name) {
 		print "bad data type name '$name' typedef is '$dtypedefname'\n";

@@ -1,23 +1,22 @@
 #!/usr/local/bin/perl
 
-# $Id: amos2ace.pl,v 1.13 2010/07/02 07:53:54 floflooo Exp $
+# $Id: amos2ace.pl,v 1.9 2007/10/19 19:43:36 jamesrwhite Exp $
 #
 # Converts from an AMOS assembly file to a new .ace file
 #
 
 use strict;
-use File::Spec;
-use AMOS::AmosLib;
 use TIGR::Foundation;
+use AMOS::AmosLib;
 
 my $base = new TIGR::Foundation;
+my $GREP = "/bin/grep";
+
 if (! defined $base){
     die ("Foundation cannot be created.  FATAL!\n");
 }
 
-my $GREP = "/bin/grep";
-
-my $VERSION = '$Revision: 1.13 $ ';
+my $VERSION = '$Revision: 1.9 $ ';
 $base->setVersionInfo($VERSION);
 
 my $HELPTEXT = q~
@@ -25,10 +24,10 @@ my $HELPTEXT = q~
   amos2ace [opts] [infile1] [infile2] ...
  
 .DESCRIPTION.
-  Amos2ace reads one or more AMOS message files specified on the command line and produces
-  a .ACE file. The message files must be provided in a "reasonable" order: the file
-  defining a specific object must occur before a file using it. The output file name is
-  generated from the first file on the command line unless specifically set through option
+  Amos2ace reads one or more AMOS message files specified on the command line and produces 
+  a .ACE file. The message files must be provided in a "reasonable" order: the file 
+  defining a specific object must occur before a file using it. The output file name is 
+  generated from the first file on the command line unless specifically set through option 
   -o (see below).
 
 .OPTIONS.   
@@ -37,9 +36,9 @@ my $HELPTEXT = q~
   -p <phd_dir>    Location of the PHD directory
 
   The multiple input files must be presented in "proper" order - each message needs to
-  be defined before being referenced.  Note: the chromat_dir and phd_dir parameters are
+  be defined before being referenced.  Note: the chromat_dir and phd_dir parameters are 
   only used to provide consed with the necessary information used to display
-  chromatograms. These options are only relevant if the assembler inputs were generated
+  chromatograms. These options are only relevant if the assembler inputs were generated 
   using the phred pipeline.
 
 .KEYWORDS.
@@ -101,13 +100,13 @@ my $nReads = 0;
 
 my $fr;
 
-my $TMP = $$ . time();
-my $dirTmp = $base->getTempDir();
-my $ctgTmp = File::Spec->catfile($dirTmp, "$TMP.CTG.TMP");
-my $seqTmp = File::Spec->catfile($dirTmp, "$TMP.SEQ.TMP");
-my $outTmp = File::Spec->catfile($dirTmp, "$TMP.OUT.TMP");
 
-open(OUT, ">$outTmp") || 
+my $TMP = $$ . time();
+my $ctgTmp = "$TMP.CTG.TMP";
+my $seqTmp = "$TMP.SEQ.TMP";
+my $outTmp = "$TMP.OUT.TMP";
+
+open(OUT, ">$outTmp") ||
     $base->bail("Cannot open output temp \"$outTmp\" : $!");
 
 my $nseqs;     # number of sequences in this contig
@@ -140,7 +139,7 @@ for (my $f = 0; $f <= $#ARGV; $f++){
 
     while (my $record = getRecord($files[$f])){
 	my ($rec, $fields, $recs) = parseRecord($record);
-	my $nseqs = 0;
+	my $nseqs;
 	my $id = $$fields{iid};
 	$contigid = $$fields{iid};
 	
@@ -158,7 +157,7 @@ for (my $f = 0; $f <= $#ARGV; $f++){
 		}
 	    }
 	    $seqclr{$$fields{iid}} = $$fields{clr};
-	    #print STDERR "setting clear range for $$fields{iid} to $$fields{clr}\n";
+#	    print STDERR "setting clear range for $$fields{iid} to $$fields{clr}\n";
 	} elsif ($rec eq "CTG"){
 	    my $seq = $$fields{seq};
 	    my @lines = split('\n', $seq);
@@ -191,9 +190,8 @@ for (my $f = 0; $f <= $#ARGV; $f++){
 	    my @qualvals;
 	    # .ace qualities are only assigned to unpadded bases
 	    for (my $i = 0; $i < length($qual); $i++){
-		my $qualval = substr($seq, $i, 1);
-		if ($qualval ne "*"){
-		    push(@qualvals, ord($qualval) - ord('0'));
+		if (substr($seq, $i, 1) ne "*"){
+		    push(@qualvals, ord(substr($qual, $i, 1)) - ord('0'));
 		}
 	    }
 	    for (my $i = 0; $i <= $#qualvals; $i+=50){
@@ -216,8 +214,10 @@ for (my $f = 0; $f <= $#ARGV; $f++){
 	    
 	    for (my $r = 0; $r <= $#$recs; $r++){
 		my ($srec, $sfields, $srecs) = parseRecord($$recs[$r]);
+		my $seql;
+		my $seqr;
+		my $sequence;
 		if ($srec eq "TLE"){
-
 		    $nReads++;
 		    $nseqs++;
 		    if (! exists $$sfields{src}){
@@ -227,26 +227,15 @@ for (my $f = 0; $f <= $#ARGV; $f++){
 			$base->bail("Sequence with ID $$sfields{src} not found\nSequence records (RED) either not provided or in wrong order\n");
 		    }
 		    $seqName = $seqnames{$$sfields{src}};
-		    my $sequence = get_seq($seqfile{$$sfields{src}}, $$sfields{src});
+		    $sequence = get_seq($seqfile{$$sfields{src}}, $$sfields{src});
 		    @lines = split('\n', $sequence);
 		    $sequence = join('', @lines);
-
-		    my $seql = 0;
-		    my $seqr = length $sequence;
-
-                    if (defined $seqclr{$$sfields{src}}) {
-			($seql, $seqr) = split(',', $seqclr{$$sfields{src}});
-                    }
-
-		    #print STDERR "sequence $$sfields{src} has range $seql, $seqr\n";
-
-		    my @gaps;
-		    if (defined $$sfields{gap}) {
-			@gaps = split(/\s+/, $$sfields{gap});
-		    }
+		    ($seql, $seqr) = split(',', $seqclr{$$sfields{src}});
+#		    print STDERR "sequence $$sfields{src} has range $seql, $seqr\n";
+		    my @gaps = split(/\s+/, $$sfields{gap});
 		    my ($asml, $asmr) = split(',', $$sfields{clr});
 
-		    #print STDERR "asml and asmr are $asml $asmr\n";
+#		    print STDERR "asml and asmr are $asml $asmr\n";
 		    if ($asml < $asmr){
 			$asmr -= $asml;
 			$asml = 0;
@@ -254,10 +243,10 @@ for (my $f = 0; $f <= $#ARGV; $f++){
 			$asml -= $asmr;
 			$asmr = 0;
 		    }
-		    #print STDERR "asml and asmr are $asml $asmr\n";
+#		    print STDERR "asml and asmr are $asml $asmr\n";
 		    $asml += $$sfields{off};
 		    $asmr += $$sfields{off};
-		    #print STDERR "asml and asmr are $asml $asmr\n";
+#		    print STDERR "asml and asmr are $asml $asmr\n";
 
 		    my $left = $seql;
 		    if ($asml > $asmr){
@@ -271,14 +260,14 @@ for (my $f = 0; $f <= $#ARGV; $f++){
 			$seql = $tmp;
 			$left = length($sequence) - $seql;
 		    }
-		    #print STDERR "asml and asmr are $asml $asmr\n";
+#		    print STDERR "asml and asmr are $asml $asmr\n";
 		    # now we add gaps to the sequence
 		    my $outseq = "";
 		    my $gapindex = 0;
-		    #print STDERR "have ", $#gaps + 1, " gaps and ", length($sequence), " bases\n";
+#		    print STDERR "have ", $#gaps + 1, " gaps and ", length($sequence), " bases\n";
 		    for (my $j = 0; $j < length($sequence); $j++){
 			my $seqj = $j - $left;# + $seql{$id} - 1; # index in untrimmed sequence
-			#my $seqj = $j; # if index in trimmed sequence
+#			my $seqj = $j; # if index in trimmed sequence
 			if ($gapindex <= $#gaps && $seqj > $gaps[$gapindex]){
 			    print STDERR "Weird $seqnames{$id}, $seqj > $gaps[$gapindex]\n";
 			}
@@ -290,8 +279,8 @@ for (my $f = 0; $f <= $#ARGV; $f++){
 			$outseq .= substr($sequence, $j, 1);
 		    }
 		    $seqAlnRng{$seqName} = sprintf("%d %d", $asml + 1, $asmr);
-		    $seqAlnClr{$seqName} = sprintf("%d %d",
-						   (($seql < $seqr)?$seql + 1:$seql),
+		    $seqAlnClr{$seqName} = sprintf("%d %d", 
+						   (($seql < $seqr)?$seql + 1:$seql), 
 						   (($seql < $seqr)?$seqr : $seqr + 1));
 		    my $off = $$sfields{off};
 		    my $ori = ($seql > $seqr) ? "C" : "U";
@@ -325,8 +314,7 @@ for (my $f = 0; $f <= $#ARGV; $f++){
 			$end3 = length($outseq) - length($sequence) + $seqr;
 		    }
 		    $end5++; #all coordinates are 1 based
-
-		    print SEQOUT sprintf("QA %d %d %d %d\n",
+		    print SEQOUT sprintf("QA %d %d %d %d\n", 
 					 $end5, $end3, $end5, $end3);
 		    my $chrmfile = $chromodir . "$seqName";
 		    my $phdfile = "";
@@ -340,14 +328,14 @@ for (my $f = 0; $f <= $#ARGV; $f++){
 		    if (-r $phdfile){
 			$time = `$GREP TIME $phdfile`;
 			$time =~ s/TIME: //;
-		    }
+		    } 
 		    
 		    if (! defined $time){
 			if (-e $phddir) {
 			    $base->logError("Cannot stat phd file \"$phdfile\"", 1);
 			}
 			$time = localtime;
-		    }
+		    } 
 		    
 		    my $dir = ($ori eq "C") ? "rev" : "forw";
 		    
@@ -358,14 +346,14 @@ for (my $f = 0; $f <= $#ARGV; $f++){
 	    my $prev;
 	    my $nBS = 0;
 
-	    @offsets = keys  %seqOff;
-	    #print STDERR " I have ", $#offsets + 1, " offsets\n";
+	    my @offsets = keys  %seqOff;
+#	    print STDERR " I have ", $#offsets + 1, " offsets\n";
  	    foreach my $sequence ( sort {
-		($seqOff{$a} == $seqOff{$b}) ?
-		    ($rend{$b} <=> $rend{$a}) :
+		($seqOff{$a} == $seqOff{$b}) ? 
+		    ($rend{$b} <=> $rend{$a}) : 
 		    ($seqOff{$a} <=> $seqOff{$b})
 		} (keys %seqOff)) {
-		#print STDERR "${sequence}($seqOff{$sequence}), ";
+#		print STDERR "${sequence}($seqOff{$sequence}), ";
  		if (defined $prev) {
  		    if ($seqOff{$sequence} - 1 < $seqOff{$prev} ||
 			$rend{$sequence} < $rend{$prev}){
@@ -376,11 +364,9 @@ for (my $f = 0; $f <= $#ARGV; $f++){
  		}
  		$prev = $sequence;
 	    }
-	    #print STDERR "\n";
+#	    print STDERR "\n";
  	    $nBS++;
-     	    if (defined $prev) {
-		print CTGOUT "BS $seqOff{$prev} $contigLen $prev\n";
-     	    }
+ 	    print CTGOUT "BS $seqOff{$prev} $contigLen $prev\n";
 	    close(CTGOUT);
 	    
 	    print OUT "CO $contigid $contigLen $nseqs $nBS U\n";

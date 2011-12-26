@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl
 
-# $Id: ta2ace.pl,v 1.3 2010/02/04 09:38:30 floflooo Exp $
+# $Id: ta2ace.pl,v 1.2 2004/04/28 18:45:36 mpop Exp $
 #
 # Converts from a TIGR .asm file to a new .ace file
 #
@@ -25,7 +25,6 @@
 #  prior written consent of TIGR.
 
 use strict;
-use File::Spec;
 use TIGR::Foundation;
 use TIGR::FASTAreader;
 use TIGR::FASTArecord;
@@ -37,7 +36,7 @@ if (! defined $base){
     die ("Foundation cannot be created.  FATAL!\n");
 }
 
-my $VERSION = 'ta2ace version 1.0 $Revision: 1.3 $ ';
+my $VERSION = 'ta2ace version 1.0 $Revision: 1.2 $ ';
 $base->setVersionInfo($VERSION);
 
 my $GREP = "/bin/grep";
@@ -204,10 +203,9 @@ if (defined $db){
 } # if defined $db
 
 my $TMP = $$ . time();
-my $dirTmp = $base->getTempDir();
-my $ctgTmp = File::Spec->catfile($dirTmp, "$TMP.CTG.TMP");
-my $seqTmp = File::Spec->catfile($dirTmp, "$TMP.SEQ.TMP");
-my $outTmp = File::Spec->catfile($dirTmp, "$TMP.OUT.TMP");
+my $ctgTmp = "$TMP.CTG.TMP";
+my $seqTmp = "$TMP.SEQ.TMP";
+my $outTmp = "$TMP.OUT.TMP";
 
 open(OUT, ">$outTmp") ||
     $base->bail("Cannot open output temp \"$outTmp\" : $!");

@@ -1,10 +1,9 @@
-#!/usr/bin/perl
+#!/usr/local/bin/perl
 
 use strict;
 use FindBin;
 use lib "$FindBin::Bin";
 use TIGR::AsmLib;
-use bytes;
 
 =head 1
 

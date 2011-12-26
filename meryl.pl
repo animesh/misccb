@@ -33,6 +33,7 @@ sub runMeryl ($$$$$$) {
     #if (-e $ffile) {
     #    print STDERR "runMeryl() would have returned.\n";
     #}
+    #print STDERR "$ffile\n";
 
     if (merylVersion() eq "Mighty") {
 
@@ -69,6 +70,8 @@ sub runMeryl ($$$$$$) {
             $cmd .= " -o $ofile ";
             $cmd .= "> $wrk/0-mercounts/meryl.err 2>&1";
 
+            stopBefore("meryl", $cmd);
+
             if (runCommand("$wrk/0-mercounts", $cmd)) {
                 caFailure("meryl failed", "$wrk/0-mercounts/meryl.err");
             }
@@ -82,6 +85,8 @@ sub runMeryl ($$$$$$) {
                 $cmd .= " -m $ofile ";
                 $cmd .= " > $ofile.estMerThresh.out ";
                 $cmd .= "2> $ofile.estMerThresh.err";
+
+                stopBefore("meryl", $cmd);
 
                 if (runCommand("$wrk/0-mercounts", $cmd)) {
                     rename "$ofile.estMerThresh.out", "$ofile.estMerThresh.out.FAILED";
@@ -166,6 +171,8 @@ sub runMeryl ($$$$$$) {
             $cmd .= " -o $ofile";
             $cmd .= "> $wrk/0-mercounts/meryl.err 2>&1";
 
+            stopBefore("meryl", $cmd);
+
             if (runCommand("$wrk/0-mercounts", $cmd)) {
                 unlink $ofile;
                 caFailure("meryl failed to dump frequent mers", "$wrk/0-mercounts/meryl.err");
@@ -216,9 +223,9 @@ sub meryl {
     }
 
     $ovlT = runMeryl(getGlobal('ovlMerSize'), $ovlc, $ovlC, getGlobal("ovlMerThreshold"), "ovl", $ovlD);
-    $obtT = runMeryl(getGlobal('obtMerSize'), $obtc, $obtC, getGlobal("obtMerThreshold"), "obt", $obtD) if (getGlobal("doOverlapTrimming"));
+    $obtT = runMeryl(getGlobal('obtMerSize'), $obtc, $obtC, getGlobal("obtMerThreshold"), "obt", $obtD) if (getGlobal("doOverlapBasedTrimming") || getGlobal("doMerBasedTrimming"));
 
-    if ((getGlobal("obtMerThreshold") ne $obtT) && (getGlobal("doOverlapTrimming"))) {
+    if ((getGlobal("obtMerThreshold") ne $obtT) && (getGlobal("doOverlapBasedTrimming"))) {
         print STDERR "Reset OBT mer threshold from ", getGlobal("obtMerThreshold"), " to $obtT.\n";
         setGlobal("obtMerThreshold", $obtT);
     }

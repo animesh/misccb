@@ -1,13 +1,12 @@
 #!/usr/local/bin/perl
 
-# $Id: ace2contig.pl,v 1.7 2010/02/04 09:38:21 floflooo Exp $
+# $Id: ace2contig.pl,v 1.6 2007/10/19 21:22:48 jamesrwhite Exp $
 #
 # Converts from a TIGR .asm file to a new .ace file
 #
 #  Copyright @ 2002, The Institute for Genomic Research (TIGR). 
 
 use strict;
-use File::Spec;
 use AMOS::AmosLib;
 use TIGR::Foundation;
 
@@ -16,7 +15,7 @@ if (! defined $base){
     die("Weird problem!\n");
 }
 
-my $VERSION = '1.0 $Revision: 1.7 $ ';
+my $VERSION = '1.0 $Revision: 1.6 $ ';
 
 my $acefile;
 my $contigfile;
@@ -82,8 +81,7 @@ my $ctgRight;   # where we'll trim the contig
 my $asmLeft;
 my $asmRight;
 my $nseq;
-my $tmpdir  = $base->getTempDir();
-my $tmpfile = File::Spec->catfile($tmpdir, "tmpfile.$$");
+my $tmpfile = "tmpfile.$$";
 while (<ACE>){
     if (/^CO (\S+) (\d+) (\d+)/){
 	if (defined $ctgSeq){

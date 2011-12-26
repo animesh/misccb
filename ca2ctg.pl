@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl
 
-# $Id: ca2ctg.pl,v 1.7 2010/02/04 09:38:30 floflooo Exp $
+# $Id: ca2ctg.pl,v 1.6 2004/08/11 22:42:23 aphillip Exp $
 #
 # This program creates an empty .ctg file that only contains
 # the headers for the sequences and contigs
@@ -12,7 +12,7 @@ use TIGR::Foundation;
 use AMOS::AmosLib;
 use strict;
 
-my $MY_VERSION = " Version 1.0 (Build " . (qw/$Revision: 1.7 $/ )[1] . ")";
+my $MY_VERSION = " Version 1.0 (Build " . (qw/$Revision: 1.6 $/ )[1] . ")";
 
 # Constants
 
@@ -98,7 +98,8 @@ if (defined $outfile){
 	$base->bail("Cannot open \"$outfile\": $!\n");
 }
 
-open(IN, $infile) || $base->bail("Cannot open $infile: $!");
+open(IN, $infile) ||
+    $base->bail("Cannot open $infile: $!");
 my $prefix = (split /\./,basename($infile))[0];
 
 print STDERR "first pass through asm\n";

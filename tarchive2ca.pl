@@ -38,7 +38,7 @@ if (! defined $base) {
 
 #$base->setLogLevel(1);
 
-my $VERSION = '1.0 ($Revision: 1.15 $)';
+my $VERSION = '1.0 ($Revision: 1.14 $)';
 $base->setVersion($VERSION);
 
 $base->setLogFile("tarchive2ca.log");
@@ -285,8 +285,8 @@ for (my $f = 0; $f <= $#ARGV; $f++){
 	my $recId = getId();
 
 	my $seqlen = length($frec);
-	$qrec =~ s/^\s+//;
-	my @quals = split(/\s+/, $qrec);
+	$qrec =~ s/^ //;
+	my @quals = split(/ +/, $qrec);
 	if ($#quals + 1 != $seqlen) {
 	    $base->bail("Fasta and quality for $fid($fidname) disagree: $seqlen vs " . sprintf("%d\n", $#quals + 1));
 	}

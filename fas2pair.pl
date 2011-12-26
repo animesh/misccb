@@ -1,57 +1,84 @@
 #!/usr/bin/perl
-# fas2pair.pl     sharma.animesh@gmail.com     2009/03/22 01:04:42
-#Converts format >codbac-190o01.fb140_b1.SCF length=577 sp3=clipped to >DJS045A03F template=DJS054A03 dir=F library=DJS045
-my $lthreshmax=15000;
-my $lthreshmin=10000;
-my $tcnt=1000;
-my $seqlen=650;
-my $tes=10;
-my $filein=shift @ARGV;
-open(F2,$filein);
-        
-while ($line = <F2>) {
-                chomp ($line);
-                if ($line =~ /^>/){
-                        $snames=$line;
-                        chomp $snames;
-                     push(@seqname,$snames);
-                        if ($seq ne ""){
-                      push(@seq,$seq);
-                      $seq = "";
-                    }
-              } else {$seq=$seq.$line;
-              }
-}push(@seq,$seq);
-$seq="";
-close F2;
-open(FT,">$filein.artbac.txt");
-while($tcnt>0){
-	for($c=0;$c<=$#seq;$c++){
-		$len=length(@seq[$c]);
-		if($len>$lthreshmax && $tcnt>0){
-		 for($ccc=0;$ccc<$tes;$ccc++){
-		   $cnt++;
-			$playlen=$len-$lthreshmin-$seqlen;
-			$fpos=int(rand(1)*$playlen);
-			$rpos=$fpos+$lthreshmin;
-		   my @tmp=split(/\s+/,@seqname[$c]);
-		   my $name=@seqname[$c];
-		   $name=~s/\>|\s+//g;
-		   my $namesubstr=@tmp[0];
-		   $namesubstr=~s/\>|\s+//g;
-		   my $template="$namesubstr-$fpos-$rpos";
-		   my $dirf="F";
-		   my $dirr="R";
-		   my $libstring=$namesubstr;
-		   $fseq=substr($seq[$c],$fpos-1,$seqlen);
-		   $rseq=substr($seq[$c],$rpos-1,$seqlen);
-		   print FT">$name\ttemplate=$template\tdir=$dirf\tlibrary=$libstring\n$fseq\n";    
-		   print FT">$name\ttemplate=$template\tdir=$dirr\tlibrary=$libstring\n$rseq\n";   
-			print "Wrote $cnt from $name\ttemplate=$template\tdir=$dirf\tlibrary=$libstring\n"; 
-		   }
-			$tcnt-=$tes;
-		 }
-		else{next}
+use strict;
+my $main_file=shift @ARGV;
+my @gseq;
+my @gseqname;
+my $fot;
+my $time=time;
+my $fas_file=$main_file.".$time.pairedread.fasta";
+open(FT,">$fas_file");
+
+get_other_source($main_file);
+
+my $sno=0;
+my $basec=2;
+my $per_win=shift @ARGV;
+
+for($fot=0;$fot<=$#gseq;$fot++){
+	my $slname=@gseqname[$fot];
+	my $slseq=@gseq[$fot];
+	my $wseqlen=length($gseq[$fot]);
+	my $slnamews=$slname;$slnamews=~s/\s+/\./g;
+	my $name2use=$slnamews;
+	$name2use=~s/\s+|\_|\>//g;
+	$name2use=$name2use.$per_win.$wseqlen;
+	for(my $c=0;$c<$basec;$c++){
+	if($wseqlen>2*$per_win){
+   		$sno++;
+		#my $chlen=$randy[int(rand(3))];
+		my $fq=int($wseqlen/4);
+		my $lq=int($wseqlen*3/4);
+		my $chlen=$lq-$fq;
+		#my $p=int(rand($fq));
+		my $p=0;
+ 	       	my $p1=$p;
+        	my $p2=$wseqlen-$per_win;
+		my $mf=$main_file;
+		$mf=~s/\.fna//;
+		my $timecnt=time;
+		my $template=$name2use."-".$timecnt.$sno;
+		my $nameofseqF=$template."F";
+		#>DJS045A03F template=DJS054A03 dir=F library=DJS045 trim=12-543
+		print FT">$nameofseqF template=$template dir=F library=$name2use\n";
+		print "SL-$wseqlen SN-$slname\n";
+     		print FT substr($slseq,$p1+$c*$per_win,$per_win),"\n";
+		my $nameofseqR=$template."R";
+		print FT ">$nameofseqR template=$template dir=R library=$name2use\n";
+		my $revstr=substr($slseq,$p2-$c*$per_win,$per_win);
+		$revstr=reverse($revstr);
+		$revstr=~tr/ATGCN/TACGN/;
+     		print FT $revstr,"\n";
+	}
 	}
 }
-close FT;
+
+
+sub get_other_source{
+	my $other_file_pattern=shift;
+	my $line;
+	open(FO,$other_file_pattern)||die "can't open";
+	my $seq;
+	my $snames;
+	while ($line = <FO>) {
+        	chomp ($line);
+		$line=~s///g;
+       	if ($line =~ /^>/){
+		$snames=$line;
+		chomp $snames;
+             push(@gseqname,$snames);
+                	if ($seq ne ""){
+              		push(@gseq,uc($seq));
+              		$seq = "";
+            	}
+      	} 
+		else {
+			$seq=$seq.$line;
+      	}
+	}
+	push(@gseq,uc($seq));
+	$seq="";
+	close FO;
+	my $noseq=length(@gseq);
+}
+
+

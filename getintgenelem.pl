@@ -32,7 +32,7 @@ sub get_other_source{
     }
 
 }
-$file=shift @ARGV;
+$file=shift @ARGV;
 $fileout=$file.".int.fasta";
 open(F,$file);
 open(FO,">$fileout");
