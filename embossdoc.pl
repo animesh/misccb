@@ -477,6 +477,28 @@ sub testmisc($\@\@) {
 #    }
 }
 
+sub testinternals($\@\@) {
+    my ($tdata, $tcast, $tcode) = @_;
+    my $ok = 0;
+    my $i = 0;
+#    if ($#{$tcast} < 0) {
+#	print "bad category misc - no parameters\n";
+#	return 0;
+#    }
+#    for ($i=0; $i <= $#{$tcast}; $i++) {
+#	$tc = ${$tcast}[$i];
+#	$tx = ${$tcode}[$i];
+#	if ($tc eq "$tdata" || $tc eq "const $tdata") {
+#	    if  ($tx =~ /[ru]/) {
+#		$ok = 1;
+#	    }
+#	}
+#    }
+#    if (!$ok) {
+#	print "bad category internals - no parameter (const) '$tdata' and code 'r' or 'u'\n";
+#    }
+}
+
 sub printsect($$) {
     my ($mysect,$mysrest) = @_;
     if ($mysect ne $lastfsect) {
@@ -601,7 +623,7 @@ $lastfname = "";
 
 %categs = ("new" => 1, "delete" => 1, "assign" => 1, "modify" => 1,
 	   "cast" => 1, "derive" => 1, "use" => 1, "iterate" => 1,
-	   "input" => 1, "output" => 1, "misc" => 1);
+	   "input" => 1, "output" => 1, "misc" => 1, "internals" => 1);
 %ctot = ();
 if ($ARGV[0]) {$infile = $ARGV[0];}
 if ($ARGV[1]) {$lib = $ARGV[1];}
@@ -648,6 +670,7 @@ else {
     while (<>) {$source .= $_}
 }
 
+open (BOOK, ">$pubout.book");
 open (OBS, ">>deprecated.new");
 print OBS "#$pubout\n";
 open (HTML, ">$pubout.html");
@@ -672,6 +695,7 @@ $mainprog = 0;
 $functot = 0;
 $datanum=0;
 $secnum=0;
+$bookstr = "$pubout\.c\n";
 $datastr = " ";
 $datastrstatic = " ";
 $sectstr = " ";
@@ -694,10 +718,11 @@ $datatitle = "";
 
 $fdata = "";
 
-while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
+while ($source =~ m"((\s+)([#]if[^\n]+\n)?)([/][*][^*]*[*]+([^/*][^*]*[*]+)*[/])"gos) {
     $partnum=0;
     $mastertoken="undefined";
-    $ccfull = $&;
+    $prespace = $2;
+    $ccfull = $4;
     $rest = $POSTMATCH;
 
     ($cc) = ($ccfull =~ /^..\s*(.*\S)*\s*..$/gos);
@@ -718,6 +743,7 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
     @savecode = ();
     @savevar = ();
     @savecast = ();
+    @savedesc = ();
     $inputargs = "";
     $outputargs = "";
     $modifyargs = "";
@@ -729,7 +755,7 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
     $errtext = "See source code";
     $dependtext = "See source code";
     $othertext = "See other functions in this section";
-    $availtext = "In release 5.0.0";
+    $availtext = "In release 6.3.0";
     $ctype = "";
 
     while ($cc =~ m/\s@((\S+)\s+([^@]*[^@\s]))/gos) {
@@ -774,6 +800,24 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	    $srest =~ s/{([^\}]+)}/<a href="#$1">$1<\/a>/gos;
 	    print "\nSection $sect\n";
 	    print "-----------------------------\n";
+
+	    if($prespace !~ /^\n\n\n\n\n$/) {
+		if($prespace =~ /^[\n]+$/) {
+		    $whitelen = length($&) - 1;
+		    print "bad whitespace $whitelen lines at start\n";
+		}
+		elsif ($prespace =~ / /) {
+		    print "bad whitespace has space(s) at start\n";
+		}
+		elsif ($prespace =~ /\t/) {
+		    print "bad whitespace has tab(s) at start\n";
+		}
+		else {
+		    print "bad whitespace at start\n";
+		}
+	    }
+
+	    $bookstr .= "\n  section: $sect\n";
 
 	    push (@{$datasect{$datatitle}}, $sect);
 	    $datasub = "$datatitle - $sect";
@@ -854,6 +898,24 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	    $datastr = "<p><b>Sections:</b> ";
 	    $datastrstatic = "<p><b>Sections:</b> ";
 
+	    if($prespace !~ /^\n\n\n\n\n$/) {
+		print "Datasection '$datatype' '$datadesc'\n";
+		if($prespace =~ /^[\n]+$/) {
+		    $whitelen = length($&) - 1;
+		    print "bad whitespace $whitelen lines at start\n";
+		}
+		elsif ($prespace =~ / /) {
+		    print "bad whitespace has space(s) at start\n";
+		}
+		elsif ($prespace =~ /\t/) {
+		    print "bad whitespace has tab(s) at start\n";
+		}
+		else {
+		    print "bad whitespace at start\n";
+		}
+	    }
+
+	    $bookstr .= "  $dataname\n $datadesc\n";
 	    splice(@namrules, 1+$namrulesfilecount);
 	    splice(@namdescs, 1+$namrulesfilecount);
 	    splice(@sufname, 1+$suffixfilecount);
@@ -865,8 +927,27 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	    if($partnum != 1) {
 		print "bad syntax \@$token must be at start\n";
 	    }
+	    ($sname, $norest) =
+		($data =~ /\S+\s+(\S+)\s*(.*)/gos);
 	    $flastname = "";
 	    splice (@namrules, 0);
+
+	    if($prespace !~ /^\n\n\n\n\n$/) {
+		print "Filesection $sname\n";
+		if($prespace =~ /^[\n]+$/) {
+		    $whitelen = length($&) - 1;
+		    print "bad whitespace $whitelen lines at start\n";
+		}
+		elsif ($prespace =~ / /) {
+		    print "bad whitespace has space(s) at start\n";
+		}
+		elsif ($prespace =~ /\t/) {
+		    print "bad whitespace has tab(s) at start\n";
+		}
+		else {
+		    print "bad whitespace at start\n";
+		}
+	    }
 
 	}
 
@@ -997,6 +1078,23 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	    print "Function $name\n";
 	    ${$ostr} .= "<hr><h4><a name=\"$name\">\n";
 	    ${$ostr} .= "Function</a> ".srsref($name)."</h4>\n";
+
+	    if($prespace !~ /^\n\n\n\n\n$/) {
+		if($prespace =~ /^[\n]+$/) {
+		    $whitelen = length($&) - 1;
+		    print "bad whitespace $whitelen lines at start\n";
+		}
+		elsif ($prespace =~ / /) {
+		    print "bad whitespace has space(s) at start\n";
+		}
+		elsif ($prespace =~ /\t/) {
+		    print "bad whitespace has tab(s) at start\n";
+		}
+		else {
+		    print "bad whitespace at start\n";
+		}
+	    }
+
 	    if(!defined($fargs)) {
 		print "bad function prototype: not parsed\n";
 		$ftype = "unknown";
@@ -1005,6 +1103,7 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	    }
 	    if ($isprog && $fname eq "main") {$fname = $pubout}
 	    $trest = $frest;
+	    #if($frest =~ /<(.*)>/) {print "bad HTML tag <$1>\n"}
 	    $frest =~ s/>/\&gt;/gos;
 	    $frest =~ s/</\&lt;/gos;
 	    $frest =~ s/\n\n/\n<p>\n/gos;
@@ -1060,6 +1159,13 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 #           }
 #           print "\n";
 #           print "-----------------------------\n";
+	    $bookstr .= sprintf "%-15s %s (", $ftype, $fname;
+	    $ia = 0;
+	    foreach $f (split(/,/,$fargs)) {
+		if($ia++) {$bookstr .= ", "}
+		$bookstr .= $f;
+	    }
+	    $bookstr .= ");\n";
 	}
 
 	elsif ($token eq "funcstatic")  {
@@ -1079,6 +1185,17 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	    ($unused,$ftype,$fname, $fargs) =
 		$rest =~ /^\s*(__noreturn\s*)?static\s+([^\(\)]*\S)\s+(\S+)\s*[\(]\s*([^{]*)[)]\s*[\{]/os;
 	    print "Static function $name\n";
+
+	    if($prespace !~ /^\n\n\n\n\n$/) {
+		if($prespace =~ /^[\n]+$/) {
+		    $whitelen = length($&) - 1;
+		    print "bad whitespace $whitelen lines at start\n";
+		}
+		 else {
+		     print "bad whitespace at start\n";
+		 }
+	    }
+
 	    $sectstrstatic .= " <a href=#$name>$name</a>";
 	    ${$ostr} .= "<hr><h4><a name=\"$name\">\n";
 	    ${$ostr} .= "Static function</a> ".srsref($name)."</h4>\n";
@@ -1092,6 +1209,7 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 		}
 	    }
 	    $trest = $frest;
+	    #if($frest =~ /<(.*)>/) {print "bad HTML tag <$1>\n"}
 	    $frest =~ s/>/\&gt;/gos;
 	    $frest =~ s/</\&lt;/gos;
 	    $frest =~ s/\n\n/\n<p>\n/gos;
@@ -1151,11 +1269,23 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	    ($name, $mrest) = ($data =~ /\S+\s+(\S+)\s*(.*)/gos);
 	    $fname = $name;
 	    print "Macro $name\n";
+
+	    if($prespace !~ /^\n\n\n\n\n$/) {
+		if($prespace =~ /^[\n]+$/) {
+		    $whitelen = length($&) - 1;
+		    print "bad whitespace $whitelen lines at start\n";
+		}
+		 else {
+		     print "bad whitespace at start\n";
+		 }
+	    }
+
 	    $sectstr .= " <a href=#$name>$name</a>";
 	    ### print "args '$margs'\n";
 	    ${$ostr} .= "<hr><h4><a name=\"$name\">\n";
 	    ${$ostr} .= "Macro</a> ".srsref($name)."</h4>\n";
 	    $trest = $mrest;
+	    #if($mrest =~ /<(.*)>/) {print "bad HTML tag <$1>\n"}
 	    $mrest =~ s/>/\&gt;/gos;
 	    $mrest =~ s/</\&lt;/gos;
 	    $mrest =~ s/\n\n/\n<p>\n/gos;
@@ -1163,6 +1293,8 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	    $shortdesc = $mrest;
 	    $longdesc = $mrest;
 
+	    $bookmacro = $fname;
+	    @bookmacroparams = ();
 	    print SRS "ID $name\n";
 	    print SRS "TY macro\n";
 	    print SRS "MO $pubout\n";
@@ -1202,10 +1334,22 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	    $type = $token;
 	    ($name, $mrest) = ($data =~ /\S+\s+(\S+)\s*(.*)/gos);
 	    print "Function list $name\n";
+
+	    if($prespace !~ /^\n\n\n\n\n$/) {
+		if($prespace =~ /^[\n]+$/) {
+		    $whitelen = length($&) - 1;
+		    print "bad whitespace $whitelen lines at start\n";
+		}
+		 else {
+		     print "bad whitespace at start\n";
+		 }
+	    }
+
 	    $sectstrstatic .= " <a href=#$name>$name</a>";
 	    ${$ostr} .= "<hr><h4><a name=\"$name\">\n";
 	    ${$ostr} .= "Function list</a> ".srsref($name)."</h4>\n";
 	    $trest = $mrest;
+	    #if($mrest =~ /<(.*)>/) {print "bad HTML tag <$1>\n"}
 	    $mrest =~ s/>/\&gt;/gos;
 	    $mrest =~ s/</\&lt;/gos;
 	    $mrest =~ s/\n\n/\n<p>\n/gos;
@@ -1244,7 +1388,7 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	    }
 	    ($code,$var,$cast, $prest) = ($data =~ m/[\[]([^\]]+)[\]]\s*(\S*)\s*[\[]([^\]]+[\]]?)[\]]\s*(.*)/gos);
 	    if (!defined($code)) {
-		print "bad \@param syntax:\n$data";
+		print "bad paramsyntax:\n$data";
 		next;
 	    }
 
@@ -1263,6 +1407,9 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 
 	    if ($code !~ /^[rwufdvo?][CENP]*$/) { # deleted OSU (all unused)
 		print "bad code <$code> var: <$var>\n";
+	    }
+	    elsif ($code =~ /^.([CENP]+)$/){
+		{$countcode{$1}++}
 	    }
 
 	    if($code =~ /^[rfv]/) {
@@ -1284,6 +1431,7 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 
 	    testvar($var);
 	    if ($ismacro) {               # No code to test for macros
+		push (@bookmacroparams, "$cast $var");
 	    }
 	    else {
 		$curarg = $largs[$acnt];
@@ -1324,7 +1472,7 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	    push @savecode, $code;
 	    push @savevar,  $var;
 	    push @savecast, $cast;
-
+	    push @savedesc, $prest;
 	    $drest = $prest;
 	    $drest =~ s/\n\n+$/\n/gos;
 	    $drest =~ s/\n\n\n+/\n\n/gos;
@@ -1338,26 +1486,26 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	    print SRS "PD $drest\n";
 	    print SRS "PX\n";
 
-	    if (!$prest) {print "bad \@param '$var', no description\n"}
+	    if (!$prest) {print "bad paramdescription '$var', no description\n"}
 	    $ftable .= "<tr><td>$cast</td><td>$var</td><td>$codename</td><td>$prest</td></tr>\n";
 
 	    if ($simpletype{$cast}) {
 # Simple C types (not structs)
 # and EMBOSS types that resolve to simple types
 		if ($code !~ /r/) {
-		    print "bad \@param '$var' pass by value, code '$code'\n";
+		    print "bad paramcode '$var' pass by value, code '$code'\n";
 		}
 	    }
 	    elsif ($functype{$cast}) {
 # Known function types - C and EMBOSS-specific
 		if ($code !~ /f/) {
-		    print "bad \@param '$var' function type '$cast', code '$code'\n";
+		    print "bad paramcode '$var' function type '$cast', code '$code'\n";
 		}
 	    }
 	    elsif ($cast =~ / function$/) {
 # other function types
 		if ($code !~ /f/) {
-		    print "bad \@param '$var' function type '$cast', code '$code'\n";
+		    print "bad paramcode '$var' function type '$cast', code '$code'\n";
 		}
 	    }
 	    elsif ($cast =~ /^const .*[*][*]/) {
@@ -1366,7 +1514,7 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 # e.g. pcre error pointers
 # but can be d (e.g. in ajTableMapDel functions)
 		if ($code !~ /[rwud]/) {
-		    print "bad \@param '$var' const ** but code '$code'\n";
+		    print "bad paramcode '$var' const ** but code '$code'\n";
 		}
 	    }
 	    elsif ($cast =~ /^const /) {
@@ -1375,11 +1523,16 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 		if ($cast =~ /const[^a-z].*[*]/)
 		{
 		    if ($code !~ /[rwud]/) {
-			print "bad \@param '$var' const($cast) but code '$code'\n";
+			print "bad paramcode '$var' const($cast) but code '$code'\n";
 		    }
 		}
 		elsif ($code !~ /r/) {
-		    print "bad \@param '$var' const but code '$code'\n";
+		    print "bad paramcode '$var' const but code '$code'\n";
+		}
+	    }
+	    elsif ($cast =~ /^struct /) {
+		if ($code !~ /u/) {
+		    print "bad paramcode '$var' struct but code '$code'\n";
 		}
 	    }
 	    elsif ($cast =~ / const[^a-z]/) {
@@ -1389,44 +1542,44 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 		if ($cast =~ / const[^a-z].*[*]/)
 		{
 		    if ($code !~ /[rwud]/) {
-			print "bad \@param '$var' const($cast) but code '$code'\n";
+			print "bad paramcode '$var' const($cast) but code '$code'\n";
 		    }
 		}
 		elsif ($code !~ /r/) {
-			print "bad \@param '$var' const($cast) but code '$code'\n";
+			print "bad paramcode '$var' const($cast) but code '$code'\n";
 		}
 	    }
 	    elsif ($cast =~ / const$/) {
 # For char* const (so far no examples)
 # There could be exceptions - but not yet!
 		if ($code !~ /r/) {
-		    print "bad \@param '$var' const($cast) but code '$code'\n";
+		    print "bad paramcode '$var' const($cast) but code '$code'\n";
 		}
 	    }
 	    elsif ($cast =~ /^[.][.][.]$/) {
 # varargs can be ...
 		if ($code !~ /v/) {
-		    print "bad \@param '$var' type '...' but code '$code'\n";
+		    print "bad paramcode '$var' type '...' but code '$code'\n";
 		}
 	    }
 	    elsif ($cast =~ /^va_list$/) {
 # varargs can also be va_list down the list
 # we did use 'a' for this instead of 'v' but it is too confusing
 		if ($code !~ /v/) {
-		    print "bad \@param '$var' type '$cast' but code '$code'\n";
+		    print "bad paramcode '$var' type '$cast' but code '$code'\n";
 		}
 	    }
 	    elsif ($cast =~ /^void[*]$/) {
 # hard to check - can be read, write, update or delete
 		if ($code =~ /[?]/) {
-		    print "bad \@param '$var' code '$code'\n";
+		    print "bad paramcode '$var' code '$code'\n";
 		}
 	    }
 	    elsif ($cast =~ /^void[*]+$/) {
 # hard to check - can be read, write, update or delete
 # Note: maybe we can put a placeholder in the @param cast
 		if ($code =~ /[?]/) {
-		    print "bad \@param '$var' code '$code'\n";
+		    print "bad paramcode '$var' code '$code'\n";
 		}
 	    }
 	    elsif ($cast =~ /[\]]$/) {
@@ -1434,7 +1587,7 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 # because we can't use const for these
 # Note: maybe we can put a placeholder in the @param cast
 		if ($code =~ /[?]/) {
-		    print "bad \@param '$var' code '$code'\n";
+		    print "bad paramcode '$var' code '$code'\n";
 		}
 		if ($code =~ /r/) {
 		    if ($cast =~ /^CONST +/) {
@@ -1442,7 +1595,7 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 		    }
 		    else
 		    {
-			print "bad \@param '$var' code '$code' but '$cast'\n";
+			print "bad paramcode '$var' code '$code' but '$cast'\n";
 		    }
 		}
 	    }
@@ -1451,7 +1604,7 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 # because we can't use const for these
 # Note: maybe we can put a placeholder in the @param cast
 		if ($code =~ /[?]/) {
-		    print "bad \@param '$var' code '$code'\n";
+		    print "bad paramcode '$var' code '$code'\n";
 		}
 		if ($code =~ /r/) {
 		    if ($cast =~ /^CONST +/) {
@@ -1459,17 +1612,17 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 		    }
 		    else
 		    {
-			print "bad \@param '$var' code '$code' but '$cast'\n";
+			print "bad paramcode '$var' code '$code' but '$cast'\n";
 		    }
 		}
 	    }
 	    else {
 # Standard checks for anything else
 		if ($code =~ /r/) {
-		    print "bad \@param '$var' code '$code' but not const\n";
+		    print "bad paramcode '$var' code '$code' but not const\n";
 		}
 		if ($code =~ /[?]/) {
-		    print "bad \@param '$var' code '$code'\n";
+		    print "bad paramcode '$var' code '$code'\n";
 		}
 	    }
 	}
@@ -1496,7 +1649,7 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 		print "bad return type <$rtype> <$ftype>\n";
 	    }
 	    if (!$rrest && $rtype ne "void") {
-		print "bad \@return [$rtype], no description\n";
+		print "bad returndescription [$rtype], no description\n";
 	    }
 
 	    if($rtype eq "void") {
@@ -1505,6 +1658,16 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	    else {
 		$returnargs = "<tr><td><b>$rtype:</b></td><td>$rrest</td></tr>";
 	    }
+	    if($ismacro) {
+		$bookstr .= sprintf "%-15s %s (", $rtype, $bookmacro;
+		$ia = 0;
+		foreach $f (@bookmacroparams) {
+		    if($ia++) {$bookstr .= ", "}
+		    $bookstr .= $f;
+		}
+		$bookstr .= ");\n";
+	    }
+
 	    $rrest =~ s/>/\&gt;/gos;
 	    $rrest =~ s/</\&lt;/gos;
 	    $ftable .= "<tr><td>$rtype</td><td>\&nbsp;</td><td>RETURN</td><td>$rrest</td></tr>\n";
@@ -1537,7 +1700,7 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	    $ctot{$ctype}++;
 	    secttest($sect,$ctype);
 	    if (!defined($categs{$ctype})) {
-		print "bad \@fcategory $ctype - unknown type\n";
+		print "bad \@fcategory $ctype - unknown category type\n";
 	    }
 	}
 
@@ -1615,6 +1778,9 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	    elsif  ($ctype eq "misc") {
 		testmisc($cdata,@savecast,@savecode);
 	    }
+	    elsif  ($ctype eq "internals") {
+		testinternals($cdata,@savecast,@savecode);
+	    }
 	    else {
 		print "bad category type '$ctype' - no validation\n";
 	    }
@@ -1658,8 +1824,11 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	elsif ($token eq "cc")  {
 	    if($mastertoken ne "func" &&
 	       $mastertoken ne "funcstatic" &&
-	       $mastertoken ne "macro") {
-		print "bad syntax \@$token must be in \@func, funcstatic, or macro\n";
+	       $mastertoken ne "macro" &&
+	       $mastertoken ne "section" &&
+	       $mastertoken ne "filesection" &&
+	       $mastertoken ne "datasection") {
+		print "bad syntax \@$token must be in \@func, funcstatic, or macro or a section\n";
 	    }
 	    next;
 	}
@@ -1670,6 +1839,23 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	    }
 	    ($oname, $norest) =
 		($data =~ /\S+\s+(\S+)\s*(.*)/gos);
+	    if($prespace !~ /^\n\n\n\n\n$/) {
+		print "Obsolete $oname\n";
+		if($prespace =~ /^[\n]+$/) {
+		    $whitelen = length($&) - 1;
+		    print "bad whitespace $whitelen lines at start\n";
+		}
+		elsif ($prespace =~ / /) {
+		    print "bad whitespace has space(s) at start\n";
+		}
+		elsif ($prespace =~ /\t/) {
+		    print "bad whitespace has tab(s) at start\n";
+		}
+		else {
+		    print "bad whitespace at start\n";
+		}
+	    }
+
 	    if($norest) {
 		print "bad obsolete $oname - extra text\n"
 	    }
@@ -1910,12 +2096,19 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 		    if(defined($namrules[$i])) {
 #			print LOG "calling isnamrule i: $i rules $#{$namrules[$i]} names $#nameparts\n";
 			if(!isnamrule($i, @{$namrules[$i]}, @nameparts)) {
-			    print "bad name $fname: '$f' not found\n";
+			    print "bad namerule $fname: '$f' not found\n";
+			    print "** \@nam$j";
+			    if($j == $#nameparts) {
+				print "rule $f $frest\n";
+                            }
+                            else{
+                                print "rule $f Undocumented\n";
+			    }
 			    last;
 			}
 		    }
 		    else {
-			print "bad name $fname: '$f' beyond last rule\n";
+			print "bad namerule $fname: '$f' beyond last rule\n";
 			last;
 		    }
 		}
@@ -1995,6 +2188,9 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	    $igen=$#genargname + 1;
 	    if($igen < $isave) {
 		print "bad argrule: $igen/$isave params defined\n";
+		for($i=$igen;$i <$isave;$i++) {
+		    print "** \@argrule $fname $savevar[$i] \[$savecast[$i]\] $savedesc[$i]\n";
+		}
 	    }
 	    elsif($igen > $isave) {
 		print "bad argrule: expected $isave params, found $igen\n";
@@ -2014,7 +2210,7 @@ while ($source =~ m"[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]"gos) {
 	    else {
 		print LOG "++ val [$genvaltype[0]] ... [$rtype]\n";
 		if($rtype ne $genvaltype[0]) {
-		    print "bad return <$rtype> rule <$genvaltype[0]>\n";
+		    print "bad return: <$rtype> rule <$genvaltype[0]>\n";
 		}
 	    }
 	    if($dosecttest && $fdata ne "") {
@@ -2248,6 +2444,19 @@ print HTML "$out";
 print HTMLB "$outstatic";
 close HTML;
 close HTMLB;
+
+print BOOK "$bookstr\n";
+close BOOK;
+
+open (TESTLOG, ">>../embossdoc.log") || die "Cannot open embossdoc.log";
+
+$i=0;
+foreach $ccc (sort(keys(%countcode))) {
+    if(!$i++) {print TESTLOG "$pubout parameter codes:\n"}
+    print TESTLOG "  $ccc: $countcode{$ccc}\n";
+}
+
+close TESTLOG;
 
 exit ();
 

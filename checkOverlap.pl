@@ -15,31 +15,31 @@ sub checkOverlapper ($) {
         $ovlOpt = "-G";
     }
 
-    open(F, "< $wrk/$outDir/ovljobs.dat") or caFailure("failed to open '$wrk/$outDir/ovljobs.dat'", undef);
-    $_ = <F>;
-    my @bat = split '\s+', $_;
-    $_ = <F>;
-    my @job = split '\s+', $_;
-    close(F);
-
-    my $jobIndex   = 1;
     my $failedJobs = 0;
+    my $failureMessage = "";
 
-    while (scalar(@bat) > 0) {
-        my $batchName = shift @bat;
-        my $jobName   = shift @job;
+    open(B, "< $wrk/$outDir/ovlbat") or caFailure("failed to open '$wrk/$outDir/ovlbat'", undef);
+    open(J, "< $wrk/$outDir/ovljob") or caFailure("failed to open '$wrk/$outDir/ovljob'", undef);
 
-        if (! -e "$wrk/$outDir/$batchName/$jobName.ovb.gz") {
-            print STDERR "$wrk/$outDir/$batchName/$jobName failed, job index $jobIndex.\n";
+    while (!eof(B) && !eof(J)) {
+        my $b = <B>;  chomp $b;
+        my $j = <J>;  chomp $j;
+
+        if ((! -e "$wrk/$outDir/$b/$j.ovb.gz") &&
+            (! -e "$wrk/$outDir/$b/$j.ovb")) {
+            $failureMessage .= "ERROR:  Overlap job $wrk/$outDir/$b/$j FAILED.\n";
             $failedJobs++;
         }
+    }
 
-        $jobIndex++;
+    if (!eof(B) || !eof(J)) {
+        print STDERR "Partitioning error; '$wrk/$outDir/ovlbat' and '$wrk/$outDir/ovljob' have extra lines.\n";
     }
 
     #  FAILUREHELPME
     #
-    caFailure("$failedJobs overlapper jobs failed", undef) if ($failedJobs);
+    $failureMessage .= "\n$failedJobs overlapper jobs failed";
+    caFailure($failureMessage, undef) if ($failedJobs);
 }
 
 
@@ -53,13 +53,14 @@ sub checkMerOverlapper ($) {
     }
 
     my $batchSize  = getGlobal("merOverlapperExtendBatchSize");
-    my $jobs       = int($numFrags / ($batchSize-1)) + 1;
+    my $jobs       = int($numFrags / $batchSize) + (($numFrags % $batchSize == 0) ? 0 : 1);
     my $failedJobs = 0;
 
     for (my $i=1; $i<=$jobs; $i++) {
         my $job = substr("0000" . $i, -4);
 
-        if (! -e "$wrk/$outDir/olaps/$job.ovb.gz") {
+        if ((! -e "$wrk/$outDir/olaps/$job.ovb.gz") &&
+            (! -e "$wrk/$outDir/olaps/$job.ovb")) {
             print STDERR "$wrk/$outDir/olaps/$job failed.\n";
             $failedJobs++;
         }

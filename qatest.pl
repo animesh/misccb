@@ -4,9 +4,9 @@
 # DONE
 ##########################
 # Timeout (TI line to set) default 60secs, diffseq needs more
-# Preprocess (PP line) command
-# Postprocess (QQ line) command - e.g. testing database builds, reusing output
-# EMBOSS_RC variable to read an extra .embossrc file (for new test dbs)
+# Pre-process (PP line) command
+# Post-process (QQ line) command - e.g. testing database builds, reusing output
+# EMBOSS_RC variable to read an extra .embossrc file (for new test databases)
 #
 ##########################
 # THINGS TO DO
@@ -24,15 +24,15 @@
 # ER error return code
 # ## Comment (required double #)
 # CC Comment (used in commenting on failed tests, e.g. "Requires SRS"
-# DL success or all or keep - whether to delete the files afterways
+# DL success or all or keep - whether to delete the files afterwards
 # IN Line(s) of standard input
 # FI File name (stdout and stderr assumed to exist and be empty unless stated)
 # FK Keystrokes output File name (non-text)
 # FP File pattern - /regexp/ to be found. Optional count to check exact number.
 # FZ [<=>]number File size test. Implicit test for zero size stdout/stderr
 #                unless stated
-# FC [<=>]number File linecount test
-# UC Comment (used un documenting the usage)
+# FC [<=>]number File line count test
+# UC Comment (used in documenting the usage)
 # IC Comment (used in documenting the input files)
 # OC Comment (used in documenting the output files)
 # RQ Requires (e.g. SRS for tests that need a local getz working)
@@ -52,7 +52,7 @@
 
 sub usage () {
   print STDERR "Usage:\n";
-  print STDERR "  qatest.pl [-kk | -ks | -ka] [-t=60] [-wild] [-mcheck] [testnames...]\n";
+  print STDERR "  qatest.pl [-kk | -ks | -ka] [-t=60] [-wild] [-mcheck] [-noembassy] [-embassy=package] [testnames...]\n";
   print STDERR "            defaults: -kk -t=60\n";
 }
 
@@ -141,7 +141,7 @@ sub runtest ($) {
     elsif ($line =~ /^AP\s+(\S+)/) {
 	$testapp = $1;
 	$apcount{$testapp}++;
-	if (!defined($tfm{$testapp})) {
+	if (!$simple && !defined($tfm{$testapp})) {
 	    $tfm{$testapp}=0;
 	    $dtop = "../../doc/programs/";
 	    if (-e "$dtop/html/$testapp.html") {$tfm{$testapp}++}
@@ -171,7 +171,7 @@ sub runtest ($) {
 	    print STDERR "No AB line before AA line in test $testid\n";
 	}
 	$dtop = "../../embassy/$packa/emboss_doc";
-	if (!defined($tfm{$testapp})) {
+	if ($doembassy && !defined($tfm{$testapp})) {
 	    $tfm{$testapp}=0;
 	    if (-e "$dtop/html/$testapp.html") {$tfm{$testapp}++}
 	    else {print STDERR "No HTML docs for $testapp\n";$misshtml++;}
@@ -306,7 +306,7 @@ sub runtest ($) {
       $testpath = "../../emboss/"; #  up from the test/qa directory
     }
     else {
-      $testpath = "../../embassy/$packa/source/"; #  up from the test/qa directory
+      $testpath = "../../embassy/$packa/src/"; #  up from the test/qa directory
     }
     if (! (-e "$testpath$testapp")) {$skipcheck++; print "not found '$testpath$testapp'\n";return 0} # make check not run
     if ($testappname && defined($acdname{$testapp}) && $acdname{$testapp}) {
@@ -315,7 +315,7 @@ sub runtest ($) {
     $testpath = "../$testpath";	# we run from the test/qa/* subdirectory
   }
 
-  if ($testa) {	# for "embassy" apps (AA lines) we can skip
+  if ($doembassy && $testa) {	# for "embassy" apps (AA lines) we can skip
     if ($testappname && !defined($acdname{$testapp})) { # embassy make not run
 	print STDERR "Embassy application $testapp ($packa) not installed - skip\n";
       $skipembassy++;
@@ -735,7 +735,7 @@ $testappname=0;
 $misshtml=0;
 $misstext=0;
 $misssf=0;
-%without = ();
+%without = ("srs" => 1);
 %dotest = ();
 %tfm = ();
 %sf = ();
@@ -745,12 +745,33 @@ $packa="unknown";
 $dowild=0;
 $logfile = "qatest.log";
 $testwild = "*";
+$doembassy=1;
+$docheck=1;
+$qatestfile = "../qatest.dat";
+
+$acddir=  "../../emboss/acd";
+$simple=0;
+
+open (VERSION, "embossversion -full -filter|") ||
+    die "Cannot run embossversion";
+while (<VERSION>){
+    if(/BaseDirectory: (\S+)/) {
+	$acddir = $1;
+	$qatestfile = "$acddir"."test/qatest.dat";
+    }
+}
+close VERSION;
 
 foreach $test (@ARGV) {
   if ($test =~ /^-(.*)/) {
     $opt=$1;
     if ($opt eq "kk") {$defdelete="keep"}
+    elsif ($opt eq "keep") {$defdelete="keep"}
     elsif ($opt eq "ks") {$defdelete="success"}
+    elsif ($opt eq "ka") {$defdelete="all"}
+    elsif ($opt eq "noembassy") {$doembassy=0}
+    elsif ($opt eq "nocheck") {$docheck=0}
+    elsif ($opt eq "simple") {$simple=1}
     elsif ($opt eq "wild") {
 	$dowild=1;
 	if(defined($testname)) {
@@ -758,10 +779,13 @@ foreach $test (@ARGV) {
 	}
     }
     elsif ($opt eq "mcheck") {$domcheck="MALLOC_CHECK_=3;export MALLOC_CHECK_;"}
-    elsif ($opt eq "ka") {$defdelete="all"}
     elsif ($opt =~ /without=(\S+)/) {$without{$1}=1}
+    elsif ($opt =~ /with=(\S+)/) {undef($without{$1})}
     elsif ($opt =~ /t=([0-9]+)/) {$timeoutdef=int($1)}
     elsif ($opt =~ /logfile=(\S+)/) {$logfile=">$1"} # append to logfile
+    elsif ($opt =~ /testfile=(\S+)/) {$qatestfile="$1"}
+    elsif ($opt =~ /acd=(\S+)/) {$acddir="$1"}
+    elsif ($opt =~ /embassy=(\S+)/) {$embassyonly="$1"}
     else {print STDERR "+++ unknown option '$opt'\n"; usage()}
   }
   else {
@@ -826,7 +850,7 @@ $SIG{ALRM} = sub { print STDERR "+++ timeout handler\n"; die "qatest timeout" };
 # The relative path is fixed, as are the paths of files in the qatest.dat
 # file, so best to keep everything running in the test/qa directory
 
-opendir (ACDDIR, "../../emboss/acd") || die "Cannot open emboss/acd directory";
+opendir (ACDDIR, "$acddir") || die "Cannot open emboss/acd directory";
 @acdfiles = readdir(ACDDIR);
 closedir ACDDIR;
 
@@ -840,7 +864,7 @@ if (!$numtests) {
 
   undef @acdfiles;
 
-  open (WOSSNAME, "export -n EMBOSS_ACDCOMMANDLINE;wossname -alpha -auto|") || die "Cannot run wossname";
+  open (WOSSNAME, "unset EMBOSS_ACDCOMMANDLINE;wossname -alpha -auto|") || die "Cannot run wossname";
   while (<WOSSNAME>) {
     if (/^[a-z]\S+/) {
       $app = $&;
@@ -856,11 +880,14 @@ if (!$numtests) {
 
 }
 
-open (IN, "../qatest.dat") || die "Cannot open qatest.dat";
+open (IN, "$qatestfile") || die "Cannot open $qatestfile";
 open (LOG, ">$logfile") || die "Cannot open $logfile";
 
 # make qatest.log unbuffered and be sure to reset the current filehandle
 $fh = select LOG; $|=1; select $fh;
+
+$ischeck = 0;
+$isembassy = 0;
 
 while (<IN>) {
 
@@ -870,7 +897,12 @@ while (<IN>) {
     $lastid = $id;
     $id = $1;
     $testdef = "";
+    $ischeck = 0;
+    $isembassy = 0;
   }
+  if (/^AA\s+(\S+)/) {$isembassy = 1}
+  if (/^AB\s+(\S+)/) {$embassypack = $1}
+  if (/^AQ\s+/) {$ischeck = 1}
   $testdef .= $_;
 
 # end of definition - fire up the test
@@ -878,7 +910,12 @@ while (<IN>) {
   if (/^\/\//) {
     if (($numtests > 0) && !$dowild && !$dotest{$id}) {next}
     if (($numtests > 0) && $dowild && $id !~ /$testwild/) {next}
-
+    if($isembassy){
+      if(!$doembassy) {next}
+      if(defined($embassyonly) && ($embassyonly ne $embassypack)){$testappname=0;next}
+    }
+    elsif(defined($embassyonly)){$testappname=0;next}
+    if($ischeck && !$docheck) {next}
     $result = runtest ($testdef);
     $tcount++;
 
@@ -994,10 +1031,12 @@ foreach $x (sort(keys(%packfail))) {
     }
 }
 print STDERR "Tests total: $totall pass: $tpass fail: $tfail\n";
-print STDERR "Skipped: $totskip check: $skipcheck embassy: $skipembassy requirements: $skipreq\n";
+if(!$simple) {
+    print STDERR "Skipped: $totskip check: $skipcheck embassy: $skipembassy requirements: $skipreq\n";
 
-print STDERR "No tests: $tnotest\n";
-print STDERR "Missing documentation html: $misshtml text: $misstext sourceforge: $misssf\n";
+    print STDERR "No tests: $tnotest\n";
+    print STDERR "Missing documentation html: $misshtml text: $misstext sourceforge: $misssf\n";
+}
 print STDERR "Time: $alltime seconds\n";
 print LOG "Time: $alltime seconds\n";
 

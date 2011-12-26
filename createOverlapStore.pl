@@ -4,7 +4,7 @@ sub createOverlapStore {
 
     goto alldone if (-d "$wrk/$asm.ovlStore");
 
-    if (runCommand($wrk, "find $wrk/1-overlapper -name \\*ovb.gz -print > $wrk/$asm.ovlStore.list")) {
+    if (runCommand($wrk, "find $wrk/1-overlapper \\( -name \\*ovb.gz -or -name \\*ovb \\) -print > $wrk/$asm.ovlStore.list")) {
         caFailure("failed to generate a list of all the overlap files", undef);
     }
 
@@ -14,8 +14,7 @@ sub createOverlapStore {
     $cmd .= " -c $wrk/$asm.ovlStore.BUILDING ";
     $cmd .= " -g $wrk/$asm.gkpStore ";
     
-    if (defined(getGlobal("closureEdges"))){
-      $cmd .= " -I " . getGlobal("closureEdges");
+    if (defined(getGlobal("closureOverlaps"))){
       $cmd .= " -i " . getGlobal("closureOverlaps");
     }
     
@@ -29,8 +28,17 @@ sub createOverlapStore {
 
     rename "$wrk/$asm.ovlStore.BUILDING", "$wrk/$asm.ovlStore";
 
-    rmrf("$asm.ovlStore.list");
-    rmrf("$asm.ovlStore.err");
+    if (getGlobal("saveOverlaps") == 0) {
+        open(F, "< $wrk/$asm.ovlStore.list");
+        while (<F>) {
+            chomp;
+            unlink $_;
+        }
+        close(F);
+    }
+
+    rmrf("$wrk/$asm.ovlStore.list");
+    rmrf("$wrk/$asm.ovlStore.err");
 
   alldone:
     stopAfter("overlapper");

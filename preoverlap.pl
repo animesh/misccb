@@ -7,7 +7,7 @@ sub perfectTrimming {
 
     return if (!defined($refFasta));
 
-    setGlobal("doOverlapTrimming", 0);
+    setGlobal("doOverlapBasedTrimming", 0);
 
     die "Can't find gkpStore '$gkpStore'\n"  if (! -d $gkpStore);
     die "Can't find reference '$refFasta'\n" if (! -e $refFasta);
@@ -183,7 +183,7 @@ sub preoverlap {
 
                     my $bin = getBinDirectory();
 
-                    if (runCommand($wrk, "$bin/sffToCA -libraryname $nam -linker flx -insertsize 3000 300 -log $log -output $frg $sff > $frg.err 2>&1")) {
+                    if (runCommand($wrk, "$bin/sffToCA -libraryname $nam -linker flx -linker titanium -insertsize 3000 300 -output $frg $sff > $frg.err 2>&1")) {
                         unlink "$wrk/$frg";
                         caFailure("sffToCA failed", "$frg.err");
                     }
@@ -197,7 +197,7 @@ sub preoverlap {
         my $cmd;
         $cmd  = "$bin/gatekeeper ";
         $cmd .= " -o $wrk/$asm.gkpStore.BUILDING ";
-        $cmd .= " -T " if (getGlobal("doOverlapTrimming"));
+        $cmd .= " -T " if (getGlobal("doOverlapBasedTrimming"));
         $cmd .= " -F " if (getGlobal("gkpFixInsertSizes"));
         $cmd .= " -E $wrk/$asm.gkpStore.errorLog ";
         $cmd .= "$gkpInput ";

@@ -57,30 +57,35 @@ sub summarizeConsensusStatistics ($) {
 
 
 
-sub terminate ($) {
-    my $cgwDir = shift @_;
-    $cgwDir = "$wrk/7-CGW" if (!defined($cgwDir));
-
+sub terminate () {
     my $bin  = getBinDirectory();
     my $perl = "/usr/bin/env perl";
 
     my $termDir = "$wrk/9-terminator";
     system("mkdir $termDir") if (! -e "$termDir");
 
+    stopBefore("terminator", undef);
+
     if (! -e "$termDir/$asm.asm") {
         my $uidServer = getGlobal("uidServer");
         my $fakeUIDs  = getGlobal("fakeUIDs");
 
         my $cmd;
-        $cmd  = "cat $cgwDir/$asm.cgw ";
-        $cmd .= " $wrk/8-consensus/$asm.cns_contigs.*[0-9] ";
-        $cmd .= " $cgwDir/$asm.cgw_scaffolds | ";
-        $cmd .= "$bin/terminator ";
-        $cmd .= " -s $fakeUIDs "                if ($fakeUIDs != 0);
-        $cmd .= " $uidServer "                  if (defined($uidServer));
-        $cmd .= " -g $wrk/$asm.gkpStore ";
-        $cmd .= " -o $termDir/$asm ";
-        $cmd .= " > $termDir/terminator.err 2>&1 ";
+
+        my $ckpVersion = findLastCheckpoint("$wrk/7-CGW");
+        my $tigVersion = $ckpVersion + 1;
+
+        caFailure("contig consensus didn't find any checkpoints in '$wrk/7-CGW'", undef) if (!defined($tigVersion));
+
+        $cmd  = "$bin/terminator";
+        $cmd .= " -E $uidServer" if (defined($uidServer));
+        $cmd .= " -s $fakeUIDs" if ($fakeUIDs > 0);
+        $cmd .= " -g $wrk/$asm.gkpStore";
+        $cmd .= " -t $wrk/$asm.tigStore $tigVersion";
+        $cmd .= " -c $wrk/7-CGW/$asm $ckpVersion";
+        $cmd .= " -o $wrk/9-terminator/$asm";
+        $cmd .= " > $wrk/9-terminator/$asm.asm.err";
+
         if (runCommand("$termDir", $cmd)) {
             rename "$termDir/$asm.asm", "$termDir/$asm.asm.FAILED";
             rename "$termDir/$asm.map", "$termDir/$asm.map.FAILED";
@@ -103,12 +108,14 @@ sub terminate ($) {
 
 
     if (! -e "$termDir/$asm.singleton.fasta") {
-        my $lastckp = findLastCheckpoint("$wrk/7-CGW");
+        my $ckpVersion = findLastCheckpoint("$wrk/7-CGW");
+        my $tigVersion = $ckpVersion + 1;
 
         my $cmd;
         $cmd  = "$bin/dumpSingletons ";
         $cmd .= " -g $wrk/$asm.gkpStore ";
-        $cmd .= " -c $cgwDir/$asm -n $lastckp -S ";
+        $cmd .= " -t $wrk/$asm.tigStore ";
+        $cmd .= " -c $wrk/7-CGW/$asm -n $ckpVersion -S ";
         $cmd .= "> $termDir/$asm.singleton.fasta ";
         $cmd .= "2> $termDir/dumpSingletons.err ";
         if (runCommand("$termDir", $cmd)) {
@@ -141,11 +148,13 @@ sub terminate ($) {
     #  Generate a read depth histogram
     #
     ########################################
-    if ((getGlobal("createPosMap") > 0) && (! -e "$termDir/$asm.qc.readdepth")) {
-        my $cmd;
+    if ((  -e "$termDir/$asm.posmap.frgscf") &&
+        (! -e "$termDir/$asm.qc.readdepth") &&
+        (! -e "$termDir/$asm.qc")) {
 
         #  Youch.  Run five commands, do something if all are successful.
 
+        my $cmd;
         $cmd  = "sort -k2n -k3n -T $termDir $termDir/$asm.posmap.frgscf > $termDir/$asm.posmap.frgscf.sorted &&";
         $cmd .= "$bin/fragmentDepth -min       0 -max    3000 < $termDir/$asm.posmap.frgscf.sorted > $termDir/$asm.posmap.frgscf.histogram1 && ";
         $cmd .= "$bin/fragmentDepth -min    3001 -max   10000 < $termDir/$asm.posmap.frgscf.sorted > $termDir/$asm.posmap.frgscf.histogram2 && ";

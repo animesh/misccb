@@ -192,6 +192,20 @@ sub htmlsource ( $$ ) {
 	die "Cannot open HTML template file '$edir/$tfile'";
 
     while (<H>) {
+	if(/^\s*Function\s*$/) {
+	    print X "Wiki\n";
+	    print X "</H2>\n";
+	    print X "\n";
+	    print X "The master copies of EMBOSS documentation are available\n";
+	    print X "at <a href=\"http://emboss.open-bio.org/wiki/Appdocs\">\n";
+	    print X "http://emboss.open-bio.org/wiki/Appdocs</a>\n";
+	    print X "on the EMBOSS Wiki.\n";
+	    print X "\n";
+	    print X "<p>\n";
+	    print X "Please help by correcting and extending the Wiki pages.\n";
+	    print X "\n";
+	    print X "<H2>\n";
+	}
 	if (/[<][\!][-][-][\#]include file=\"([^\"]+)\" +[-][-][>]/) {
 	    $ifile = $1;
 	    if(-e "$edir/$ifile") {
@@ -233,6 +247,7 @@ sub htmlsource ( $$ ) {
 # 
 # Description: 
 #	removes unwanted acdtable output from text documentation
+#	makes sure seealso output is reasonably spaced
 # 
 # Args: 
 # 	$afile - first filename
@@ -243,12 +258,19 @@ sub htmlsource ( $$ ) {
 # 
 ######################################################################
 sub cleantext ( $ ) {
+    my $seealso = 0;
     my ($afile) = @_;
     if(-e $afile) {
 	open (X, $afile);
 	open (Z, ">z.z");
 	my $acdtable = 0;
 	while (<X>) {
+	    if(/^See also$/) {
+		    $seealso = 1;
+		}
+	    if(/^Author[\(s\)]$/) {
+		    $seealso = 0;
+		}
 	    if($acdtable) {
 		if(/^Input file format$/) {
 		    $acdtable = 0;
@@ -263,10 +285,27 @@ sub cleantext ( $ ) {
 
 	    }
 	    else {
-		if(/^\s+Standard \(Mandatory\) qualifiers Allowed values Default/) {
+		if(/^\s+Qualifier Type Description Allowed values Default/) {
 		    $acdtable = 1;
 		}
 	    }
+	    if($seealso) {
+		if(/   Program name Description/) {
+		    $seealso = 2;
+		    s/Program name Description/Program name     Description/;
+		}
+		else {
+		    if(/^(\s+)(\S+) ([A-Z])/) {
+			$name = sprintf "%-16s", $2;
+			s/^(\s+)(\S+) ([A-Z])/$1$name $3/;
+		    }
+		    else {
+			s/^  /                   /;
+		    }
+		}
+		if(/^$/ && $seealso == 2) {$seealso = 0}
+	    }
+	
 	    if(!$acdtable) { print Z }
 	}
     }
@@ -1050,7 +1089,7 @@ $progs{$thisprogram}
 
 
 # check to see if the command table include file exists
-	system "acdtable $thisprogram 2> x.x";
+	system "acdtable $thisprogram -verbose 2> x.x";
 	checkincludefile($thisprogram, $progdocdir, 'itable');
 
 
