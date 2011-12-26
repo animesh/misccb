@@ -1,44 +1,20 @@
-#[animesh@astrakan ecoli]$ cat gs.pl
-$f1=shift @ARGV;
-chomp $f1;
-$f2=shift @ARGV;
-chomp $f2;
-$break=shift @ARGV;
-chomp $break;
-print "Sorting $f1\n";
-system("sort $f1 > $f1.s");
-print "Sorting $f2\n";
-system("sort $f2 > $f2.s");
-open(F1,"$f1.s");
-open(F2,"$f2.s");
-open(F,">$f1.$f2.out");
-while(<F1>){
-        chomp $_;
-        @t1=split(/\s+/,$_);
-        $c1{@t1[0]}=$_;
-	push(@n1,@t1[0]);
-	$fcnt++;
-}
-print "Read file $f1\n";
-while(<F2>){
-        chomp $_;
-        @t2=split(/\s+/,$_);
-	push(@n2,@t2[0]);
-        $c2{@t2[0]}=$_;
-}
-print "Read file $f2\n";
-system("rm $f1.s $f2.s");
-for($c=0;$c<=$#n1;$c++) {
-	$r1=@n1[$c];
-        for($cc=0;$cc<=$#n2;$cc++) {
-		$r2=@n2[$cc];
-                #print "$c\t$cc\t$r1\t$r2\n";
-                if($r1 eq $r2){
-                        print F"$r1-$r2\t$c1{$r1}\t$c2{$r2}\n";
-			@n2=@n2[$cc+1..$#n2];
-                        last;
-                }
-        }
-        if($c%($fcnt/$break)==0){print "Processed $c\n";}
-}
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#    Code base of Animesh Sharma [ sharma.animesh@gmail.com ]
 
+Nice article titled "Opening Up to the Rest of the World" which has appeared in a not-so-open Journal called Science (I wish I could share/clip). Anyways it is about Antoine de Daruvar’s [ https://www.labri.fr/publications/mabiovis/?author=de+Daruvar&title=&year=-1&display=list&full=true&x=&y= ] latest efforts to make Bioinformatics teaching more interesting. 
+Their assignment was to write a computer application to help
+biologists search genetic databases, and Daruvar is eager to test-drive the results.
+“Hmmm … is that image free of copyrights?” he asks a duo who have embellished their start page with a picture of a magnifying
+glass. “Mission accomplished,” he beams at the authors of a nearly flawless piece of software.'

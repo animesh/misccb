@@ -57,72 +57,63 @@ sub summarizeConsensusStatistics ($) {
 
 
 
-sub terminate () {
-    my $bin  = getBinDirectory();
+sub terminate ($) {
+    my $cgwDir = shift @_;
+    $cgwDir = "$wrk/7-CGW" if (!defined($cgwDir));
+
+
     my $perl = "/usr/bin/env perl";
 
     my $termDir = "$wrk/9-terminator";
     system("mkdir $termDir") if (! -e "$termDir");
-
-    stopBefore("terminator", undef);
 
     if (! -e "$termDir/$asm.asm") {
         my $uidServer = getGlobal("uidServer");
         my $fakeUIDs  = getGlobal("fakeUIDs");
 
         my $cmd;
-
-        my $ckpVersion = findLastCheckpoint("$wrk/7-CGW");
-        my $tigVersion = $ckpVersion + 1;
-
-        caFailure("contig consensus didn't find any checkpoints in '$wrk/7-CGW'", undef) if (!defined($tigVersion));
-
-        $cmd  = "$bin/terminator";
-        $cmd .= " -E $uidServer" if (defined($uidServer));
-        $cmd .= " -s $fakeUIDs" if ($fakeUIDs > 0);
-        $cmd .= " -g $wrk/$asm.gkpStore";
-        $cmd .= " -t $wrk/$asm.tigStore $tigVersion";
-        $cmd .= " -c $wrk/7-CGW/$asm $ckpVersion";
-        $cmd .= " -o $wrk/9-terminator/$asm";
-        $cmd .= " > $wrk/9-terminator/$asm.asm.err";
-
+        $cmd  = "cat $cgwDir/$asm.cgw ";
+        $cmd .= " $wrk/8-consensus/$asm.cns_contigs.*[0-9] ";
+        $cmd .= " $cgwDir/$asm.cgw_scaffolds | ";
+        $cmd .= "$bin/terminator ";
+        $cmd .= " -s $fakeUIDs "                if ($fakeUIDs != 0);
+        $cmd .= " $uidServer "                  if (defined($uidServer));
+        $cmd .= " -g $wrk/$asm.gkpStore ";
+        $cmd .= " -o $termDir/$asm.asm ";
+        $cmd .= " -m $termDir/$asm.map ";
+        $cmd .= " > $termDir/terminator.err 2>&1 ";
         if (runCommand("$termDir", $cmd)) {
             rename "$termDir/$asm.asm", "$termDir/$asm.asm.FAILED";
             rename "$termDir/$asm.map", "$termDir/$asm.map.FAILED";
-            caFailure("terminator failed", "$termDir/terminator.err");
+            caFailure("Failed.\n");
         }
-        unlink "$termDir/terminator.err";
     }
 
 
-    my $asmOutputFasta = "$bin/asmOutputFasta";
-    if (! -e "$termDir/$asm.scf.fasta") {
+    if (! -e "$termDir/$asm.scfcns.fasta") {
         my $cmd;
-        $cmd  = "$asmOutputFasta -p $termDir/$asm $termDir/$asm.asm > $termDir/asmOutputFasta.err 2>&1";
+        $cmd  = "$bin/asmOutputFasta -p $termDir/$asm $termDir/$asm.asm ";
         if (runCommand("$termDir", $cmd)) {
             rename "$termDir/$asm.scfcns.fasta", "$termDir/$asm.scfcns.fasta.FAILED";
-            caFailure("fasta output failed", "$termDir/asmOutputFasta.err");
+            caFailure("Failed.\n");
         }
-        unlink "$termDir/asmOutputFasta.err";
     }
 
 
     if (! -e "$termDir/$asm.singleton.fasta") {
-        my $ckpVersion = findLastCheckpoint("$wrk/7-CGW");
-        my $tigVersion = $ckpVersion + 1;
+        my $lastckp = findLastCheckpoint("$wrk/7-CGW");
 
         my $cmd;
         $cmd  = "$bin/dumpSingletons ";
+        $cmd .= " -f $wrk/$asm.frgStore ";
         $cmd .= " -g $wrk/$asm.gkpStore ";
-        $cmd .= " -t $wrk/$asm.tigStore ";
-        $cmd .= " -c $wrk/7-CGW/$asm -n $ckpVersion -S ";
+        $cmd .= " -c $cgwDir/$asm -n $lastckp -S ";
         $cmd .= "> $termDir/$asm.singleton.fasta ";
         $cmd .= "2> $termDir/dumpSingletons.err ";
         if (runCommand("$termDir", $cmd)) {
             print STDERR "Failed.\n";
             rename "$termDir/$asm.singleton.fasta", "$termDir/$asm.singleton.fasta.FAILED";
         }
-        unlink "$termDir/dumpSingletons.err";
     }
 
 
@@ -135,83 +126,23 @@ sub terminate () {
 
     if (getGlobal("createPosMap") > 0) {
         if (! -e "$termDir/$asm.posmap.frgscf") {
-            if (runCommand("$termDir", "$bin/buildPosMap -o $asm < $termDir/$asm.asm > $termDir/buildPosMap.err 2>&1")) {
+            my $cmd;
+            $cmd = "$perl $bin/buildFragContigPosMap.pl $asm.posmap < $termDir/$asm.asm";
+            if (runCommand("$termDir", $cmd)) {
                 rename "$termDir/$asm.posmap.frgscf", "$termDir/$asm.posmap.frgscf.FAILED";
-                caFailure("buildPosMap failed", "$termDir/buildPosMap.err");
-            }
-            unlink "$termDir/buildPosMap.err";
-        }
-    }
-
-    ########################################
-    #
-    #  Generate a read depth histogram
-    #
-    ########################################
-    if ((getGlobal("createPosMap") > 0) && (! -e "$termDir/$asm.qc.readdepth")) {
-        my $cmd;
-
-        #  Youch.  Run five commands, do something if all are successful.
-
-        $cmd  = "sort -k2n -k3n -T $termDir $termDir/$asm.posmap.frgscf > $termDir/$asm.posmap.frgscf.sorted &&";
-        $cmd .= "$bin/fragmentDepth -min       0 -max    3000 < $termDir/$asm.posmap.frgscf.sorted > $termDir/$asm.posmap.frgscf.histogram1 && ";
-        $cmd .= "$bin/fragmentDepth -min    3001 -max   10000 < $termDir/$asm.posmap.frgscf.sorted > $termDir/$asm.posmap.frgscf.histogram2 && ";
-        $cmd .= "$bin/fragmentDepth -min   10001 -max 1000000 < $termDir/$asm.posmap.frgscf.sorted > $termDir/$asm.posmap.frgscf.histogram3 && ";
-        $cmd .= "$bin/fragmentDepth -min 1000001              < $termDir/$asm.posmap.frgscf.sorted > $termDir/$asm.posmap.frgscf.histogram4 ";
-
-        if (runCommand("$termDir", $cmd) == 0) {
-            my @H1;
-            my @H2;
-            my @H3;
-            my @H4;
-            my $histMax = 0;
-
-            open(G, "<  $termDir/$asm.posmap.frgscf.histogram1") or caFailure("failed to open '$termDir/$asm.posmap.frgscf.histogram1'", undef);
-            while (<G>) {
-                my ($v, $s) = split '\s+', $_;
-                $H1[$v] = $s;
-                $histMax = $v if ($histMax < $v);
-            }
-            close(G);
-
-            open(G, "<  $termDir/$asm.posmap.frgscf.histogram2") or caFailure("failed to open '$termDir/$asm.posmap.frgscf.histogram2'", undef);
-            while (<G>) {
-                my ($v, $s) = split '\s+', $_;
-                $H2[$v] = $s;
-                $histMax = $v if ($histMax < $v);
-            }
-            close(G);
-
-            open(G, "<  $termDir/$asm.posmap.frgscf.histogram3") or caFailure("failed to open '$termDir/$asm.posmap.frgscf.histogram3'", undef);
-            while (<G>) {
-                my ($v, $s) = split '\s+', $_;
-                $H3[$v] = $s;
-                $histMax = $v if ($histMax < $v);
-            }
-            close(G);
-
-            open(G, "<  $termDir/$asm.posmap.frgscf.histogram4") or caFailure("failed to open '$termDir/$asm.posmap.frgscf.histogram4'", undef);
-            while (<G>) {
-                my ($v, $s) = split '\s+', $_;
-                $H4[$v] = $s;
-                $histMax = $v if ($histMax < $v);
-            }
-            close(G);
-
-            open(G, "> $termDir/$asm.qc.readdepth");
-            print G "\n[Read Depth Histogram]\n";
-            print G "d    < 3Kbp    < 10Kbp   < 1Mbp    < inf\n";
-            for (my $v=0; $v<=$histMax; $v++) {
-                printf(G "%-4d %-10d %-10d %-10d %-10d\n", $v, int($H1[$v]), int($H2[$v]), int($H3[$v]), int($H4[$v]));
+                caFailure("buildFragContigMap failed.\n");
             }
         }
-
-        #  Remove our temporary files.
-
-        unlink "$termDir/$asm.posmap.frgscf.histogram1";
-        unlink "$termDir/$asm.posmap.frgscf.histogram2";
-        unlink "$termDir/$asm.posmap.frgscf.histogram3";
-        unlink "$termDir/$asm.posmap.frgscf.histogram4";
+        if (! -e "$termDir/$asm.posmap.frgscf.sorted") {
+            if (runCommand("$termDir", "sort -k2n -T $termDir $termDir/$asm.posmap.frgscf > $termDir/$asm.posmap.frgscf.sorted")) {
+                rename "$termDir/$asm.posmap.frgscf.histogram", "$termDir/$asm.posmap.frgscf.histogram.FAILED";
+            } else {
+                runCommand("$termDir", "$bin/fragmentDepth -min       0 -max    3000 < $termDir/$asm.posmap.frgscf.sorted > $termDir/$asm.posmap.frgscf.histogram1");
+                runCommand("$termDir", "$bin/fragmentDepth -min    3001 -max   10000 < $termDir/$asm.posmap.frgscf.sorted > $termDir/$asm.posmap.frgscf.histogram2");
+                runCommand("$termDir", "$bin/fragmentDepth -min   10001 -max 1000000 < $termDir/$asm.posmap.frgscf.sorted > $termDir/$asm.posmap.frgscf.histogram3");
+                runCommand("$termDir", "$bin/fragmentDepth -min 1000001              < $termDir/$asm.posmap.frgscf.sorted > $termDir/$asm.posmap.frgscf.histogram4");
+            }
+        }
     }
 
 
@@ -221,37 +152,45 @@ sub terminate () {
     #
     ########################################
 
-    if (! -e "$termDir/$asm.qc") {
-        my $qcOptions;
 
-        #if (! -e "$termDir/$asm.dumpinfo") {
-        #    if (runCommand($termDir, "$bin/gatekeeper -dumpinfo $wrk/$asm.gkpStore > $termDir/$asm.gkpinfo 2> $termDir/$asm.gkpinfo.err")) {
-        #        unlink "$termDir/$asm.gkpinfo";
-        #    }
-        #    unlink "$termDir/$asm.gkpinfo.err";
-        #}
+    my $ruby;
+    system("/usr/bin/env ruby -v >/dev/null 2>&1");
+    $ruby = "/usr/bin/env ruby" if ($? == 0);
+    if (defined($ruby) && (! -e "$termDir/mateLinkIIDRanges.txt")) {
+        my $cmd;
+        $cmd = "$bin/mateLinkIIDRanges.rb $wrk/$asm.gkpStore $bin > $termDir/mateLinkIIDRanges.txt";
+#        if (runCommand($termDir, $cmd)) {
+#            rename "$termDir/mateLinkIIDRanges.txt", "$termDir/mateLinkIIDRanges.txt.FAILED";
+#        }
+    }
+
+    if (! -e "$termDir/$asm.qc") {
+        if (! -e "$termDir/$asm.dumpinfo") {
+            if (runCommand($termDir, "$bin/gatekeeper -dumpinfo $wrk/$asm.gkpStore > $termDir/$asm.gkpinfo 2> $termDir/$asm.gkpinfo.err")) {
+                unlink "$termDir/$asm.gkpinfo";
+            }
+        }
     	if ( -e "$wrk/$asm.frg" ) {
             link "$wrk/$asm.frg", "$termDir/$asm.frg";
-            $qcOptions = "-metrics";
-	}
+	}    
     	if ( -e "$wrk/$asm.catmap" && !-e "$termDir/$asm.catmap" )  {
             link "$wrk/$asm.catmap", "$termDir/$asm.catmap";
 	}
     	if ( -e "$wrk/$asm.seq.features" && !-e "$termDir/$asm.seq.features" )  {
             link "$wrk/$asm.seq.features", "$termDir/$asm.seq.features";
 	}
-        if (runCommand("$termDir", "$perl $bin/caqc.pl -euid $qcOptions $termDir/$asm.asm")) {
+        if (runCommand("$termDir", "$perl $bin/caqc.pl -euid -metrics $termDir/$asm.asm")) {
             rename "$termDir/$asm.qc", "$termDir/$asm.qc.FAILED";
         }
 
         summarizeConsensusStatistics("$wrk/5-consensus");
         summarizeConsensusStatistics("$wrk/8-consensus");
 
-        open(F, ">> $termDir/$asm.qc") or caFailure("failed to append to '$termDir/$asm.qc'", undef);
+        open(F, ">> $termDir/$asm.qc") or caFailure("Failed to append to '$termDir/$asm.qc'\n");
 
         if (-e "$wrk/5-consensus/consensus.stats.summary") {
             print F "\n[Unitig Consensus]\n";
-            open(G, "<  $wrk/5-consensus/consensus.stats.summary") or caFailure("failed to open '$wrk/5-consensus/consensus.stats.summary'", undef);
+            open(G, "<  $wrk/5-consensus/consensus.stats.summary") or caFailure("Failed to open '$wrk/5-consensus/consensus.stats.summary'\n");
             while (<G>) {
                 print F $_;
             }
@@ -260,26 +199,64 @@ sub terminate () {
 
         if (-e "$wrk/8-consensus/consensus.stats.summary") {
             print F "\n[Contig Consensus]\n";
-            open(G, "<  $wrk/8-consensus/consensus.stats.summary") or caFailure("failed to open '$wrk/8-consensus/consensus.stats.summary'", undef);
+            open(G, "<  $wrk/8-consensus/consensus.stats.summary") or caFailure("Failed to open '$wrk/8-consensus/consensus.stats.summary'\n");
             while (<G>) {
                 print F $_;
             }
             close(G);
         }
 
-        if (-e "$termDir/$asm.qc.readdepth") {
-            open(G, "< $termDir/$asm.qc.readdepth") or caFailure("failed to open '$termDir/$asm.qc.readdepth'", undef);
+        my @H1;
+        my @H2;
+        my @H3;
+        my @H4;
+        my $histMax = 0;
+        if (-e "$termDir/$asm.posmap.frgscf.histogram1") {
+            open(G, "<  $termDir/$asm.posmap.frgscf.histogram1") or caFailure("Failed to open '$termDir/$asm.posmap.frgscf.histogram1'\n");
             while (<G>) {
-                print F $_;
+                my ($v, $s) = split '\s+', $_;
+                $H1[$v] = $s;
+                $histMax = $v if ($histMax < $v);
             }
             close(G);
+        }
+        if (-e "$termDir/$asm.posmap.frgscf.histogram2") {
+            open(G, "<  $termDir/$asm.posmap.frgscf.histogram2") or caFailure("Failed to open '$termDir/$asm.posmap.frgscf.histogram2'\n");
+            while (<G>) {
+                my ($v, $s) = split '\s+', $_;
+                $H2[$v] = $s;
+                $histMax = $v if ($histMax < $v);
+            }
+            close(G);
+        }
+        if (-e "$termDir/$asm.posmap.frgscf.histogram3") {
+            open(G, "<  $termDir/$asm.posmap.frgscf.histogram3") or caFailure("Failed to open '$termDir/$asm.posmap.frgscf.histogram3'\n");
+            while (<G>) {
+                my ($v, $s) = split '\s+', $_;
+                $H3[$v] = $s;
+                $histMax = $v if ($histMax < $v);
+            }
+            close(G);
+        }
+        if (-e "$termDir/$asm.posmap.frgscf.histogram4") {
+            open(G, "<  $termDir/$asm.posmap.frgscf.histogram4") or caFailure("Failed to open '$termDir/$asm.posmap.frgscf.histogram4'\n");
+            while (<G>) {
+                my ($v, $s) = split '\s+', $_;
+                $H4[$v] = $s;
+                $histMax = $v if ($histMax < $v);
+            }
+            close(G);
+        }
+
+        
+        print F "\n[Read Depth Histogram]\n";
+        print F "d    < 3Kbp    < 10Kbp   < 1Mbp    < inf\n";
+        for (my $v=0; $v<=$histMax; $v++) {
+            printf(F "%-4d %-10d %-10d %-10d %-10d\n",
+                   $v, int($H1[$v]), int($H2[$v]), int($H3[$v]), int($H4[$v]));
         }
 
         close(F);
-
-        unlink "$wrk/5-consensus/consensus.stats.summary";
-        unlink "$wrk/8-consensus/consensus.stats.summary";
-        unlink "$termDir/$asm.qc.readdepth";
     }
 
 
@@ -329,13 +306,25 @@ sub terminate () {
         #  time.
 
         if (! -e "$termDir/mercy/$asm.ctgNorm.fasta") {
-            link "$termDir/$asm.ctg.fasta", "$termDir/mercy/$asm.ctgNorm.fasta";
+            $cmd  = "$bin/asmOutputContigsFasta    < $termDir/$asm.asm > $termDir/mercy/$asm.ctgNorm.fasta";
+            if (runCommand("$termDir/mercy", $cmd)) {
+                print STDERR "Failed.\n";
+                unlink "$termDir/mercy/$asm.ctgNorm.fasta";
+            }
         }
         if (! -e "$termDir/mercy/$asm.ctgDreg.fasta") {
-            link "$termDir/$asm.deg.fasta", "$termDir/mercy/$asm.ctgDreg.fasta";
+            $cmd  = "$bin/asmOutputContigsFasta -D < $termDir/$asm.asm > $termDir/mercy/$asm.ctgDreg.fasta";
+            if (runCommand("$termDir/mercy", $cmd)) {
+                print STDERR "Failed.\n";
+                unlink "$termDir/mercy/$asm.ctgDreg.fasta";
+            }
         }
         if (! -e "$termDir/mercy/$asm.ctgAll.fasta") {
-            system "cat $termDir/$asm.{ctg,deg}.fasta > $termDir/mercy/$asm.ctgAll.fasta";
+            $cmd  = "$bin/asmOutputContigsFasta -d < $termDir/$asm.asm > $termDir/mercy/$asm.ctgAll.fasta";
+            if (runCommand("$termDir/mercy", $cmd)) {
+                print STDERR "Failed.\n";
+                unlink "$termDir/mercy/$asm.ctgAll.fasta";
+            }
         }
 
         if ((! -e "$termDir/mercy/$asm-ms$ms-ctgNorm.mcidx") &&
@@ -404,15 +393,9 @@ sub terminate () {
     }
 
     if (getGlobal("createACE") > 0) {
-        if (! -e "$termDir/$asm.ace.bz2") {
-            if (! -e "$termDir/$asm.frg") {
-                if (runCommand($termDir, "$bin/gatekeeper -dumpfrg -allreads $wrk/$asm.gkpStore > $termDir/$asm.frg 2> $termDir/gatekeeper.err")) {
-                    caFailure("gatekeeper failed to dump fragments for ACE generation", "$termDir/gatekeeper.err");
-                }
-                unlink "$termDir/gatekeeper.err";
-            }
+        if (! -e "$termDir/test.ace.bz2") {
             if (runCommand($termDir, "$perl $bin/ca2ace.pl $termDir/$asm.asm")) {
-                rename "$termDir/$asm.ace.bz2", "$termDir/$asm.ace.FAILED.bz2";
+                rename "$termDir/test.ace.bz2", "$termDir/test.ace.FAILED.bz2";
             }
         }
     }
@@ -422,8 +405,10 @@ sub terminate () {
 
     link "$termDir/$asm.asm", "$wrk/$asm.asm";
     link "$termDir/$asm.qc",  "$wrk/$asm.qc";
+ 
+    localPostTerminator($termDir);
 
-    return(0);
+    return(0); 
 }
 
 1;

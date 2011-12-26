@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 # Author: Jason Stajich, jason@bioperl.org
-# $Id: parse_calc_stats.pl 6576 2003-07-29 02:50:08Z jason $
-# $Revision: 6576 $
+# $Id: parse_calc_stats.pl,v 1.1 2003/07/29 02:50:08 jason Exp $
+# $Revision: 1.1 $
 
 use strict;
 

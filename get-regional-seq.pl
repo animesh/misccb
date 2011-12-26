@@ -1,6 +1,6 @@
 use strict;
-use lib '/scratch/bac2fish/ensembl/modules';
-use lib '/scratch/bac2fish/BioPerl-1.6.1';
+use lib '/media/DATA/tariku/ensembl';
+#use lib '/scratch/bac2fish/BioPerl-1.6.1';
 use Bio::EnsEMBL::Registry;
 my $file=shift @ARGV;
 open(F,$file);

@@ -1,6 +1,6 @@
 $file2=shift @ARGV;
 open(F2,$file2);
-$fout="$file2.subid.csv";
+$fout="$file2.rv.csv";
 open(FO,">$fout");
 while($l=<F2>){
 	$l=~s/^\s+//;
@@ -8,19 +8,19 @@ while($l=<F2>){
 	@t=split(/\,/,$l);
 	$line++;
 	if($line==1){
-			for($c=0;$c<$#t-2;$c++){
+			for($c=0;$c<$#t;$c++){
 				$cp=$c+1;
 				print FO"V$cp,";
 			}
-			print FO"SubID\n";
+			print FO"LI\n";
 	}
-	for($c=0;$c<=$#t-3;$c++){
+	for($c=0;$c<$#t;$c++){
 		$out=@t[$c]+0;
 		print FO"$out,";
 	}
-	$out=@t[$c+2]+0;
-	print FO"C$out\n";
-	print "$line SubID $out\n";
+	$out=@t[$c]+0;
+	print FO"$out\n";
+	print "$line Class $out\n";
 }
 close F2;
 

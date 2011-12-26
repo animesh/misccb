@@ -16,7 +16,7 @@ my $pdb_file = "../../t/data/pdb1bpt.ent";
 # (similar methods to loop over all chains exist as well)
 #
 # Author: Kris Boulez (kris.boulez@algonomics.com)
-# $Id: struct_example1.pl,v 1.1 2002/08/27 18:17:19 bosborne Exp $
+# $Id: struct_example1.pl,v 1.1 2002/02/18 20:12:34 krbou Exp $
 
 use strict;
 

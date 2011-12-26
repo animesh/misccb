@@ -20,7 +20,7 @@ use Bio::SeqIO;
 
 my $main_file_pattern=shift @ARGV;chomp $main_file_pattern;
 my $other_file_pattern=shift @ARGV;chomp $other_file_pattern;
-$main_file_pattern = "FCRLHFZ01.sff.fna";
+$main_file_pattern = "FCRLHFZ02.sff.fna";
 $other_file_pattern = "NC_010336.fna";
 
 my $line;

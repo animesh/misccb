@@ -9,16 +9,16 @@
   #my $command="est2genome";
   #my $genome="NC_010336.fna";
   my @tasks;
-  my $tasksize= 8;
+  my $tasksize= 16;
   #open(F,"list.tmp");
   #while(<F>){chomp;push(@tasks,$_);}
   #close F;  
- for(my $c=1;$c<=6000;$c+=$tasksize){
+ for(my $c=1;$c<=720;$c+=$tasksize){
   print "There are #  $tasksize from $c \n";
   my $pm = new Parallel::ForkManager($tasksize); 
    for(my $task=$c;$task<$c+$tasksize;$task++) {
     $pm->start and next; 
-    system("/xanadu/project/codgenome/wgs/dMALLLWGSLM/0-overlaptrim-overlap/overlap.sh $task");
+    system("/work/1341743.d/Dwgs6dhmcod/1-overlapper/overlap.sh $task");
     $pm->finish; 
   }
   $pm->wait_all_children;

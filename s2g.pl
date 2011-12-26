@@ -76,13 +76,7 @@ for($fot=0;$fot<=$#seq;$fot++){
 my $cntm=@gseq[0]=~s/@seq[$fot]/@seq[$fot]/g;
 $m{$fot}++;
 @seqname[$fot]=~s/\s+/\_/g;
-if($cntm){
-print FRA"@seqname[$fot]\t$cntm\tM\n";
-print "@seqname[$fot]\t$cntm\n";
-}
-else{
 print FRA"@seqname[$fot]\t$cntm\n";
-}
 }
 close FRA;
 #foreach $w (sort {$a<=>$b} keys %m){print FR"$w\t$m{$w}\n";$t+=$m{$w};}

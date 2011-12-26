@@ -4,9 +4,9 @@
 # for producing HTML Blast output from a Blast report input stream.
 #
 # Usage:
-#   STDIN:  stream containing one or more BLAST or PSI-BLAST reports.
-#   STDOUT: none, but generates an output file "searchio.html"
-#           containing HTML-formatted Blast Report(s)
+#   STDIN:  none; supply filename of BLAST report on command-line
+#   STDOUT: none; generates an output file "searchio.html"
+#           containing HTML-formatted Blast Report
 #   STDERR: Any errors that occurred.
 #
 # For more documentation about the writer, including
@@ -16,14 +16,15 @@
 # For more documentation about working with Blast result objects,
 # see docs for these modules:
 #   Bio::Search::Result::BlastResult
+#   Bio::Search::Iteration::IterationI
 #   Bio::Search::Hit::BlastHit
 #   Bio::Search::HSP::BlastHSP
 #
-# For more documentation about the PSI-Blast parser, see docs for
-#   Bio::SearchIO::psiblast
+# For more documentation about the Blast parser, see docs for
+#   Bio::SearchIO
 #
 # Author: Steve Chervitz <sac@bioperl.org>
-# Revision: $Id: htmlwriter.pl,v 1.2 2002/10/26 09:35:55 sac Exp $
+# Revision: $Id: htmlwriter.pl,v 1.5 2004/02/21 10:50:34 sac Exp $
 
 
 use strict;
@@ -32,15 +33,17 @@ use lib '../../';
 use Bio::SearchIO;
 use Bio::SearchIO::Writer::HTMLResultWriter;
 
-print "\nUsing SearchIO->new()\n";
+my $outfile = "searchio.html";
+my $file = shift or die "Usage: $0 <BLAST-report-file>\n       HTML output is saved to $outfile\n";
 
-my $in = Bio::SearchIO->new( -format => 'psiblast', 
-                             -signif => 0.1, 
+my $in = Bio::SearchIO->new( -format => 'blast', 
+                             -file => $file,  #comment this out to read STDIN
+                             #-fh => \*ARGV,  #uncomment this to read from STDIN
                              -verbose => 0 );
 
 my $writer = new Bio::SearchIO::Writer::HTMLResultWriter();
 my $out = new Bio::SearchIO(-writer => $writer,
-                            -file   => ">searchio.html");
+                            -file   => ">$outfile");
 
 
 while ( my $result = $in->next_result() ) {

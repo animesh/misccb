@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: aligntutorial.pl,v 1.1 2002/08/27 18:17:10 bosborne Exp $
+# $Id: aligntutorial.pl,v 1.1 2003/07/07 18:20:58 bosborne Exp $
 # An example of how to use the different alignment tools in bioperl
 # to align some sequences
 

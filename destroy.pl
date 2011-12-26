@@ -6,7 +6,7 @@
 #           references and parent-child relationships.
 # AUTHOR  : Steve Chervitz (sac@bioperl.org)
 # CREATED : 3 Nov 1996
-# REVISION: $Id: destroy.pl,v 1.1 2002/08/27 18:17:17 bosborne Exp $
+# REVISION: $Id: destroy.pl,v 1.3 2002/01/11 08:05:40 sac Exp $
 # INSTALLATION
 #    Edit the use lib "...." line to point the directory
 #    containing your Bioperl modules.

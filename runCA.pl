@@ -1,136 +1,168 @@
 
 
-my @specFiles;
+my $specFile = undef;
 my @specOpts;
 my @fragFiles;
 
-#  Set global defaults.
-setDefaults();
+my $isContinuation = 0;
+my @cgbFiles;
+my $cgiFile;
+my $scaffoldDir;
 
-#  At some pain, we stash the original options for later use.  We need
-#  to use these when we resubmit ourself to SGE.  We can't simply dump
-#  all of @ARGV into here, because we need to fix up relative paths.
-#
-$commandLineOptions = "";
+my @steps = ('Pre-overlap',               'preoverlap(@fragFiles)',
+             'OverlapTrim',               'overlapTrim()',
+             'CreateOverlapJobs',         'createOverlapJobs("normal")',
+             'CheckOverlap',              'checkOverlap("normal")',
+             'CreateOverlapStore',        'createOverlapStore()',
+             'CreateFragmentCorrections', 'createFragmentCorrectionJobs()',
+             'MergeFragmentCorrection',   'mergeFragmentCorrection()',
+             'CreateOverlapCorrections',  'createOverlapCorrectionJobs()',
+             'ApplyOverlapCorrection',    'applyOverlapCorrection()',
+             'Unitigger',                 '@cgbFiles = unitigger(@cgbFiles)',
+             'PostUnitiggerConsensus',    'postUnitiggerConsensus(@cgbFiles)',
+             'Scaffolder',                'scaffolder($cgiFile)',
+             'PostScaffolderConsensus',   'postScaffolderConsensus($scaffoldDir)',
+             'Terminator',                'terminate($scaffoldDir)',
+             'Cleaner',                   'cleaner()',
+             );
+
+
+setDefaults();
+localDefaults();
+
+# echo invocation to aid debugging
+my $oldSep = $,;
+$, = ' ';
+print STDERR $0,@ARGV,"\n\n";
+$, = $oldSep;
+
+#  Stash the original options, quoted, for later use.  We need to use
+#  these when we resubmit ourself to SGE.
+foreach my $a (@ARGV) {
+    $invocation .= " $a";
+    $commandLineOptions .= " \"$a\" ";
+}
+
 
 while (scalar(@ARGV)) {
     my $arg = shift @ARGV;
 
+    my $found = 0;
+    ($found, @ARGV) = localOption($arg, @ARGV);
+    
+    if ($found == 1 ) {
+    	next;
+    }
+
+    if (!defined($arg)) {
+        last;
+    }
+
     if      ($arg =~ m/^-d/) {
         $wrk = shift @ARGV;
         $wrk = "$ENV{'PWD'}/$wrk" if ($wrk !~ m!^/!);
-        $commandLineOptions .= " -d \"$wrk\"";
-
-    } elsif ($arg eq "-p") {
+    } elsif ($arg =~ m/^-p/) {
         $asm = shift @ARGV;
-        $commandLineOptions .= " -p \"$asm\"";
-
-    } elsif ($arg eq "-s") {
-        push @specFiles, shift @ARGV;
-
-    } elsif ($arg eq "-version") {
+    } elsif ($arg =~ m/^-s/) {
+        $specFile = shift @ARGV;
+    } elsif ($arg =~ m/^-h/) {
+        setGlobal("help", 1);
+    } elsif ($arg =~ m/^-v/ or $arg =~ m/^-V/) {
         setGlobal("version", 1);
-
-    } elsif ($arg eq "-options") {
-        setGlobal("options", 1);
-
-    } elsif (($arg =~ /\.frg$|frg\.gz$|frg\.bz2$/i) && (-e $arg)) {
+    } elsif ($arg =~ m/^-f/) {
+        setGlobal("fields", 1);
+    } elsif (($arg =~ /\.frg$|frg\.gz$|frg\.bz2$/) && (-e $arg)) {
         $arg = "$ENV{'PWD'}/$arg" if ($arg !~ m!^/!);
         push @fragFiles, $arg;
-        $commandLineOptions .= " \"$arg\"";
-
-    } elsif (($arg =~ /\.sff$|sff\.gz$|sff\.bz2$/i) && (-e $arg)) {
+    } elsif (($arg =~ /\.sff$|sff\.gz$|sff\.bz2$/) && (-e $arg)) {
         $arg = "$ENV{'PWD'}/$arg" if ($arg !~ m!^/!);
         push @fragFiles, $arg;
-        $commandLineOptions .= " \"$arg\"";
-
-    } elsif (($arg =~ /\.ace$/i) && (-e $arg)) {
+    } elsif (($arg =~ /\.cgb$/) && (-e $arg)) {
+        $isContinuation = 1;
         $arg = "$ENV{'PWD'}/$arg" if ($arg !~ m!^/!);
-        push @fragFiles, $arg;
-        $commandLineOptions .= " \"$arg\"";
-
+        push @cgbFiles, $arg;
+    } elsif (($arg =~ /\.cgi$/) && (-e $arg)) {
+        $isContinuation = 1;
+        $cgiFile = $arg;
+        $cgiFile = "$ENV{'PWD'}/$cgiFile" if ($cgiFile !~ m!^/!);
+    } elsif (-d $arg) {
+        $isContinuation = 1;
+        $scaffoldDir  = $arg;
+        $scaffoldDir  = "$ENV{'PWD'}/$scaffoldDir" if ($scaffoldDir !~ m!^/!);
     } elsif ($arg =~ m/=/) {
         push @specOpts, $arg;
-        $commandLineOptions .= " \"$arg\"";
-
     } else {
-        setGlobal("help",
-                  getGlobal("help") . "File not found or invalid command line option '$arg'\n");
+        die "$0: Unknown argument '$arg'\n";
     }
 }
 
-
-setGlobal("help", getGlobal("help") . "Assembly name prefix not supplied with -p.\n") if (!defined($asm));
-setGlobal("help", getGlobal("help") . "Directory not supplied with -d.\n")            if (!defined($wrk));
-
-
-my $bin = getBinDirectory();
-
-@fragFiles = setParametersFromFile("$bin/spec/runCA.default.specFile", @fragFiles)   if (-e "$bin/spec/runCA.default.specFile");
-@fragFiles = setParametersFromFile("$ENV{'HOME'}/.runCA",              @fragFiles)   if (-e "$ENV{'HOME'}/.runCA");
-
-
-#  For each of the specfiles on the command line, find the actual file and make it an absolute path.
-#  These can be in the current directory (e.g., 'my.spec'), or in the installed directory ('$bin/spec').
-#
-foreach my $specFile (@specFiles) {
-
-    if ((-e "$specFile") && (! -d "$specFile")) {
-        $specFile = "$ENV{'PWD'}/$specFile" if ($specFile !~ m!^/!);
-
-    } elsif ((-e "$bin/spec/$specFile") && (! -d "$bin/spec/$specFile")) {
-        $specFile = "$bin/spec/$specFile";
-
-    } elsif ((-e "$bin/spec/$specFile.specFile") && (! -d "$bin/spec/$specFile.specFile")) {
-        $specFile = "$bin/spec/$specFile.specFile";
-
-    } else {
-        die "specFile '$specFile' not found.\n";
-    }
-
-    $commandLineOptions .= " -s \"$specFile\"";
-
-    @fragFiles = setParametersFromFile($specFile, @fragFiles);
-}
-
-setParametersFromCommandLine(@specOpts);
-
-setParameters();
+setParameters($specFile, @specOpts);
 
 printHelp();
 
-#  Fail immediately if we run the script on the grid, and the gkpStore
-#  directory doesn't exist and we have no input files.  Without this
-#  check we'd fail only after being scheduled on the grid.
-#
-if ((getGlobal("scriptOnGrid") == 1) &&
-    (! -d "$wrk/$asm.gkpStore") &&
-    (scalar(@fragFiles) == 0)) {
-    caFailure("no fragment files specified, and stores not already created", undef);
-}
+localSetup(scalar(@steps) / 2);
 
 checkDirectories();
 
-#  If not already on the grid, see if we should be on the grid.
-#  N.B. the arg MUST BE undef.
+#  If this is a continuation, we don't want to do obt or fragment
+#  error correction, or a bunch of other stuff.  We could surround
+#  those steps below with if's, but the whole design of this script is
+#  that each piece checks if it is done or not.  So, we disable those
+#  pieces.
 #
-submitScript(undef) if (!runningOnGrid());
+if ($isContinuation) {
+    setGlobal("doOverlapTrimming", 0);
+    setGlobal("doFragmentCorrection", 0);
+
+    #  If given cgb files, we don't need to do anything more
+
+    #  If given cgi files, we need to tell unitigger and consensus that
+    #  we're done.
+    if (defined($cgiFile)) {
+        system("mkdir $wrk/4-unitigger") if (! -d "$wrk/4-unitigger");
+        touch("$wrk/4-unitigger/unitigger.success");
+
+        system("mkdir $wrk/5-consensus") if (! -d "$wrk/5-consensus");
+        touch("$wrk/5-consensus/jobsCreated.success");
+        touch ("$wrk/5-consensus/consensus.success");
+    }
+
+    #  If given a scaffold directory, tell unitigger, consensus and
+    #  scaffolder that they are done.
+    if (defined($scaffoldDir)) {
+        system("mkdir $wrk/4-unitigger") if (! -d "$wrk/4-unitigger");
+        touch("$wrk/4-unitigger/unitigger.success");
+
+        system("mkdir $wrk/5-consensus") if (! -d "$wrk/5-consensus");
+        touch("$wrk/5-consensus/jobsCreated.success");
+        touch ("$wrk/5-consensus/consensus.success");
+
+        system("mkdir $wrk/7-CGW") if (! -d "$wrk/7-CGW");
+        touch ("$wrk/7-CGW/cgw.success");
+    }
+}
+
+
+#  If not already on the grid, see if we should be on the grid.
+#
+submitScript("") if (!runningOnGrid());
+
 
 #  Begin
 
-preoverlap(@fragFiles);
-merTrim();
-overlapTrim();
-createOverlapJobs("normal");
-checkOverlap("normal");
-createOverlapStore();
-overlapCorrection();
-unitigger();
-postUnitiggerConsensus();
-scaffolder();
-postScaffolderConsensus();
-terminate();
-cleaner();
-toggler();
 
+while (scalar(@steps) > 0) {
+    my $stepName = shift @steps;
+    my $stepCmd  = shift @steps;
+
+    localStart($stepName);
+    eval($stepCmd);
+    if ($@) {
+        chomp $@;
+        die "step $stepName failed with '$@'\n" ;
+    }
+    localFinish($stepName);
+}
+
+localFinalize();
 exit(0);

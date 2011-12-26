@@ -1,116 +1,116 @@
 use strict;
 
 
-sub submitBatchJobs($$) {
-   my $SGE = shift @_;
-   my $TAG = shift @_;
+# Submit batch jobs in groups. This function allows one to limit 
+# the maximum number of jobs submitted at once to the grid. The jobs are 
+# split into multiple submissions, dependent on each other.
+#
+# NOTE: inefficient because all jobs in a previous 
+# submission must finish for the next submission to be scheduled.
+#
+sub submitBatchJobs($$$$) {
+   my $id = shift @_;
+   my $sgeParam = shift @_;
+   my $jobs = shift @_;
+   my $jobsSubmitted = 0;
+   my $max = 1;
+   my $min = 1;
+   my $SGE = "";
+   my $numThreads = shift @_;
 
-   if (runningOnGrid()) {
-       runCommand($wrk, $SGE) and caFailure("Failed to submit batch jobs.");
-       submitScript($TAG);
-   } else {
-       pleaseExecute($SGE);
+   my $maxSize = getGlobal("maxGridJobSize");
+   if (defined($maxSize)) {
+      $maxSize = floor($maxSize / $numThreads);
    }
+   else {
+      $maxSize = $jobs;
+   }
+
+   while ($jobsSubmitted < $jobs) {
+      my $max = $jobsSubmitted + $maxSize;
+      my $min = $jobsSubmitted + 1;
+
+      if ($max > $jobs) {
+         $max = $jobs;
+      }
+
+       $SGE = $sgeParam;
+       $SGE =~ s/NAME/"$id\_$asm\_$max"/e;
+       if ($jobsSubmitted != 0) {
+          $SGE =~ s/MINMAX/"$min-$max -hold_jid \"$id\_$asm\_$jobsSubmitted\" "/e;
+       }
+       else {
+          $SGE =~ s/MINMAX/"$min-$max"/e;
+       }
+
+       if (runningOnGrid()) {
+          system($SGE) and caFailure("Failed to submit overlap jobs.");
+       } else {
+          pleaseExecute($SGE);
+       }
+       $jobsSubmitted = $max;
+   }
+
+   return "$id\_$asm\_$jobs";
 }
 
 
-#  Decide what bin directory to use.
+#  Decide what host we are on, and the the bin directory
+#  appropriately
 #
-#  When we are running on SGE, the path of this perl script is NOT
-#  always the correct architecture.  If the submission host is
-#  FreeBSD, but the grid is Linux, the BSD box will submit
-#  FreeBSD/bin/runCA.pl to the grid -- unless it knows in advance,
-#  there is no way to pick the correct one.  The grid host then has to
-#  have enough smarts to choose the correct binaries, and that is what
-#  we're doing here.
-#
-#  To make it more trouble, shell scripts need to do all this by
-#  themselves.
-#
-sub getBinDirectory () {
-    my $installDir;
+sub setBinDirectory ($) {
+    my $gridarch = shift @_;
+    my $thisarch;
+    my $binRoot;
 
-    ###
-    ### CODE DUPLICATION WITH getBinDirectoryShellCode
-    ###
+    #  Assume the current binary path is the correct one.
+    #
+    $binRoot = "$FindBin::Bin";
+    my @t = split '/', $binRoot;
+    pop @t;
+    $thisarch = pop @t;
+    $binRoot  = join '/', @t;
 
-    #  Assume the current binary path is the path to the global CA
-    #  install directory.
+    #  Guess what platform we're on, unless we've been told already.
+    #
+    #  Check, and warn, if the user is trying something strange, like
+    #  running the wrong binaries for this host, or running pointing to
+    #  binaries other than the ones associated with this script.
 
-    #  CODE DUPLICATION!!!
-    my @t = split '/', "$FindBin::RealBin";
-    pop @t;                      #  bin
-    pop @t;                      #  arch, e.g., FreeBSD-amd64
-    my $installDir = join '/', @t;  #  path to the assembler
-    #  CODE DUPLICATION!!!
+    if (defined($gridarch)) {
+        $thisarch = $gridarch;
+    } else {
+        my $hostF = `uname`;
+        my $machF = `uname -m`;
+        chomp $hostF;
+        chomp $machF;
 
-    #  Guess what platform we are currently running on.
-
-    my $syst = `uname -s`;    chomp $syst;  #  OS implementation
-    my $arch = `uname -m`;    chomp $arch;  #  Hardware platform
-    my $name = `uname -n`;    chomp $name;  #  Name of the system
-
-    $arch = "amd64"  if ($arch eq "x86_64");
-    $arch = "ppc"    if ($arch eq "Power Macintosh");
-
-    my $path = "$installDir/$syst-$arch/bin";
-
-    my $pathMap = getGlobal("pathMap");
-    if (defined($pathMap)) {
-        open(F, "< $pathMap") or caFailure("failed to open pathMap '$pathMap'", undef);
-        while (<F>) {
-            my ($n, $b) = split '\s+', $_;
-            $path = $b if ($name eq $n);
+        $machF = "amd64"  if ($machF eq "x86_64");
+        $machF = "ppc"    if ($machF eq "Power Macintosh");
+        
+        if ($thisarch ne "$hostF-$machF") {
+            print STDERR "WARNING: You're running the script from the $bin directory,\n";
+            print STDERR "         but are on a $hostF-$machF.\n";
         }
-        close(F);
     }
 
-    return($path);
-}
-
-sub getBinDirectoryShellCode () {
-    my $string;
-
-    #  CODE DUPLICATION!!!
-    my @t = split '/', "$FindBin::RealBin";
-    pop @t;                      #  bin
-    pop @t;                      #  arch, e.g., FreeBSD-amd64
-    my $installDir = join '/', @t;  #  path to the assembler
-    #  CODE DUPLICATION!!!
-
-    $string  = "\n";
-    $string .= "syst=`uname -s`\n";
-    $string .= "arch=`uname -m`\n";
-    $string .= "name=`uname -n`\n";
-    $string .= "\n";
-    $string .= "if [ \"\$arch\" = \"x86_64\" ] ; then\n";
-    $string .= "  arch=\"amd64\"\n";
-    $string .= "fi\n";
-    $string .= "if [ \"\$arch\" = \"Power Macintosh\" ] ; then\n";
-    $string .= "  arch=\"ppc\"\n";
-    $string .= "fi\n";
-    $string .= "\n";
-    $string .= "bin=\"$installDir/\$syst-\$arch/bin\"\n";
-    $string .= "\n";
-
-    my $pathMap = getGlobal("pathMap");
-    if (defined($pathMap)) {
-        open(PM, "< $pathMap") or caFailure("failed to open pathMap '$pathMap'", undef);
-        while (<PM>) {
-            my ($n, $b) = split '\s+', $_;
-            $string .= "if [ \"\$name\" = \"$n\" ] ; then\n";
-            $string .= "  bin=\"$b\"\n";
-            $string .= "fi\n";
-        }
-        close(PM);
-        $string .= "\n";
+    my $t = getGlobal("binRoot");
+    if ((defined($t)) && ($binRoot ne $t)) {
+        print STDERR "WARNING: I appear to be installed in $binRoot, but you\n";
+        print STDERR "         specified a bin directory of $t in the spec file.\n";
+        $binRoot = $t;
+    }
+    if (!defined($binRoot)) {
+        $binRoot = $t;
+    }
+    if (!defined($binRoot)) {
+        my $errStr = "ERROR: I'm not installed in the assembler tree, and you\n";
+        $errStr .= "       didn't specify a binDir in the spec file.\n";
+        caFailure($errStr);
     }
 
-    return($string);
+    return("$binRoot/$thisarch/bin");
 }
-
-
-
 
 
 #  Return the second argument, unless the first argument is found in
@@ -118,449 +118,132 @@ sub getBinDirectoryShellCode () {
 #
 sub getGlobal ($) {
     my $var = shift @_;
-    caFailure("script error -- $var has no defined value", undef) if (!exists($global{$var}));
+    caFailure("ERROR: $var has no defined value!\n") if (!exists($global{$var}));
     return($global{$var});
 }
 
 sub setGlobal ($$) {
     my $var = shift @_;
     my $val = shift @_;
-
-    #  If no value, set the field to undefined, the default for many of the options.
-
-    $val = undef  if ($val eq "");
-
-    #  Handle special cases.
-
+    #  Special case -- merSize sets both merSizeObt and merSizeOvl.
     if ($var eq "merSize") {
-        setGlobal("obtMerSize", $val);
-        setGlobal("ovlMerSize", $val);
+        setGlobal("merSizeObt", $val);
+        setGlobal("merSizeOvl", $val);
         return;
     }
-
-    if ($var eq "overlapper") {
-        setGlobal("obtOverlapper", $val);
-        setGlobal("ovlOverlapper", $val);
-        return;
-    }
-
-    #  Update obsolete usage.
-
-    if ($var eq "doOverlapTrimming") {
-        print STDERR "WARNING:  option doOverlapTrimming deprecated.  Use doOverlapBasedTrimming in the future.\n";
-        $var = "doOverlapBasedTrimming";
-    }
-
-    #  Update aliases.
-
-    $var = "doMerBasedTrimming"        if ($var eq "doMBT");
-    $var = "doOverlapBasedTrimming"    if ($var eq "doOBT");
-    $var = "doExtendClearRanges"       if ($var eq "doECR");
-
-    #  If "help" exists, we're parsing command line options, and will catch this failure in
-    #  printHelp().  Otherwise, this is an internal error, and we should bomb now.
-    #
-    if (!exists($global{$var})) {
-        if (exists($global{"help"})) {
-            setGlobal("help", getGlobal("help") . "'$var' is not a valid option; see 'runCA -options' for a list of valid options.\n");
-        } else {
-            caFailure("'$var' is not a valid option Global variable.", undef);
-        }
-    }
-
+    caFailure("ERROR: $var is not a valid option.\n") if (!exists($global{$var}));
     $global{$var} = $val;
 }
 
 sub setDefaults () {
+    $global{"binRoot"}                     = undef;
 
-    #  The rules:
-    #
-    #  1) Before changing these defaults, read the (printed) documentation.
-    #  2) After changing, update the documentation.
-    #  3) Add new defaults in the correct section.
-    #  4) Keep defaults in the same order as the documentation.
-    #  5) UPDATE THE DOCUMENTATION.
-    #
-
-    #####  General Configuration Options (aka miscellany)
-
-    $global{"pathMap"}                     = undef;
-    $synops{"pathMap"}                     = "File with a hostname to binary directory map";
-
-    $global{"shell"}                       = "/bin/sh";
-    $synops{"shell"}                       = "Command interpreter to use; sh-compatible (e.g., bash), NOT C-shell (csh or tcsh)";
-
-    #####  Error Rates
-
-    $global{"ovlErrorRate"}                = 0.06;
-    $synops{"ovlErrorRate"}                = "Overlaps above this error rate are not computed";
-
-    $global{"utgErrorRate"}                = 0.015;
-    $synops{"utgErrorRate"}                = "Overlaps above this error rate are not used to construct unitigs";
-
-    $global{"utgErrorLimit"}               = undef;
-    $synops{"utgErrorLimit"}               = "Overlaps with more than this number of errors are not used to construct unitigs";
-
-    $global{"utgShortOverlapModelDefault"} = 2.5;
-    $synops{"utgShortOverlapModelDefault"} = "If short overlap model is used, the default number of errors used to construct unitigs";
-
-    $global{"cnsErrorRate"}                = 0.06;
-    $synops{"cnsErrorRate"}                = "Consensus expects alignments at about this error rate";
-
-    $global{"cgwErrorRate"}                = 0.10;
-    $synops{"cgwErrorRate"}                = "Unitigs/Contigs are not merged if they align above this error rate";
-
-    #####  Stopping conditions
-
-    $global{"stopBefore"}                  = undef;
-    $synops{"stopBefore"}                  = "Tell runCA when to halt execution";
-
-    $global{"stopAfter"}                   = undef;
-    $synops{"stopAfter"}                   = "Tell runCA when to halt execution";
-
-    #####  Sun Grid Engine
-
-    $global{"useGrid"}                     = 0;
-    $synops{"useGrid"}                     = "Enable SGE globally";
-
-    $global{"scriptOnGrid"}                = 0;
-    $synops{"scriptOnGrid"}                = "Enable SGE for runCA (and unitigger, scaffolder, other sequential phases)";
-
-    $global{"ovlOnGrid"}                   = 1;
-    $synops{"ovlOnGrid"}                   = "Enable SGE for overlap computations";
-
-    $global{"frgCorrOnGrid"}               = 0;
-    $synops{"frgCorrOnGrid"}               = "Enable SGE for the fragment error correction";
-
-    $global{"ovlCorrOnGrid"}               = 0;
-    $synops{"ovlCorrOnGrid"}               = "Enable SGE for the overlap error correction";
-
-    $global{"cnsOnGrid"}                   = 1;
-    $synops{"cnsOnGrid"}                   = "Enable SGE for consensus";
-
-    $global{"maxGridJobSize"}              = undef;
-    $synops{"maxGridJobSize"}              = "";
-
-    $global{"sge"}                         = undef;
-    $synops{"sge"}                         = "SGE options applied to all SGE jobs";
-
-    $global{"sgeName"}                     = undef;
-    $synops{"sgeName"}                     = "SGE jobs name suffix";
-
-    $global{"sgeScript"}                   = undef;
-    $synops{"sgeScript"}                   = "SGE options applied to runCA jobs (and unitigger, scaffolder, other sequential phases)";
-
-    $global{"sgeOverlap"}                  = undef;
-    $synops{"sgeOverlap"}                  = "SGE options applied to overlap computation jobs";
-
-    $global{"sgeMerOverlapSeed"}           = undef;
-    $synops{"sgeMerOverlapSeed"}           = "SGE options applied to mer overlap seed (overmerry) jobs";
-
-    $global{"sgeMerOverlapExtend"}         = undef;
-    $synops{"sgeMerOverlapExtend"}         = "SGE options applied to mer overlap extend (olap-from-seeds) jobs";
-
-    $global{"sgeConsensus"}                = undef;
-    $synops{"sgeConsensus"}                = "SGE options applied to consensus jobs";
-
-    $global{"sgeFragmentCorrection"}       = undef;
-    $synops{"sgeFragmentCorrection"}       = "SGE options applied to fragment error correction jobs";
-
-    $global{"sgeOverlapCorrection"}        = undef;
-    $synops{"sgeOverlapCorrection"}        = "SGE options applied to overlap error correction jobs";
-
-    $global{"sgePropagateHold"}            = undef;
-    $synops{"sgePropagateHold"}            = undef;  #  Internal option
-
-    #####  Preoverlap
-
-    $global{"gkpFixInsertSizes"}           = 1;
-    $synops{"gkpFixInsertSizes"}           = "Update stddev to 0.10 * mean if it is too large";
-
-    #####  Vector Trimming
-
-    $global{"vectorIntersect"}             = undef;
-    $synops{"vectorIntersect"}             = "File of vector clear ranges";
-
-    $global{"vectorTrimmer"}               = "ca";
-    $synops{"vectorTrimmer"}               = "Use the CA default vector trimmer, or figaro";
-
-    $global{"figaroFlags"}                 = "-T 30 -M 100 -E 500 -V f";
-    $synops{"figaroFlags"}                 = "Options to the figaro vector trimmer";
-
-    #####  Overlap Based Trimming
-
-    $global{"perfectTrimming"}             = undef;  #  SECRET!
-    $synops{"perfectTrimming"}             = undef;  #  SECRET!
-
-    $global{"doOverlapBasedTrimming"}      = 1;
-    $synops{"doOverlapBasedTrimming"}      = "Enable the Overlap Based Trimming module (doOBT and doOverlapTrimming are aliases)";
-
-    $global{"doDeDuplication"}             = 1;
-    $synops{"doDeDuplication"}             = "Enable the OBT duplication detection and cleaning module for 454 reads, enabled automatically";
-
-    $global{"doChimeraDetection"}          = "normal";
-    $synops{"doChimeraDetection"}          = "Enable the OBT chimera detection and cleaning module; 'off', 'normal' or 'aggressive'";
-
-    #####  Mer Based Trimming
-
-    $global{"doMerBasedTrimming"}          = 0;
-    $synops{"doMerBasedTrimming"}          = "Enable the Mer Based Trimming module";
-
-    #####  Overlapper
-
-    $global{"obtOverlapper"}               = "ovl";
-    $synops{"obtOverlapper"}               = "Which overlap algorithm to use for OBT overlaps";
-
-    $global{"ovlOverlapper"}               = "ovl";
-    $synops{"ovlOverlapper"}               = "Which overlap algorithm to use for OVL (unitigger) overlaps";
-
-    $global{"ovlStoreMemory"}              = 1024;
-    $synops{"ovlStoreMemory"}              = "How much memory (MB) to use when constructing overlap stores";
-
-    $global{"ovlThreads"}                  = 2;
-    $synops{"ovlThreads"}                  = "Number of threads to use when computing overlaps";
-
-    $global{"ovlConcurrency"}              = 1;
-    $synops{"ovlConcurrency"}              = "If not SGE, number of overlapper processes to run at the same time";
-
-    $global{"ovlStart"}                    = 1;
-    $synops{"ovlStart"}                    = "Starting fragment for overlaps (EXPERT!)";
-
-    $global{"ovlHashBlockSize"}            = 200000;
-    $synops{"ovlHashBlockSize"}            = "Number of fragments to load into the in-core overlap hash table";
-
-    $global{"ovlRefBlockSize"}             = 2000000;
-    $synops{"ovlRefBlockSize"}             = "Number of fragments to search against the hash table per batch";
-
-    $global{"ovlMemory"}                   = "2GB";
-    $synops{"ovlMemory"}                   = "Amount of memory to use for overlaps";
-
-    $global{"ovlMerSize"}                  = 22;
-    $synops{"ovlMerSize"}                  = "K-mer size for seeds in overlaps";
-
-    $global{"ovlMerThreshold"}             = "auto";
-    $synops{"ovlMerThreshold"}             = "K-mer frequency threshold; mers more frequent than this are ignored";
-
-    $global{"obtMerSize"}                  = 22;
-    $synops{"obtMerSize"}                  = "K-mer size";
-
-    $global{"obtMerThreshold"}             = "auto";
-    $synops{"obtMerThreshold"}             = "K-mer frequency threshold; mers more frequent than this are ignored";
-
-    $global{"merCompression"}              = 1;
-    $synops{"merCompression"}              = "K-mer size";
-
-    $global{"merOverlapperThreads"}        = 2;
-    $synops{"merOverlapperThreads"}        = "Number of threads to use for both mer overlapper seed finding and extension jobs";
-
-    $global{"merOverlapperSeedBatchSize"}  = 100000;
-    $synops{"merOverlapperSeedBatchSize"}  = "Number of fragments in a mer overlapper seed finding batch; directly affects memory usage";
-
-    $global{"merOverlapperExtendBatchSize"}= 75000;
-    $synops{"merOverlapperExtendBatchSize"}= "Number of fragments in a mer overlapper seed extension batch; directly affects memory usage";
-
-    $global{"merOverlapperCorrelatedDiffs"}= 0;
-    $synops{"merOverlapperCorrelatedDiffs"}= "EXPERIMENTAL!";
-
-    $global{"merOverlapperSeedConcurrency"}= 1;
-    $synops{"merOverlapperSeedConcurrency"}= "If not SGE, number of mer overlapper seed finding processes to run at the same time";
-
-    $global{"merOverlapperExtendConcurrency"}= 1;
-    $synops{"merOverlapperExtendConcurrency"}= "If not SGE, number of mer overlapper seed extension processes to run at the same time";
-
-    $global{"umdOverlapperFlags"}          = "-use-uncleaned-reads -trim-error-rate 0.03 -max-minimizer-cutoff 150";
-    $synops{"umdOverlapperFlags"}          = "Options for the UMD overlapper";
-
-    $global{"saveOverlaps"}                = 0;
-    $synops{"saveOverlaps"}                = "Save intermediate overlap files";
-
-    #####  Mers
-
-    $global{"merylMemory"}                 = 800;
-    $synops{"merylMemory"}                 = "Amount of memory, in MB, to use for mer counting";
-
-    $global{"merylThreads"}                = 1;
-    $synops{"merylThreads"}                = "Number of threads to use for mer counting";
-
-    #####  Fragment/Overlap Error Correction
-
-    $global{"frgCorrBatchSize"}            = 200000;
-    $synops{"frgCorrBatchSize"}            = "Number of fragments per fragment error detection batch, directly affects memory usage";
-
-    $global{"doFragmentCorrection"}        = 1;
-    $synops{"doFragmentCorrection"}        = "Do overlap error correction";
-
-    $global{"frgCorrThreads"}              = 2;
-    $synops{"frgCorrThreads"}              = "Number of threads to use while computing fragment errors";
-
-    $global{"frgCorrConcurrency"}          = 1;
-    $synops{"frgCorrConcurrency"}          = "If not SGE, number of fragment error detection processes to run at the same time";
-
-    $global{"ovlCorrBatchSize"}            = 200000;
-    $synops{"ovlCorrBatchSize"}            = "Number of fragments per overlap error correction batch";
-
-    $global{"ovlCorrConcurrency"}          = 4;
-    $synops{"ovlCorrConcurrency"}          = "If not SGE, number of overlap error correction processes to run at the same time";
-
-    #####  Unitigger & BOG Options
-
-    $global{"unitigger"}                   = undef;
-    $synops{"unitigger"}                   = "Which unitig algorithm to use; utg (if no SFF files) or bog (Best Overlap Graph, if SFF files)";
-
-    $global{"utgGenomeSize"}               = undef;
-    $synops{"utgGenomeSize"}               = "An estimate of the size of the genome; decides if unitigs are unique or repeats";
-
-    $global{"utgBubblePopping"}            = 1;
-    $synops{"utgBubblePopping"}            = "Smooth polymorphic regions";
-
-    $global{"utgRecalibrateGAR"}           = 1;
-    $synops{"utgRecalibrateGAR"}           = "Use an experimental algorithm to decide unique/repeat";
-
-    $global{"bogBreakAtIntersections"}     = 1;
-    $synops{"bogBreakAtIntersections"}     = "EXPERT!";
-
-    $global{"bogBadMateDepth"}             = 7;
-    $synops{"bogBadMateDepth"}             = "EXPERT!";
-
-    #####  Scaffolder Options
-
-    $global{"cgwPurgeCheckpoints"}         = 1;
-    $synops{"cgwPurgeCheckpoints"}         = "Remove cgw checkpoint files when a scaffolding step finishes successfully";
-
-    $global{"cgwDemoteRBP"}                = 1;
-    $synops{"cgwDemoteRBP"}                = "EXPERT!";
-
-    $global{"cgwUseUnitigOverlaps"}        = 0;
-    $synops{"cgwUseUnitigOverlaps"}        = "Use unused best overlaps (from BOG) in scaffolder (EXPERIMENTAL)";
-
-    $global{"astatLowBound"}               = 1;
-    $synops{"astatLowBound"}               = "EXPERT!";
-
-    $global{"astatHighBound"}              = 5;
-    $synops{"astatHighBound"}              = "EXPERT!";
-
-    $global{"stoneLevel"}                  = 2;
-    $synops{"stoneLevel"}                  = "EXPERT!";
-
-    $global{"computeInsertSize"}           = 0;
-    $synops{"computeInsertSize"}           = "Compute a scratch scaffolding to estimate insert sizes";
-
-    $global{"cgwDistanceSampleSize"}       = 100;
-    $synops{"cgwDistanceSampleSize"}       = "Require N mates to reestimate insert sizes";
-
-    $global{"doResolveSurrogates"}         = 1;
-    $synops{"doResolveSurrogates"}         = "Place fragments in surrogates in the final assembly";
-
-    $global{"doExtendClearRanges"}         = 2;
-    $synops{"doExtendClearRanges"}         = "Enable the clear range extension heuristic";
-
-    $global{"extendClearRangesStepSize"}   = undef;
-    $synops{"extendClearRangesStepSize"}   = "Batch N scaffolds per ECR run";
-
-    $global{"kickOutNonOvlContigs"}        = 0;
-    $synops{"kickOutNonOvlContigs"}        = "Allow kicking out a contig placed in a scaffold by mate pairs that has no overlaps to both its left and right neighbor contigs. EXPERT!\n";
-
-    $global{"doUnjiggleWhenMerging"}        = 0;
-    $synops{"doUnjiggleWhenMerging"}        = "after inserting rocks/stones try shifting contig positions back to their original location when computing overlaps to see if they overlap with the rock/stone and allow them to merge if they do. EXPERT!\n";
+    $global{"gkpBelieveInputStdDev"}           = 0;
     
-    #####  Consensus Options
-
-    $global{"cnsPartitions"}               = 128;
-    $synops{"cnsPartitions"}               = "Partition consensus into N jobs";
-
-    $global{"cnsMinFrags"}                 = 75000;
-    $synops{"cnsMinFrags"}                 = "Don't make a consensus partition with fewer than N fragments";
-
-    $global{"cnsConcurrency"}              = 2;
-    $synops{"cnsConcurrency"}              = "If not SGE, number of consensus jobs to run at the same time";
-
-    $global{"cnsPhasing"}                  = 0;
-    $synops{"cnsPhasing"}                  = "Options for consensus phasing of SNPs\n\t0 - Do not phase SNPs to be consistent.\n\t1 - If two SNPs are joined by reads, phase them to be consistent.";
-
-    $global{"consensus"}                   = "cns";
-    $synops{"consensus"}                   = "Which consensus algorithm to use; currently only 'cns' is supported";
-
-    #####  Terminator Options
-
-    $global{"fakeUIDs"}                    = 0;
-    $synops{"fakeUIDs"}                    = "Don't query a UID server, use UIDs specific to this assembly";
-
-    $global{"uidServer"}                   = undef;
-    $synops{"uidServer"}                   = "EXPERT!";
-
-    $global{"createAGP"}                   = 0;
-    $synops{"createAGP"}                   = "Create an AGP file for the assembly";
-
-    $global{"createACE"}                   = 0;
-    $synops{"createACE"}                   = "Create an ACE file for the assembly";
-
-    $global{"createPosMap"}                = 1;
-    $synops{"createPosMap"}                = "Create the POSMAP files for the assembly";
-
-    $global{"merQC"}                       = 0;
-    $synops{"merQC"}                       = "Compute a mer-based QC for the assembly";
-
-    $global{"merQCmemory"}                 = 1024;
-    $synops{"merQCmemory"}                 = "Memory to use for the mer-based QC";
-
-    $global{"merQCmerSize"}                = 22;
-    $synops{"merQCmerSize"}                = "Mer size to use for the mer-based QC";
+    $global{"cgwOutputIntermediate"}       = 0;
+    $global{"cgwPurgeCheckpoints"}         = 1;
+    $global{"cgwDemoteRBP"}                = 1;
+    $global{"cgwDistanceSampleSize"}       = 100;
 
     $global{"cleanup"}                     = "none";
-    $synops{"cleanup"}                     = "At the end of a successful assembly, remove none/some/many/all of the intermediate files";
 
-    #####  Options for toggling assembly. 
+    $global{"cnsPartitions"}               = 128;
+    $global{"cnsMinFrags"}                 = 75000;
+    $global{"cnsConcurrency"}              = 2;
+    $global{"cnsOnGrid"}                   = 1;
 
-    $global{"doToggle"}                     = 0;
-    $synops{"doToggle"}                     = "At the end of a successful assembly, search for placed surrogates and toggle them to be unique unitigs. Re-run the assembly starting from scaffolder";
+    $global{"delayInterleavedMerging"}     = 0;
+    $global{"doBackupFragStore"}           = 1;
+    $global{"doExtendClearRanges"}         = 2;
+    $global{"extendClearRangesStepSize"}   = undef;
+    $global{"doFragmentCorrection"}        = 1;
+    $global{"doOverlapTrimming"}           = 1;
+    $global{"doResolveSurrogates"}         = 1;
+    $global{"doUpdateDistanceRecords"}     = 0;
+    $global{"fakeUIDs"}                    = 0;
 
-    $global{"toggleUnitigLength"}           = 2000;
-    $synops{"toggleUnitigLength"}           = "Minimum length for a surrogate to be toggled.";
+    $global{"frgCorrBatchSize"}            = 175000;
+    $global{"frgCorrOnGrid"}               = 0;
+    $global{"frgCorrThreads"}              = 2;
+    $global{"frgCorrConcurrency"}          = 1;
 
-    $global{"toggleNumInstances"}            = 1;
-    $synops{"toggleNumInstances"}            = "Number of instances for a surrogate to be toggled. If 0 is specified, all non-singleton unitigs are toggled to unique status.";
+    $global{"grid"}                        = "Linux-amd64";
 
-    $global{"toggleMaxDistance"}             = 1000;
-    $synops{"toggleMaxDistance"}             = "Toggling will look for surrogates that appear exactly twice, both at the end of a scaffold. This parameter specifies how close to the scaffold end the surrogate must be.";
-    
-    $global{"toggleDoNotDemote"}             = 0;
-    $synops{"toggleDoNotDemote"}            = "Do not allow CGW to demote toggled unitigs based on branching patterns.";
+    $global{"help"}                        = 0;
+    $global{"version"}			   = 0;
+    $global{"fields"}			   = 0;
 
-    #### Closure Options
+    #  Undocumented!
+    $global{"doMeryl"}                     = 1;
+    $global{"merylMemory"}                 = 800;
+    $global{"merylObtThreshold"}           = 1000;
+    $global{"merylOvlThreshold"}           = 500;
+    $global{"merSizeObt"}                  = 22;
+    $global{"merSizeOvl"}                  = 22;
 
-    $global{"closureOverlaps"}            = 0;
-    $synops{"closureOverlaps"}             = "Option for handling overlaps involving closure reads.\n\t0 - Treat them just like regular reads, \n\t1 - Do not allow any overlaps (i.e. closure reads will stay as singletons until scaffolding), \n\t2 - allow overlaps betweeen closure reads and non-closure reads only";
+    $global{"maxGridJobSize"}		   = undef;
 
-    $global{"closurePlacement"}           = 2;
-    $synops{"closurePlacement"}           = "Option for placing closure reads using the constraints.\n\t0 - Place at the first location found\n\t1 - Place at the best location (indicated by most constraints)\n\t2 - Place at multiple locations as long as the closure read/unitig in question is not unique";
+    $global{"ovlCorrBatchSize"}            = 175000;
+    $global{"ovlCorrOnGrid"}               = 0;
+    $global{"ovlCorrConcurrency"}          = 4;
+    $global{"ovlHashBlockSize"}            = 40000;   # 150000
+    $global{"ovlStart"}                    = 1;
+    $global{"ovlMemory"}                   = "1GB";   # 2GB
+    $global{"ovlRefBlockSize"}             = 2000000; # 5000000
+    $global{"ovlSortMemory"}               = 1024;
+    $global{"ovlStoreMemory"}              = 1024;
+    $global{"ovlThreads"}                  = 2;
+    $global{"ovlOnGrid"}                   = 1;
 
-    #####  Ugly, command line options passed to printHelp()
+    $global{"merOverlap"}                  = "none";  # obt or ovl or both
+    $global{"merOverlapThreads"}           = 2;
+    $global{"merCompression"}              = 1;       # used only if merOverlap != none
 
-    $global{"help"}                        = "";
-    $synops{"help"}                        = undef;
+    $global{"executionWrapper"}            = undef;
+    $global{"scratch"}                     = "/tmp";
+    $global{"scriptOnGrid"}                = 0;
 
-    $global{"version"}                     = 0;
-    $synops{"version"}                     = undef;
+    #  Undocumented!
+    $global{"sge"}                         = undef;    #  Options to all qsub
+    $global{"sgeScript"}                   = undef;    #  Options to qsub of the script (high-memory)
+    $global{"sgeOverlap"}                  = undef;    #  Options to overlap jobs
+    $global{"sgeConsensus"}                = undef;    #  Options to consensus jobs
+    $global{"sgeFragmentCorrection"}       = undef;    #  Options to fragment correction jobs
+    $global{"sgeOverlapCorrection"}        = undef;    #  Options to overlap correction jobs
 
-    $global{"options"}                     = 0;
-    $synops{"options"}                     = undef;
+    $global{"stoneLevel"}                  = 2;
 
+    $global{"createAGP"}                   = 0;
+    $global{"createACE"}                   = 0;
+    $global{"createPosMap"}                = 1;
 
+    $global{"merQC"}                       = 0;
+    $global{"merQCmemory"}                 = 1024;
+    $global{"merQCmerSize"}                = 22;
 
-    if (exists($ENV{'AS_OVL_ERROR_RATE'})) {
-        setGlobal("ovlErrorRate", $ENV{'AS_OVL_ERROR_RATE'});
-        print STDERR "ovlErrorRate $ENV{'AS_OVL_ERROR_RATE'} (from \$AS_OVL_ERROR_RATE)\n";
-    }
+    $global{"stopAfter"}                   = undef;
+    $global{"uidServer"}                   = undef;
+    $global{"utgEdges"}                    = undef;
+    $global{"utgErrorRate"}                = 15;
+    $global{"utgFragments"}                = undef;
+    $global{"utgBubblePopping"}            = 1;
+    $global{"utgGenomeSize"}               = undef;
+    $global{"utgRecalibrateGAR"}           = 1;
+    $global{"useGrid"}                     = 0;
+    $global{"useBogUnitig"}                = 0;
+    $global{"bogPromiscuous"}              = 0;
+    $global{"bogEjectUnhappyContain"}      = 0;
+    $global{"bogBadMateDepth"}             = undef;
+    $global{"vectorIntersect"}             = undef;
 
-    if (exists($ENV{'AS_CGW_ERROR_RATE'})) {
-        setGlobal("cgwErrorRate", $ENV{'AS_CGW_ERROR_RATE'});
-        print STDERR "ENV: cgwErrorRate $ENV{'AS_CGW_ERROR_RATE'} (from \$AS_CGW_ERROR_RATE)\n";
-    }
+    $global{"ovlErrorRate"}                = 0.06;
+    $global{"cgwErrorRate"}                = 0.10;
+    $global{"cnsErrorRate"}                = 0.06;
 
-    if (exists($ENV{'AS_CNS_ERROR_RATE'})) {
-        setGlobal("cnsErrorRate", $ENV{'AS_CNS_ERROR_RATE'});
-        print STDERR "ENV: cnsErrorRate $ENV{'AS_CNS_ERROR_RATE'} (from \$AS_CNS_ERROR_RATE)\n";
-    }
+    $global{"astatLowBound"}		   = 1;
+    $global{"astatHighBound"}		   = 5;
+
+    $global{"specFile"}                    = undef;
 }
 
 sub makeAbsolute ($) {
@@ -573,326 +256,147 @@ sub makeAbsolute ($) {
     }
 }
 
-sub fixCase ($) {
-    my $var = shift @_;
-    my $val = getGlobal($var);
-    $val =~ tr/A-Z/a-z/;
-    setGlobal($var, $val);
-}
-
-sub setParametersFromFile ($@) {
-    my $specFile  = shift @_;
-    my @fragFiles = @_;
-
-    #  Client should be ensuring that the file exists before calling this function.
-    die "specFile '$specFile' not found.\n"  if (! -e "$specFile");
-
-    print STDERR "#\n";
-    print STDERR "#  Reading options from '$specFile'\n";
-    print STDERR "#\n";
-    open(F, "< $specFile") or caFailure("Couldn't open '$specFile'", undef);
-
-    while (<F>) {
-        print STDERR $_;
-
-        s/^\s+//;
-        s/\s+$//;
-
-        next if (m/^\s*\#/);
-        next if (m/^\s*$/);
-
-        if (m/\s*(\w*)\s*=([^#]*)#*.*$/) {
-            my ($var, $val) = ($1, $2);
-            $var =~ s/^\s+//; $var =~ s/\s+$//;
-            $val =~ s/^\s+//; $val =~ s/\s+$//;
-            undef $val if ($val eq "undef");
-            setGlobal($var, $val);
-        } else {
-            my $xx = $_;
-            $xx = "$ENV{'PWD'}/$xx" if ($xx !~ m!^/!);
-            if (-e $xx) {
-                push @fragFiles, $xx;
-            } else {
-                setGlobal("help", getGlobal("help") . "File not found or invalid specFile line '$_'\n");
-            }
-        }
-    }
-    close(F);
-
-    return(@fragFiles);
-}
-
-
-sub setParametersFromCommandLine(@) {
+sub setParameters ($@) {
+    my $specFile = shift @_;
     my @specOpts = @_;
 
-    if (scalar(@specOpts) > 0) {
-        print STDERR "#\n";
-        print STDERR "#  Reading options from the command line.\n";
-        print STDERR "#\n";
+    if (exists($ENV{'AS_OVL_ERROR_RATE'})) {
+        setGlobal("ovlErrorRate", $ENV{'AS_OVL_ERROR_RATE'});
+        print STDERR "ENV: ovlErrorRate $ENV{'AS_OVL_ERROR_RATE'}\n";
+    }
+    if (exists($ENV{'AS_CGW_ERROR_RATE'})) {
+        setGlobal("cgwErrorRate", $ENV{'AS_CGW_ERROR_RATE'});
+        print STDERR "cgwErrorRate $ENV{'AS_CGW_ERROR_RATE'}\n";
+    }
+    if (exists($ENV{'AS_CNS_ERROR_RATE'})) {
+        setGlobal("cnsErrorRate", $ENV{'AS_CNS_ERROR_RATE'});
+        print STDERR "cnsErrorRate $ENV{'AS_CNS_ERROR_RATE'}\n";
+    }
+
+    #  If the user didn't give us a specFile, see if there is a
+    #  system-wide one defined (set by your localDefaults()).
+    #
+    if( !defined($specFile) ) {
+    	$specFile = getGlobal("specFile");
+    }
+
+    if (defined($specFile)) {
+        my $binRoot = "$FindBin::Bin";
+	
+        if (-e "$specFile") {
+            open(F, "< $specFile") or caFailure("Couldn't open '$specFile'\n");
+        } elsif (-e "$binRoot/$specFile") {
+            open(F, "< $binRoot/$specFile") or caFailure("Couldn't open '$binRoot/$specFile'\n");
+        } elsif (-e "$binRoot/$specFile.specFile") {
+            open(F, "< $binRoot/$specFile.specFile") or caFailure("Couldn't open '$binRoot/$specFile.specFile'\n");
+        } else {
+            caFailure("You gave me a specFile, but I couldn't find '$specFile' or '$binRoot/$specFile' or '$binRoot/$specFile.specFile'!\n");
+        }
+        while (<F>) {
+            chomp;
+            next if (m/^\s*\#/);
+            next if (m/^\s*$/);
+            if (m/\s*(\w*)\s*=(.*)/) {
+                my ($var, $val) = ($1, $2);
+                print STDERR $_,"\n"; # echo the spec file
+                $var =~ s/^\s+//; $var =~ s/\s+$//;
+                $val =~ s/^\s+//; $val =~ s/\s+$//;
+                undef $val if ($val eq "undef");
+                setGlobal($var, $val);
+            } else {
+                print STDERR "WARNING!  Invalid specFile line '$_'\n";
+            }
+        }
+        close(F);
     }
 
     foreach my $s (@specOpts) {
-        print STDERR "$s\n";
-
         if ($s =~ m/\s*(\w*)\s*=(.*)/) {
             my ($var, $val) = ($1, $2);
             $var =~ s/^\s+//; $var =~ s/\s+$//;
             $val =~ s/^\s+//; $val =~ s/\s+$//;
             setGlobal($var, $val);
         } else {
-            setGlobal("help", getGlobal("help") . "Misformed command line option '$s'.\n");
+            print STDERR "WARNING!  Misformed specOption '$s'\n";
         }
-    }
-}
-
-
-sub setParameters () {
-
-    #  Update obsolete usages.
-    #
-    if (getGlobal("doChimeraDetection") eq "1") {
-        print STDERR "WARNING: 'doChimeraDetection=1' is obsolete; use 'doChimeraDetection=normal' in the future.\n";
-        setGlobal("doChimeraDetection", "normal");
-    }
-    if (getGlobal("doChimeraDetection") eq "0") {
-        print STDERR "WARNING: 'doChimeraDetection=0' is obsolete; use 'doChimeraDetection=off' in the future.\n";
-        setGlobal("doChimeraDetection", "off");
     }
 
     #  Fiddle with filenames to make them absolute paths.
     #
     makeAbsolute("vectorIntersect");
-    makeAbsolute("pathMap");
+    makeAbsolute("scratch");
 
-    #  Adjust case on some of them
+    #  Decode on a set of binaries to use
     #
-    fixCase("doChimeraDetection");
-    fixCase("obtOverlapper");
-    fixCase("ovlOverlapper");
-    fixCase("unitigger");
-    fixCase("vectorTrimmer");
-    fixCase("stopBefore");
-    fixCase("stopAfter");
-    fixCase("consensus");
-    fixCase("cleanup");
+    $bin = $gin = setBinDirectory( undef);
+    $gin        = setBinDirectory(getGlobal("grid"))  if (getGlobal("useGrid") == 1);
 
-    if ((getGlobal("doChimeraDetection") ne "off") && (getGlobal("doChimeraDetection") ne "normal") && (getGlobal("doChimeraDetection") ne "aggressive")) {
-        caFailure("invalid doChimeraDetection specified (" . getGlobal("doChimeraDetection") . "); must be 'off', 'normal', or 'aggressive'", undef);
-    }
-    if ((getGlobal("obtOverlapper") ne "mer") && (getGlobal("obtOverlapper") ne "ovl")) {
-        caFailure("invalid obtOverlapper specified (" . getGlobal("obtOverlapper") . "); must be 'mer' or 'ovl'", undef);
-    }
-    if ((getGlobal("ovlOverlapper") ne "mer") && (getGlobal("ovlOverlapper") ne "ovl")) {
-        caFailure("invalid ovlOverlapper specified (" . getGlobal("ovlOverlapper") . "); must be 'mer' or 'ovl'", undef);
-    }
-    if (defined(getGlobal("unitigger")) && (getGlobal("unitigger") ne "utg") && (getGlobal("unitigger") ne "bog")) {
-        caFailure("invalid unitigger specified (" . getGlobal("unitigger") . "); must be 'utg' or 'bog'", undef);
-    }
-    if ((getGlobal("vectorTrimmer") ne "ca") && (getGlobal("vectorTrimmer") ne "figaro")) {
-        caFailure("invalid vectorTrimmer specified (" . getGlobal("vectorTrimmer") . "); must be 'ca' or 'figaro'", undef);
-    }
-    if ((getGlobal("consensus") ne "cns") && (getGlobal("consensus") ne "seqan")) {
-        caFailure("invalid consensus specified (" . getGlobal("consensus") . "); must be 'cns' or 'seqan'", undef);
-    }
-    if ((getGlobal("cnsPhasing") ne "0") && (getGlobal("cnsPhasing") ne "1")) {
-       caFailure("invalid cnsPhasing specified (" . getGlobal("cnsPhasing") . "); must be '0' or '1'", undef);
-    }
-    if ((getGlobal("cleanup") ne "none") &&
-        (getGlobal("cleanup") ne "light") &&
-        (getGlobal("cleanup") ne "heavy") &&
-        (getGlobal("cleanup") ne "aggressive")) {
-        caFailure("invalid cleaup specified (" . getGlobal("cleanup") . "); must be 'none', 'light', 'heavy' or 'aggressive'", undef);
-    }
-
-    if (defined(getGlobal("stopBefore"))) {
-        my $ok = 0;
-        my $st = getGlobal("stopBefore");
-        $st =~ tr/A-Z/a-z/;
-
-        my $failureString = "Invalid stopBefore specified (" . getGlobal("stopBefore") . "); must be one of:\n";
-
-        my @stopBefore = ("meryl",
-                          "initialTrim",
-                          "deDuplication",
-                          "mergeTrimming",
-                          "chimeraDetection",
-                          "unitigger",
-                          "scaffolder",
-                          "CGW",
-                          "eCR",
-                          "extendClearRanges",
-                          "eCRPartition",
-                          "extendClearRangesPartition",
-                          "terminator");
-
-        foreach my $sb (@stopBefore) {
-            $failureString .= "    '$sb'\n";
-            $sb =~ tr/A-Z/a-z/;
-            if ($st eq $sb) {
-                $ok++;
-                setGlobal('stopBefore', $st);
-            }
-        }
-
-        caFailure($failureString, undef) if ($ok == 0);
-    }
-
-
-    if (defined(getGlobal("stopAfter"))) {
-        my $ok = 0;
-        my $st = getGlobal("stopAfter");
-        $st =~ tr/A-Z/a-z/;
-
-        my $failureString = "Invalid stopAfter specified (" . getGlobal("stopAfter") . "); must be one of:\n";
-
-        my @stopAfter = ("initialStoreBuilding",
-                         "overlapper",
-                         "OBT",
-                         "overlapBasedTrimming",
-                         "unitigger",
-                         "utgcns",
-                         "consensusAfterUnitigger",
-                         "scaffolder",
-                         "ctgcns",
-                         "consensusAfterScaffolder");
-
-        foreach my $sa (@stopAfter) {
-            $failureString .= "    '$sa'\n";
-            $sa =~ tr/A-Z/a-z/;
-            if ($st eq $sa) {
-                $ok++;
-                setGlobal('stopAfter', $st);
-            }
-        }
-
-        caFailure($failureString, undef) if ($ok == 0);
-    }
-
-
-    #  PIck a nice looking set of binaries, and check them.
+    #  We assume the grid is the same as the local, which will sting
+    #  us if the poor user actually goofed and gave us the wrong grid,
+    #  or didn't compile for the grid.
     #
-    {
-        my $bin = getBinDirectory();
-
-        caFailure("can't find 'gatekeeper' program in $bin.  Possibly incomplete installation", undef) if (! -x "$bin/gatekeeper");
-        caFailure("can't find 'meryl' program in $bin.  Possibly incomplete installation", undef)      if (! -x "$bin/meryl");
-        caFailure("can't find 'overlap' program in $bin.  Possibly incomplete installation", undef)    if (! -x "$bin/overlap");
-        caFailure("can't find 'unitigger' program in $bin.  Possibly incomplete installation", undef)  if (! -x "$bin/unitigger");
-        caFailure("can't find 'cgw' program in $bin.  Possibly incomplete installation", undef)        if (! -x "$bin/cgw");
-        caFailure("can't find 'utgcns' program in $bin.  Possibly incomplete installation", undef)     if (! -x "$bin/utgcns");
-        caFailure("can't find 'ctgcns' program in $bin.  Possibly incomplete installation", undef)     if (! -x "$bin/ctgcns");
-        caFailure("can't find 'terminator' program in $bin.  Possibly incomplete installation", undef) if (! -x "$bin/terminator");
-
-        if ((getGlobal("obtOverlapper") eq "mer") || (getGlobal("ovlOverlapper") eq "mer")) {
-            caFailure("can't find 'overmerry' program in $bin.  Possibly incomplete installation", undef) if (! -x "$bin/overmerry");
-        }
+    if (! -e "$gin/gatekeeper") {
+#        print STDERR "WARNING: Didn't find binaries for the grid in $gin.\n";
+#        print STDERR "         Using $bin instead.\n";
+        $gin = $bin;
     }
 
-    #  Set the globally accessible error rates.  Adjust them if they
-    #  look strange.
+    caFailure("Can't find local bin/gatekeeper in $bin\n") if (! -e "$bin/gatekeeper");
+    caFailure("Can't find grid bin/gatekeeper in $gin\n")  if (! -e "$gin/gatekeeper");
+
+    #  Set the globally accessible error rates.  Adjust them
+    #  if they look strange.
     #
     #  We must have:     ovl <= cns <= cgw
     #  We usually have:  ovl == cns <= cgw
     #
     my $ovlER = getGlobal("ovlErrorRate");
-    my $utgER = getGlobal("utgErrorRate");
     my $cgwER = getGlobal("cgwErrorRate");
     my $cnsER = getGlobal("cnsErrorRate");
 
     if (($ovlER < 0.0) || (0.25 < $ovlER)) {
-        caFailure("ovlErrorRate is $ovlER, this MUST be between 0.00 and 0.25", undef);
-    }
-    if (($utgER < 0.0) || (0.25 < $utgER)) {
-        caFailure("utgErrorRate is $utgER, this MUST be between 0.00 and 0.25", undef);
+        caFailure("ovlErrorRate is $ovlER, this MUST be between 0.0 and 0.25.\n");
     }
     if (($cgwER < 0.0) || (0.25 < $cgwER)) {
-        caFailure("cgwErrorRate is $cgwER, this MUST be between 0.00 and 0.25", undef);
+        caFailure("cgwErrorRate is $cgwER, this MUST be between 0.0 and 0.25.\n");
     }
     if (($cnsER < 0.0) || (0.25 < $cnsER)) {
-        caFailure("cnsErrorRate is $cnsER, this MUST be between 0.00 and 0.25", undef);
-    }
-    if ($utgER > $ovlER) {
-        caFailure("utgErrorRate is $utgER, this MUST be <= ovlErrorRate ($ovlER)", undef);
+        caFailure("cnsErrorRate is $cnsER, this MUST be between 0.0 and 0.25.\n");
     }
     if ($ovlER > $cnsER) {
-        caFailure("ovlErrorRate is $ovlER, this MUST be <= cnsErrorRate ($cnsER)", undef);
+        caFailure("ovlErrorRate is $ovlER, this MUST be <= cnsErrorRate ($cnsER)\n");
     }
     if ($ovlER > $cgwER) {
-        caFailure("ovlErrorRate is $ovlER, this MUST be <= cgwErrorRate ($cgwER)", undef);
+        caFailure("ovlErrorRate is $ovlER, this MUST be <= cgwErrorRate ($cgwER)\n");
     }
     if ($cnsER > $cgwER) {
-        caFailure("cnsErrorRate is $cnsER, this MUST be <= cgwErrorRate ($cgwER)", undef);
+        caFailure("cnsErrorRate is $cnsER, this MUST be <= cgwErrorRate ($cgwER)\n");
     }
     $ENV{'AS_OVL_ERROR_RATE'} = $ovlER;
     $ENV{'AS_CGW_ERROR_RATE'} = $cgwER;
     $ENV{'AS_CNS_ERROR_RATE'} = $cnsER;
-
-    if ((getGlobal("doOverlapBasedTrimming") == 1) &&
-        (getGlobal("doMerBasedTrimming") == 1)) {
-        caFailure("Cannot do both overlap based trimming and mer based trimming", undef);
-    }
 }
 
-sub logVersion() {
-        my $bin = getBinDirectory();
-
-        system("$bin/gatekeeper   --version");
-        system("$bin/overlap      --version");
-        system("$bin/unitigger    --version");
-        system("$bin/buildUnitigs --version");
-        system("$bin/cgw          --version");
-        system("$bin/consensus    --version");
-        system("$bin/terminator   --version");
-}
 
 sub printHelp () {
-
-    if (getGlobal("version")) {
-        logVersion();
-        exit(0);
-    }
-
-    if (getGlobal("options")) {
+    if ( getGlobal("version")) {
+	my @full_pName = split('/',$0);
+	my $pName = $full_pName[$#full_pName]; 
+	print "$pName $MY_VERSION\n";
+	exit(0);
+    } elsif (getGlobal("help")) {
+        print $HELPTEXT;
+	exit(0);
+    } elsif ( getGlobal("fields") ) {
         foreach my $k (sort keys %global) {
-            my $o = substr("$k                                    ", 0, 35);
-            my $d = substr(getGlobal($k) . "                      ", 0, 20);
-            my $u = $synops{$k};
-
-            if (!defined(getGlobal($k))) {
-                $d = substr("<unset>                    ", 0, 20);
+            if (defined(getGlobal($k))) {
+                print substr("$k                             ", 0, 30) . getGlobal($k) . "\n";
+            } else {
+                print substr("$k                             ", 0, 30) . "<not defined>\n";
             }
-
-            print "$o$d($u)\n";
         }
         exit(0);
     }
-
-    if (getGlobal("help") ne "") {
-        print "usage: runCA -d <dir> -p <prefix> [options] <frg> ...\n";
-        print "  -d <dir>          Use <dir> as the working directory.  Required\n";
-        print "  -p <prefix>       Use <prefix> as the output prefix.  Required\n";
-        print "\n";
-        print "  -s <specFile>     Read options from the specifications file <specfile>.\n";
-        print "                      <specfile> can also be one of the following key words:\n";
-        print "                      [no]OBT - run with[out] OBT\n";
-        print "                      noVec   - run with OBT but without Vector\n";
-        print "\n";
-        print "  -version          Version information\n";
-        print "  -help             This information\n";
-        print "  -options          Describe specFile options, and show default values\n";
-        print "\n";
-        print "  <frg>             CA formatted fragment file\n";
-        print "\n";
-        print "Complete documentation at http://wgs-assembler.sourceforge.net/\n";
-        print "\n";
-        print $global{"help"};
-        exit(0);
-    }
-
-    undef $global{"version"};
-    undef $global{"options"};
-    undef $global{"help"};
 }
 
 
@@ -907,9 +411,26 @@ sub checkDirectories () {
     system("mkdir -p $wrk") if (! -d $wrk);
     chmod 0755, "$wrk";
 
-    $ENV{'AS_RUNCA_DIRECTORY'} = $wrk;
+    caFailure("ERROR: Directory '$wrk' doesn't exist (-d option) and couldn't be created.\n") if (! -d $wrk);
 
-    caFailure("directory '$wrk' doesn't exist (-d option) and couldn't be created", undef) if (! -d $wrk);
+    #  Check that we have scratch space, or try to make one in the
+    #  work directory.
+
+    #  See if we can use the supplied scratch space.  Previous
+    #  behavior was to attempt to make the directory.
+    #
+    my $scratch = getGlobal("scratch");
+    if (! -d $scratch) {
+        $scratch = "$wrk/scratch";
+        system("mkdir -p $scratch");
+        setGlobal("scratch", $scratch);
+    }
+
+    #  If still not created, die.
+    #
+    if (! -d $scratch) {
+        caFailure("ERROR:  Scratch directory '$scratch' doesn't exist, and couldn't be created!\n");
+    }
 }
 
 
@@ -919,12 +440,14 @@ sub findFirstCheckpoint ($) {
 
     $dir = "$wrk/$dir" if (! -d $dir);
 
-    open(F, "ls -1 $dir/$asm.ckp.[0-9]* |");
+    open(F, "ls -1 $dir/*ckp* |");
     while (<F>) {
         chomp;
 
         if (m/ckp.(\d+)$/) {
             $firstckp = $1 if ($1 < $firstckp);
+        } else {
+            print STDERR "WARNING: Didn't match $_\n";
         }
     }
     close(F);
@@ -936,14 +459,16 @@ sub findLastCheckpoint ($) {
     my $dir     = shift @_;
     my $lastckp = 0;
 
-    $dir = "$wrk/$dir" if (-d "$wrk/$dir");
+    $dir = "$wrk/$dir" if (! -d $dir);
 
-    open(F, "ls -1 $dir/$asm.ckp.[0-9]* |");
+    open(F, "ls -1 $dir/*ckp* |");
     while (<F>) {
         chomp;
 
         if (m/ckp.(\d+)$/) {
             $lastckp = $1 if ($1 > $lastckp);
+        } else {
+            print STDERR "WARNING: Didn't match $_\n";
         }
     }
     close(F);
@@ -954,32 +479,31 @@ sub findLastCheckpoint ($) {
 sub findNumScaffoldsInCheckpoint ($$) {
     my $dir     = shift @_;
     my $lastckp = shift @_;
-    my $bin     = getBinDirectory();
 
     open(F, "cd $wrk/$dir && $bin/getNumScaffolds ../$asm.gkpStore $asm $lastckp 2> /dev/null |");
     my $numscaf = <F>;  chomp $numscaf;
     close(F);
     $numscaf = int($numscaf);
 
+    caFailure("findNumScaffoldsInCheckpoint($dir, $lastckp) found no scaffolds?!") if ($numscaf == 0);
+    print STDERR "Found $numscaf scaffolds in $dir checkpoint number $lastckp.\n";
     return($numscaf);
 }
 
 
-sub getNumberOfFragsInStore ($$) {
+sub getNumberOfFragsInStore ($$$) {
+    my $bin = shift @_;
     my $wrk = shift @_;
     my $asm = shift @_;
-    my $bin = getBinDirectory();
 
-    $numFrags = 0;
+    return(0) if (! -e "$wrk/$asm.gkpStore/frg");
 
-    if (-e "$wrk/$asm.gkpStore/inf") {
-        open(F, "$bin/gatekeeper -lastfragiid $wrk/$asm.gkpStore 2> /dev/null |") or caFailure("failed to run gatekeeper to get the number of frags in the store", undef);
-        $_ = <F>;    chomp $_;
-        close(F);
+    open(F, "$bin/gatekeeper -L $wrk/$asm.gkpStore 2> /dev/null |") or caFailure("Failed to run gatekeeper to get the number of frags in the store.");
+    $_ = <F>;    chomp $_;
+    close(F);
 
-        $numFrags = $1 if (m/^Last frag in store is iid = (\d+)$/);
-    }
-
+    $numFrags = $1 if (m/^Last frag in store is iid = (\d+)$/);
+    caFailure("No frags in the store?\n") if ($numFrags == 0);
     return($numFrags);
 }
 
@@ -987,32 +511,48 @@ sub getNumberOfFragsInStore ($$) {
 #  Decide if we have the CA meryl or the Mighty one.
 #
 sub merylVersion () {
-    my $bin = getBinDirectory();
-    my $ver = "unknown";
-
+    my $v = "unknown";
     open(F, "$bin/meryl -V |");
     while (<F>) {
-        $ver = "CA"     if (m/CA/);
-        $ver = "Mighty" if (m/Mighty/);
+        $v = "CA"     if (m/CA/);
+        $v = "Mighty" if (m/Mighty/);
     }
     close(F);
-    return($ver);
+    return($v);
 }
 
-sub stopBefore ($$) {
-    my $stopBefore = shift @_;  $stopBefore =~ tr/A-Z/a-z/;
-    my $cmd        = shift @_;
-    if (defined($stopBefore) &&
-        defined(getGlobal('stopBefore')) &&
-        (getGlobal('stopBefore') eq $stopBefore)) {
-        print STDERR "Stop requested before '$stopBefore'.\n";
-        print STDERR "Command:\n$cmd\n" if (defined($cmd));
-        exit(0);
+
+
+sub backupFragStore ($) {
+    my $backupName = shift @_;
+
+    return if (getGlobal("doBackupFragStore") == 0);
+
+    if (-e "$wrk/$asm.gkpStore/frg.$backupName") {
+
+        print STDERR "Found a backup for $backupName!  Restoring!\n";
+
+        unlink "$wrk/$asm.gkpStore/frg";
+        if (system("cp -p $wrk/$asm.gkpStore/frg.$backupName $wrk/$asm.gkpStore/frg")) {
+            unlink "$wrk/$asm.gkpStore/frg";
+            caFailure("Failed to restore gkpStore from backup.\n");
+        }
+    }
+    if (! -e "$wrk/$asm.gkpStore/frg.$backupName") {
+
+        print STDERR "Backing up the gkpStore to $backupName.\n";
+
+        if (system("cp -p $wrk/$asm.gkpStore/frg $wrk/$asm.gkpStore/frg.$backupName")) {
+            unlink "$wrk/$asm.gkpStore/frg.$backupName";
+            caFailure("Failed to backup gkpStore.\n");
+        }
     }
 }
 
+
+
 sub stopAfter ($) {
-    my $stopAfter = shift @_;  $stopAfter =~ tr/A-Z/a-z/;
+    my $stopAfter = shift @_;
     if (defined($stopAfter) &&
         defined(getGlobal('stopAfter')) &&
         (getGlobal('stopAfter') eq $stopAfter)) {
@@ -1020,6 +560,10 @@ sub stopAfter ($) {
         exit(0);
     }
 }
+
+
+
+
 
 sub runningOnGrid () {
     return(defined($ENV{'SGE_TASK_ID'}));
@@ -1038,106 +582,55 @@ sub submitScript ($) {
 
     return if (getGlobal("scriptOnGrid") == 0);
 
+    my $perl = "/usr/bin/env perl";
+
     my $output = findNextScriptOutputFile();
     my $script = "$output.sh";
+    my $cmd;
 
-    open(F, "> $script") or caFailure("failed to open '$script' for writing", undef);
-    print F "#!" . getGlobal("shell") . "\n";
+    open(F, "> $script") or caFailure("Failed to open '$script' for writing\n");
+    print F "#!/bin/sh\n";
     print F "#\n";
     print F "#  Attempt to (re)configure SGE.  For reasons Bri doesn't know,\n";
     print F "#  jobs submitted to SGE, and running under SGE, fail to read his\n";
     print F "#  .tcshrc (or .bashrc, limited testing), and so they don't setup\n";
     print F "#  SGE (or ANY other paths, etc) properly.  For the record,\n";
     print F "#  interactive SGE logins (qlogin, etc) DO set the environment.\n";
-    print F "\n";
+    print F "#\n";
     print F ". \$SGE_ROOT/\$SGE_CELL/common/settings.sh\n";
-    print F "\n";
-    print F "#  On the off chance that there is a pathMap, and the host we\n";
-    print F "#  eventually get scheduled on doesn't see other hosts, we decide\n";
-    print F "#  at run time where the binary is.\n";
-
-    print F getBinDirectoryShellCode();
-
-    #print F "hostname\n";
-    #print F "echo \$bin\n";
-
-    print F "/usr/bin/env perl \$bin/runCA $commandLineOptions\n";
+    print F "$perl $0 $commandLineOptions\n";
     close(F);
 
-    system("chmod +x $script");
+    my $sge       = getGlobal("sge");
+    my $sgeScript = getGlobal("sgeScript");
 
-    my $sge         = getGlobal("sge");
-    my $sgeName     = getGlobal("sgeName");
-    my $sgeScript   = getGlobal("sgeScript");
-    my $sgePropHold = getGlobal("sgePropagateHold");
-
-    $sgeName = "_$sgeName"              if (defined($sgeName));
-    $waitTag = "-hold_jid \"$waitTag\"" if (defined($waitTag));
-
-    my $qcmd = "qsub $sge $sgeScript -cwd -N \"rCA_$asm$sgeName\" -j y -o $output $waitTag $script";
-
-    runCommand($wrk, $qcmd) and caFailure("Failed to submit script.\n");
-
-    if (defined($sgePropHold)) {
-        my $acmd = "qalter -hold_jid \"rCA_$asm$sgeName\" \"$sgePropHold\"";
-        system($acmd) and print STDERR "WARNING: Failed to reset hold_jid trigger on '$sgePropHold'.\n";
+    if (!defined($waitTag) || ($waitTag eq "")) {
+        $cmd = "qsub $sge $sgeScript -cwd -r y -N runCA_${asm} -j y -o $output $script";
+    } else {
+        $cmd = "qsub $sge $sgeScript -cwd -r y -N runCA_${asm} -j y -o $output -hold_jid \"$waitTag\" $script";
     }
+
+    system("chmod +x $script");
+    system($cmd) and caFailure("Failed to sumbit script.\n");
 
     exit(0);
 }
 
 
-use Carp;
-
-sub caFailure ($$) {
+sub caFailure ($) {
     my  $msg = shift @_;
-    my  $log = shift @_;
-
-    print STDERR "================================================================================\n";
-    print STDERR "\n";
-    print STDERR "runCA failed.\n";
-    print STDERR "\n";
-
-    print STDERR "----------------------------------------\n";
-    print STDERR "Stack trace:\n";
-    print STDERR "\n";
-    carp;
-
-    if (-e $log) {
-        print STDERR "\n";
-        print STDERR "----------------------------------------\n";
-        print STDERR "Last few lines of the relevant log file ($log):\n";
-        print STDERR "\n";
-        system("tail -n 20 $log");
-    }
-
-    print STDERR "\n";
-    print STDERR "----------------------------------------\n";
-    print STDERR "Failure message:\n";
-    print STDERR "\n";
-    print STDERR "$msg\n";
-    print STDERR "\n";
-
-    exit(1);
+    localFailure($msg);
+    die $msg;
 }
 
-
-
-#  Bit of a wierd one here; assume path are supplied relative to $wrk.
-#  Potentially gives us a bit of safety.
-#
-sub rmrf (@) {
-    foreach my $f (@_) {
-        unlink("$wrk/$f")         if (-f "$wrk/$f");
-        system("rm -rf $wrk/$f")  if (-d "$wrk/$f");
-    }
-}
 
 
 #  Create an empty file.  Much faster than system("touch ...").
 #
 sub touch ($) {
-    open(F, "> $_[0]") or caFailure("failed to touch file '$_[0]'", undef);
+    open(F, "> $_[0]") or caFailure("Failed to touch '$_[0]'\n");
+    #print F "$wrk\n";
+    #print F "process id: " . getppid() . "\n";
     close(F);
 }
 
@@ -1162,7 +655,8 @@ sub runCommand ($$) {
     my $d = time();
     print STDERR "----------------------------------------START $t\n$cmd\n";
 
-    my $rc = 0xffff & system("cd $dir && $cmd");
+    my $execwrap = getGlobal("executionWrapper");
+    my $rc = 0xffff & system("cd $dir && $execwrap $cmd");
 
     $t = localtime();
     print STDERR "----------------------------------------END $t (", time() - $d, " seconds)\n";
@@ -1190,7 +684,7 @@ sub runCommand ($$) {
         if ($rc & 0x80) {
             $error .= "coredump from ";
         }
-
+    
         if ($rc > 0x80) {
             $rc >>= 8;
         }

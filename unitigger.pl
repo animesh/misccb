@@ -1,96 +1,69 @@
 use strict;
 
-sub unitigger () {
-    my $bin = getBinDirectory();
+sub unitigger (@) {
+    my @cgbFiles  = @_;
 
-
-    if (0) {
-        my $cmd = "$bin/removeMateOverlap -gkp $wrk/$asm.gkpStore -ovl $wrk/$asm.ovlStore";
-        if (runCommand("$wrk", $cmd)) {
-            caFailure("failed to remove mate overlaps", undef);
-        }
-    }
-
+    goto alldone if (scalar(@cgbFiles) > 0);
 
     if (! -e "$wrk/4-unitigger/unitigger.success") {
-
-        #  Default to unitigger, unless the gkpStore says otherwise.
-        #
-        if (!defined(getGlobal("unitigger"))) {
-            setGlobal("unitigger", "utg");
-
-            if (system("$bin/gatekeeper -isfeatureset 0 forceBOGunitigger $wrk/$asm.gkpStore") == 0) {
-               setGlobal("unitigger", "bog");
-            }
-        }
-        
-		#  Default to overlap error %, unless the gkpStore says otherwise.
-		#
-		if (!defined(getGlobal("utgErrorLimit"))) {
-			setGlobal("utgErrorLimit", 0);
-
-			if (system("$bin/gatekeeper -isfeatureset 0 shortOverlapModel $wrk/$asm.gkpStore") == 0) {
-				setGlobal("utgErrorLimit", getGlobal("utgShortOverlapModelDefault"));
-			}
-		}
-
         system("mkdir $wrk/4-unitigger") if (! -e "$wrk/4-unitigger");
 
         my $l = getGlobal("utgGenomeSize");
+        my $m = getGlobal("utgEdges");
         my $e = getGlobal("utgErrorRate");
-        my $E = getGlobal("utgErrorLimit");
-
+        my $n = getGlobal("utgFragments");
+        my $u = getGlobal("utgBubblePopping");
         my $B = int($numFrags / getGlobal("cnsPartitions"));
         $B = getGlobal("cnsMinFrags") if ($B < getGlobal("cnsMinFrags"));
 
-        my $u = getGlobal("utgBubblePopping");
-
-        my $unitigger = getGlobal("unitigger");
+        my $bmd = getGlobal("bogBadMateDepth");
 
         my $cmd;
 
-        if ($unitigger eq "bog") {
-            my $bmd = getGlobal("bogBadMateDepth");
-
+        if ($global{'useBogUnitig'}) {
             $cmd  = "$bin/buildUnitigs ";
             $cmd .= " -O $wrk/$asm.ovlStore ";
             $cmd .= " -G $wrk/$asm.gkpStore ";
-            $cmd .= " -T $wrk/$asm.tigStore ";
             $cmd .= " -B $B ";
             $cmd .= " -e $e ";
-            $cmd .= " -E $E ";
             $cmd .= " -s $l "   if (defined($l));
-            $cmd .= " -b "      if (getGlobal("bogBreakAtIntersections") == 1);
+            $cmd .= " -b "      if (getGlobal("bogPromiscuous") == 0);
+            $cmd .= " -k "      if (getGlobal("bogEjectUnhappyContain") == 1);
             $cmd .= " -m $bmd " if (defined($bmd));
-            $cmd .= " -U "      if ($u == 1);
             $cmd .= " -o $wrk/4-unitigger/$asm ";
-            $cmd .= " > $wrk/4-unitigger/unitigger.err 2>&1";
-        } elsif ($unitigger eq "utg") {
-            $cmd  = "$bin/unitigger ";
-            $cmd .= " -I $wrk/$asm.ovlStore ";
-            $cmd .= " -F $wrk/$asm.gkpStore ";
-            $cmd .= " -T $wrk/$asm.tigStore ";
-            $cmd .= " -B $B ";
-            $cmd .= " -e $e ";
-            $cmd .= " -k " if (getGlobal("utgRecalibrateGAR") == 1);
-            $cmd .= " -l $l " if defined($l);
-            $cmd .= " -d 1 -x 1 -z 10 -j 5 -U $u ";
-            $cmd .= " -o $wrk/4-unitigger/$asm ";
-            $cmd .= " > $wrk/4-unitigger/unitigger.err 2>&1";
+            $cmd .= " > $wrk/4-unitigger/unitigger.out 2>$wrk/4-unitigger/unitigger.err";
         } else {
-            caFailure("unknown unitigger $unitigger; must be 'bog' or 'utg'", undef);
+            $cmd  = "$bin/unitigger ";
+            $cmd .= " -k " if (getGlobal("utgRecalibrateGAR") == 1);
+            $cmd .= " -B $B ";
+            $cmd .= " -l $l " if defined($l);
+            $cmd .= " -m $m " if defined($m);
+            $cmd .= " -n $n " if defined($n);
+            $cmd .= " -d 1 -x 1 -z 10 -j 5 -U $u ";
+            $cmd .= " -e $e ";
+            $cmd .= " -F $wrk/$asm.gkpStore ";
+            $cmd .= " -o $wrk/4-unitigger/$asm ";
+            $cmd .= " -I $wrk/$asm.ovlStore ";
+            $cmd .= " > $wrk/4-unitigger/unitigger.err 2>&1";
         }
 
-        stopBefore("unitigger", $cmd);
-
         if (runCommand("$wrk/4-unitigger", $cmd)) {
-            caFailure("failed to unitig", "$wrk/4-unitigger/unitigger.err");
+            caFailure("Failed to unitig.\n");
         }
 
         touch("$wrk/4-unitigger/unitigger.success");
     }
 
+  alldone:
+    #  Other steps (consensus) need the list of cgb files, so we just do it here.
+    #
+    open(F, "ls $wrk/4-unitigger/*.cgb |") or caFailure("Failed to ls '$wrk/4-unitigger/*.cgb'\n");
+    @cgbFiles = <F>;
+    close(F);
+    chomp @cgbFiles;
+
     stopAfter("unitigger");
+    return @cgbFiles;
 }
 
 1;

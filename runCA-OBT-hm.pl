@@ -23,7 +23,7 @@ sub submitBatchJobs($$) {
    my $TAG = shift @_;
 
    if (runningOnGrid()) {
-       system($SGE) and caFailure("Failed to submit batch jobs.");
+       runCommand($wrk, $SGE) and caFailure("Failed to submit batch jobs.");
        submitScript($TAG);
    } else {
        pleaseExecute($SGE);
@@ -172,6 +172,7 @@ sub setGlobal ($$) {
 
     $var = "doMerBasedTrimming"        if ($var eq "doMBT");
     $var = "doOverlapBasedTrimming"    if ($var eq "doOBT");
+    $var = "doExtendClearRanges"       if ($var eq "doECR");
 
     #  If "help" exists, we're parsing command line options, and will catch this failure in
     #  printHelp().  Otherwise, this is an internal error, and we should bomb now.
@@ -211,7 +212,7 @@ sub setDefaults () {
     $global{"ovlErrorRate"}                = 0.06;
     $synops{"ovlErrorRate"}                = "Overlaps above this error rate are not computed";
 
-    $global{"utgErrorRate"}                = 0.03;
+    $global{"utgErrorRate"}                = 0.015;
     $synops{"utgErrorRate"}                = "Overlaps above this error rate are not used to construct unitigs";
 
     $global{"utgErrorLimit"}               = 0;
@@ -327,8 +328,7 @@ sub setDefaults () {
     $global{"ovlOverlapper"}               = "ovl";
     $synops{"ovlOverlapper"}               = "Which overlap algorithm to use for OVL (unitigger) overlaps";
 
-    #$global{"ovlStoreMemory"}              = 1024;
-    $global{"ovlStoreMemory"}              = 8192;
+    $global{"ovlStoreMemory"}              = 1024;
     $synops{"ovlStoreMemory"}              = "How much memory (MB) to use when constructing overlap stores";
 
     $global{"ovlThreads"}                  = 2;
@@ -346,7 +346,7 @@ sub setDefaults () {
     $global{"ovlRefBlockSize"}             = 4000000;
     $synops{"ovlRefBlockSize"}             = "Number of fragments to search against the hash table per batch";
 
-    $global{"ovlMemory"}                   = "4GB --hashstrings 100000";
+    $global{"ovlMemory"}                   = "8GB --hashstrings 100000";
     $synops{"ovlMemory"}                   = "Amount of memory to use for overlaps";
 
     $global{"ovlMerSize"}                  = 22;
@@ -390,10 +390,10 @@ sub setDefaults () {
 
     #####  Mers
 
-    $global{"merylMemory"}                 = 64000;
+    $global{"merylMemory"}                 = 800;
     $synops{"merylMemory"}                 = "Amount of memory, in MB, to use for mer counting";
 
-    $global{"merylThreads"}                = 2;
+    $global{"merylThreads"}                = 1;
     $synops{"merylThreads"}                = "Number of threads to use for mer counting";
 
     #####  Fragment/Overlap Error Correction
@@ -485,7 +485,7 @@ sub setDefaults () {
     $global{"cnsMinFrags"}                 = 75000;
     $synops{"cnsMinFrags"}                 = "Don't make a consensus partition with fewer than N fragments";
 
-    $global{"cnsConcurrency"}              = 16;
+    $global{"cnsConcurrency"}              = 2;
     $synops{"cnsConcurrency"}              = "If not SGE, number of consensus jobs to run at the same time";
 
     $global{"cnsPhasing"}                  = 0;
@@ -540,7 +540,15 @@ sub setDefaults () {
     $global{"toggleDoNotDemote"}             = 0;
     $synops{"toggleDoNotDemote"}            = "Do not allow CGW to demote toggled unitigs based on branching patterns.";
 
-   #####  Ugly, command line options passed to printHelp()
+    #### Closure Options
+
+    $global{"closureOverlaps"}            = 0;
+    $synops{"closureOverlaps"}             = "Option for handling overlaps involving closure reads.\n\t0 - Treat them just like regular reads, \n\t1 - Do not allow any overlaps (i.e. closure reads will stay as singletons until scaffolding), \n\t2 - allow overlaps betweeen closure reads and non-closure reads only";
+
+    $global{"closurePlacement"}           = 2;
+    $synops{"closurePlacement"}           = "Option for placing closure reads using the constraints.\n\t0 - Place at the first location found\n\t1 - Place at the best location (indicated by most constraints)\n\t2 - Place at multiple locations as long as the closure read/unitig in question is not unique";
+
+    #####  Ugly, command line options passed to printHelp()
 
     $global{"help"}                        = "";
     $synops{"help"}                        = undef;
@@ -551,12 +559,22 @@ sub setDefaults () {
     $global{"options"}                     = 0;
     $synops{"options"}                     = undef;
 
-    #### Closure Options
-    $global{"closureOverlaps"}            = 0;
-    $synops{"closureOverlaps"}             = "Option for handling overlaps involving closure reads.\n\t0 - Treat them just like regular reads, \n\t1 - Do not allow any overlaps (i.e. closure reads will stay as singletons until scaffolding), \n\t2 - allow overlaps betweeen closure reads and non-closure reads only";
 
-    $global{"closurePlacement"}           = 2;
-    $synops{"closurePlacement"}           = "Option for placing closure reads using the constraints.\n\t0 - Place at the first location found\n\t1 - Place at the best location (indicated by most constraints)\n\t2 - Place at multiple locations as long as the closure read/unitig in question is not unique";
+
+    if (exists($ENV{'AS_OVL_ERROR_RATE'})) {
+        setGlobal("ovlErrorRate", $ENV{'AS_OVL_ERROR_RATE'});
+        print STDERR "ovlErrorRate $ENV{'AS_OVL_ERROR_RATE'} (from \$AS_OVL_ERROR_RATE)\n";
+    }
+
+    if (exists($ENV{'AS_CGW_ERROR_RATE'})) {
+        setGlobal("cgwErrorRate", $ENV{'AS_CGW_ERROR_RATE'});
+        print STDERR "ENV: cgwErrorRate $ENV{'AS_CGW_ERROR_RATE'} (from \$AS_CGW_ERROR_RATE)\n";
+    }
+
+    if (exists($ENV{'AS_CNS_ERROR_RATE'})) {
+        setGlobal("cnsErrorRate", $ENV{'AS_CNS_ERROR_RATE'});
+        print STDERR "ENV: cnsErrorRate $ENV{'AS_CNS_ERROR_RATE'} (from \$AS_CNS_ERROR_RATE)\n";
+    }
 }
 
 sub makeAbsolute ($) {
@@ -580,67 +598,40 @@ sub setParametersFromFile ($@) {
     my $specFile  = shift @_;
     my @fragFiles = @_;
 
-    if (exists($ENV{'AS_OVL_ERROR_RATE'})) {
-        setGlobal("ovlErrorRate", $ENV{'AS_OVL_ERROR_RATE'});
-        print STDERR "ENV: ovlErrorRate $ENV{'AS_OVL_ERROR_RATE'}\n";
-    }
-    if (exists($ENV{'AS_CGW_ERROR_RATE'})) {
-        setGlobal("cgwErrorRate", $ENV{'AS_CGW_ERROR_RATE'});
-        print STDERR "cgwErrorRate $ENV{'AS_CGW_ERROR_RATE'}\n";
-    }
-    if (exists($ENV{'AS_CNS_ERROR_RATE'})) {
-        setGlobal("cnsErrorRate", $ENV{'AS_CNS_ERROR_RATE'});
-        print STDERR "cnsErrorRate $ENV{'AS_CNS_ERROR_RATE'}\n";
-    }
+    #  Client should be ensuring that the file exists before calling this function.
+    die "specFile '$specFile' not found.\n"  if (! -e "$specFile");
 
-    if (defined($specFile)) {
-        my $bin = "$FindBin::RealBin/spec";
+    print STDERR "#\n";
+    print STDERR "#  Reading options from '$specFile'\n";
+    print STDERR "#\n";
+    open(F, "< $specFile") or caFailure("Couldn't open '$specFile'", undef);
 
-        if (-e $specFile && ! -d $specFile) {
-            print STDERR "#\n";
-            print STDERR "#  Reading options from '$specFile'\n";
-            print STDERR "#\n";
-            open(F, "< $specFile") or caFailure("Couldn't open '$specFile'", undef);
-        } elsif (-e "$bin/$specFile") {
-            print STDERR "#\n";
-            print STDERR "#  Reading options from '$bin/$specFile'\n";
-            print STDERR "#\n";
-            open(F, "< $bin/$specFile") or caFailure("Couldn't open '$bin/$specFile'", undef);
-        } elsif (-e "$bin/$specFile.specFile") {
-            print STDERR "#\n";
-            print STDERR "#  Reading options from '$bin/$specFile.specFile'\n";
-            print STDERR "#\n";
-            open(F, "< $bin/$specFile.specFile") or caFailure("Couldn't open '$bin/$specFile.specFile'", undef);
+    while (<F>) {
+        print STDERR $_;
+
+        s/^\s+//;
+        s/\s+$//;
+
+        next if (m/^\s*\#/);
+        next if (m/^\s*$/);
+
+        if (m/\s*(\w*)\s*=([^#]*)#*.*$/) {
+            my ($var, $val) = ($1, $2);
+            $var =~ s/^\s+//; $var =~ s/\s+$//;
+            $val =~ s/^\s+//; $val =~ s/\s+$//;
+            undef $val if ($val eq "undef");
+            setGlobal($var, $val);
         } else {
-            caFailure("specFile '$specFile' or '$bin/$specFile' or '$bin/$specFile.specFile' not found", undef);
-        }
-        while (<F>) {
-            print STDERR $_;
-
-            s/^\s+//;
-            s/\s+$//;
-
-            next if (m/^\s*\#/);
-            next if (m/^\s*$/);
-
-            if (m/\s*(\w*)\s*=([^#]*)#*.*$/) {
-                my ($var, $val) = ($1, $2);
-                $var =~ s/^\s+//; $var =~ s/\s+$//;
-                $val =~ s/^\s+//; $val =~ s/\s+$//;
-                undef $val if ($val eq "undef");
-                setGlobal($var, $val);
+            my $xx = $_;
+            $xx = "$ENV{'PWD'}/$xx" if ($xx !~ m!^/!);
+            if (-e $xx) {
+                push @fragFiles, $xx;
             } else {
-                my $xx = $_;
-                $xx = "$ENV{'PWD'}/$xx" if ($xx !~ m!^/!);
-                if (-e $xx) {
-                    push @fragFiles, $xx;
-                } else {
-                    setGlobal("help", getGlobal("help") . "File not found or invalid specFile line '$_'\n");
-                }
+                setGlobal("help", getGlobal("help") . "File not found or invalid specFile line '$_'\n");
             }
         }
-        close(F);
     }
+    close(F);
 
     return(@fragFiles);
 }
@@ -1081,8 +1072,8 @@ sub submitScript ($) {
 
     print F getBinDirectoryShellCode();
 
-    print F "hostname\n";
-    print F "echo \$bin\n";
+    #print F "hostname\n";
+    #print F "echo \$bin\n";
 
     print F "/usr/bin/env perl \$bin/runCA $commandLineOptions\n";
     close(F);
@@ -1099,7 +1090,7 @@ sub submitScript ($) {
 
     my $qcmd = "qsub $sge $sgeScript -cwd -N \"rCA_$asm$sgeName\" -j y -o $output $waitTag $script";
 
-    system($qcmd) and caFailure("Failed to submit script.\n");
+    runCommand($wrk, $qcmd) and caFailure("Failed to submit script.\n");
 
     if (defined($sgePropHold)) {
         my $acmd = "qalter -hold_jid \"rCA_$asm$sgeName\" \"$sgePropHold\"";
@@ -1910,7 +1901,7 @@ sub merTrim {
     system("mkdir $wrk/0-overlaptrim-overlap") if (! -d "$wrk/0-overlaptrim-overlap");
 
 
-    if (! -e "$wrk/0-overlaptrim/$asm.merTrim.err") {
+    if (! -e "$wrk/0-overlaptrim/$asm.merTrimLog") {
         meryl();
 
         my $merSize     = getGlobal("obtMerSize");
@@ -1923,6 +1914,7 @@ sub merTrim {
         $cmd .= " -m  $merSize \\\n";
         $cmd .= " -c  $merComp \\\n";
         $cmd .= " -mc $wrk/0-mercounts/$asm-C-ms$merSize-cm$merComp \\\n";
+        $cmd .= " -l  $wrk/0-overlaptrim/$asm.merTrimLog \\\n";
         $cmd .= " >  $wrk/0-overlaptrim/$asm.merTrim.err 2>&1\n";
 
         stopBefore("initialTrim", $cmd);
@@ -5181,17 +5173,16 @@ sub toggler () {
 }
 
 
-my $specFile = undef;
+my @specFiles;
 my @specOpts;
 my @fragFiles;
 
+#  Set global defaults.
 setDefaults();
 
 #  At some pain, we stash the original options for later use.  We need
-#  to use these when we resubmit ourself to SGE.
-#
-#  We can't simply dump all of @ARGV into here, because we need to
-#  fix up relative paths.
+#  to use these when we resubmit ourself to SGE.  We can't simply dump
+#  all of @ARGV into here, because we need to fix up relative paths.
 #
 $commandLineOptions = "";
 
@@ -5208,8 +5199,7 @@ while (scalar(@ARGV)) {
         $commandLineOptions .= " -p \"$asm\"";
 
     } elsif ($arg eq "-s") {
-        $specFile = shift @ARGV;
-        $commandLineOptions .= " -s \"$specFile\"";
+        push @specFiles, shift @ARGV;
 
     } elsif ($arg eq "-version") {
         setGlobal("version", 1);
@@ -5242,15 +5232,38 @@ while (scalar(@ARGV)) {
     }
 }
 
+
 setGlobal("help", getGlobal("help") . "Assembly name prefix not supplied with -p.\n") if (!defined($asm));
 setGlobal("help", getGlobal("help") . "Directory not supplied with -d.\n")            if (!defined($wrk));
 
-{
-    my $bin = getBinDirectory();
 
-    @fragFiles = setParametersFromFile("$bin/runCA.default.spec", @fragFiles) if (-e "$bin/runCA.default.spec");
-    @fragFiles = setParametersFromFile("$ENV{'HOME'}/.runCA",     @fragFiles) if (-e "$ENV{'HOME'}/.runCA");
-    @fragFiles = setParametersFromFile($specFile,                 @fragFiles);
+my $bin = getBinDirectory();
+
+@fragFiles = setParametersFromFile("$bin/spec/runCA.default.specFile", @fragFiles)   if (-e "$bin/spec/runCA.default.specFile");
+@fragFiles = setParametersFromFile("$ENV{'HOME'}/.runCA",              @fragFiles)   if (-e "$ENV{'HOME'}/.runCA");
+
+
+#  For each of the specfiles on the command line, find the actual file and make it an absolute path.
+#  These can be in the current directory (e.g., 'my.spec'), or in the installed directory ('$bin/spec').
+#
+foreach my $specFile (@specFiles) {
+
+    if ((-e "$specFile") && (! -d "$specFile")) {
+        $specFile = "$ENV{'PWD'}/$specFile" if ($specFile !~ m!^/!);
+
+    } elsif ((-e "$bin/spec/$specFile") && (! -d "$bin/spec/$specFile")) {
+        $specFile = "$bin/spec/$specFile";
+
+    } elsif ((-e "$bin/spec/$specFile.specFile") && (! -d "$bin/spec/$specFile.specFile")) {
+        $specFile = "$bin/spec/$specFile.specFile";
+
+    } else {
+        die "specFile '$specFile' not found.\n";
+    }
+
+    $commandLineOptions .= " -s \"$specFile\"";
+
+    @fragFiles = setParametersFromFile($specFile, @fragFiles);
 }
 
 setParametersFromCommandLine(@specOpts);

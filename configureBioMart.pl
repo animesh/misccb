@@ -44,7 +44,6 @@ use Data::Dumper;
 	my %ARGUMENTS;
 	$OPTIONS{logDir} = Cwd::cwd()."/logs/";
 	$OPTIONS{conf} = Cwd::cwd()."/conf/";
-        @{$OPTIONS{modules_in_dist}} = ("BioMart/Initializer.pm"); # quick fix: under certain situations Initializer.pm has to be the first one
 	for (my $i = 0; $i < scalar(@ARGV); $i++)
 	{
 		if ($ARGV[$i] eq "--recompile") 	{	$ARGUMENTS{recompile} = $ARGV[$i];	}
@@ -458,7 +457,7 @@ sub libModules
 				#print "\n", $module_name;
 			}
 			#print "\n", $module_name;
-			push @{$OPTIONS{modules_in_dist}}, $module_name unless ($module_name eq "BioMart/Initializer.pm");
+			push @{$OPTIONS{modules_in_dist}}, $module_name;
 
 		}
    	}

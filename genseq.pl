@@ -1,60 +1,129 @@
-@b=qw/A T G C N/;
-$c=0;
-$f=shift @ARGV;
-$l=shift @ARGV;
-$p=5;
-open(FG,">$f.genome.fna");
-print FG">Genome$l$f\n";
-while($c<$l){
-	$c++;
-	$g.=$b[int(rand(5))];
-}
-print FG"$g\n";
-close FG;
-$c=0;
-open(FCL,">$f.clc.fna");
-open(FCE,">$f.cel.fna");
-open(FNE,">$f.new.fna");
-open(FEN,">$f.ens.fna");
-open(FASM,">$f.asm.fna");
-print FASM"CLC\t$f.clc.fna\t4\n";
-print FASM"CEL\t$f.cel.fna\t3\n";
-print FASM"NEW\t$f.new.fna\t2\n";
-print FASM"ENS\t$f.ens.fna\t1";
-close FASM;
-while($c<$l-($l/$p)){
-print "$c\t$p\t$l\t",$l/$p,"\n";
-$s=rand();
-if($s>0.5){
-	$s1=substr($g,$c,$l/$p);
-	$s2=substr($g,$c+int($l/4),$l/$p);
-	$s3=substr($g,$c+int($l/2),$l/$p);
-	$s4=substr($g,$c+int(3*$l/4),$l/$p);
-	print FCL">CLCFS$c \n$s1\n";
-	print FCE">CELFS$c \n$s2\n";
-	print FNE">NEWFS$c \n$s3\n";
-	print FEN">ENSFS$c \n$s4\n";
-#>codbac-190o01.fb140_b1.SCF template=codbac-190o01 dir=F library=codbac-140 trim
-	}
-else{
-        $s1=substr($g,$c,$l/$p);
-        $s2=substr($g,$c+int($l/4),$l/$p);
-        $s3=substr($g,$c+int($l/2),$l/$p);
-        $s4=substr($g,$c+int(3*$l/4),$l/$p);
-        $s1=~tr/ATGC/TACG/;
-        $s1=reverse($s1);
-        $s2=~tr/ATGC/TACG/;
-        $s2=reverse($s2);
-        $s3=~tr/ATGC/TACG/;
-        $s3=reverse($s3);
-	$s4=~tr/ATGC/TACG/;
-        $s4=reverse($s4);
-        print FEN">ENSS$c \n$s1\n";
-        print FNE">NEWRS$c \n$s2\n";
-        print FCE">CELRS$c \n$s3\n";
-        print FCL">CLCRS$c \n$s4\n";
+#!/usr/bin/env perl
 
+# generates MONSSTER sequence file
+#
+# http://mmtsb.scripps.edu/doc/genseq.pl.html
+# 2000, Michael Feig, Brooks group, TSRI
+#
+
+sub usage {
+  printf STDERR "usage:   genseq.pl [options] [-pdb | -monsster | -one] [file]\n";
+  printf STDERR "options: [-out [one][sec] | monsster]\n";
+  printf STDERR "         [-sel from:to]\n";
+  printf STDERR "         [-s inx:sequence[=inx:sequence]]\n";
+  printf STDERR "         [-2ndpred file[:file...]\n";
+  printf STDERR "         [-2ndone file]\n";
+  printf STDERR "         [-dssp]\n";
+  exit 1;
 }
-$c+=($l/$p);
+
+require 5.004;
+
+use vars qw ( $perllibdir );
+
+BEGIN {
+  $perllibdir="$ENV{MMTSBDIR}/perl" if (defined $ENV{MMTSBDIR});
+  ($perllibdir=$0)=~s/[^\/]+$// if (!defined $perllibdir);
+}
+
+use lib $perllibdir;
+use strict;
+
+use GenUtil;
+use Molecule;
+use Sequence;
+
+my $inpfile;
+my $input="pdb";
+my $output="monsster";
+my @predfiles=();
+my $secondary="";
+my $slist=();
+my $secfile;
+my $fraglist;
+
+while ($#ARGV>=0) {
+  if ($ARGV[0] eq "-help" || $ARGV[0] eq "-h") {
+    &usage();
+  } elsif ($ARGV[0] eq "-pdb") {
+    shift @ARGV;
+    $input="pdb";
+  } elsif ($ARGV[0] =~ /^-(monsster|one|pdb)$/) {
+    ($input=shift @ARGV)=~s/^-//;
+  } elsif ($ARGV[0] eq "-out") {
+    shift @ARGV;
+    $output=shift @ARGV;
+  } elsif ($ARGV[0] eq "-sel") {
+    shift @ARGV;
+    $fraglist=&GenUtil::fragListFromOption(shift @ARGV);
+  } elsif ($ARGV[0] eq "-dssp") {
+    shift @ARGV;
+    $secondary="dssp";
+  } elsif ($ARGV[0] eq "-2ndone") {
+    shift @ARGV;
+    $secfile=shift @ARGV;
+  } elsif ($ARGV[0] eq "-2ndpred") {
+    shift @ARGV;
+    $secondary="files";
+    @predfiles=split(/:/,shift @ARGV);
+  } elsif ($ARGV[0] eq "-s") {
+    shift @ARGV;
+    foreach my $t ( split(/=/,shift @ARGV) ) {
+      my ($tinx,$tseq)=split(/:/,$t);
+      my $srec={};
+      $srec->{inx}=$tinx;
+      $srec->{seq}=$tseq;
+      push(@{$slist},$srec);    
+    }
+  } elsif ($ARGV[0] =~ /^-.*/) { 
+    printf STDERR "invalid option %s\n",shift @ARGV;
+    &usage();
+  } else {
+    $inpfile=shift @ARGV;
+  }
+}
+
+my $seq;
+if ($input eq "pdb") {
+  my $mol=Molecule::new();
+  $mol->readPDB($inpfile);
+  $mol->selectChain("");
+  $seq=Sequence::new($mol,$slist);
+  $seq->secFromDSSP($mol)
+    if ($secondary eq "dssp" && $#{$slist}<0);
+} elsif ($input eq "monsster") {
+  $seq=Sequence::new();
+  $seq->readMONSSTER($inpfile);
+} elsif ($input eq "one") {
+  my $inp=&GenUtil::getInputFile($inpfile);
+  my $seqstr="";
+  while(<$inp>) { chomp $_; $seqstr.=$_ if (!/^\>sp/); }
+  $seqstr=~s/ +//g;
+  $seq=Sequence::new($seqstr);
+} else {
+  die "invalid input mode $input";
+}
+
+if (defined $secfile) {
+  $seq->secFromOneFile($secfile);
+} elsif ($secondary eq "files") {
+  $seq->secFromPredict(@predfiles);
+}
+
+if (defined $fraglist) {
+  $seq->setValidResidues($fraglist);
+}
+
+if ($output eq "monsster") {
+  $seq->writeMONSSTER(\*STDOUT,1);
+} elsif ($output =~ /^one/) {
+  printf STDOUT "%s\n",$seq->abbrevSeq(1);
+  if ($output eq "onesec") {
+    printf STDOUT "%s\n",$seq->abbrevSec(1);
+  }
+} elsif ($output =~ /sec/) {
+  printf STDOUT "%s\n",$seq->abbrevSec(1);
+} else {
+  die "unknown output mode\n";
 }
 

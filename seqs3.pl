@@ -8,15 +8,15 @@
 #            sequences are output.
 #            The basic point is to show how to work with Sequence objects
 #            and Bio::SeqIO streams (via seqtools.pl).
-# AUTHOR   : Steve Chervitz <sac@bioperl.org>
+# AUTHOR   : Steve Chervitz (sac@bioperl.org)
 # CREATED  : 29 Apr 1998
-# REVISION : $Id: seqs3.pl,v 1.2 2002/09/07 07:13:30 sac Exp $
+# REVISION : $Id: seqs3.pl,v 1.4 2002/01/11 08:05:42 sac Exp $
 # USAGE    : seqs3.pl -h
 # EXAMPLES : seqs3.pl -eg
 #
 # INSTALLATION: 
-#    Change require "seqtools.pl" to point to the proper location
-#    of the seqtools.pl file within your system.
+#    Set the require "seqtools.pl" to point to the proper location
+#    of the seqtools.pl file
 #
 # Note the use of eval{} for error handling in process_seq()
 #
@@ -27,10 +27,10 @@
 # SEE ALSO : seqs1.pl, seqs2.pl
 #---------------------------------------------------------------------------
 
-# Using seqtools.pl in the examples/seq distribution directory.
-# If you install this script on your system, modify this require
-# statement to have the absolute path to seqtools.pl
-require "seqtools.pl";
+# Using seqtools.pl in the examples/blast distribution directory:
+require "seqtools.pl"; 
+# Proper path to seqtools.pl after you install it in your system:
+#require "/home/steve/perl/bioperl/examples/seqio/seqtools.pl";
 
 my $MIN_LENGTH = 250;
 my @filtered   = ();

@@ -19,11 +19,19 @@ for($c=0;$c<$size;$c++){
 		$col=@tmp;
 		print "Row $row has $col Columns @tmp[-1]\n";
 		print FOF"Row $row has $col Columns @tmp[-1]\n";
-		for($cc=0;$cc<($col-1);$cc++){
-			print FO"@tmp[$cc]\t";
+                if($row==1){  
+		  for($cc=0;$cc<($col-1);$cc++){
+			$colnumm=$cc+1;
+			$ftrname="FTR.$colnumm";
+                          print FO"$ftrname,";
+                  }
+		  print FO"CLASS\n";
 		}
-		if(@tmp[-1]==1){print FO"1\t0\n";}
-		elsif(@tmp[-1]==0){print FO"0\t1\n";}
+		for($cc=0;$cc<($col-1);$cc++){
+			print FO"@tmp[$cc],";
+		}
+		if(@tmp[-1]==1){print FO"C1\n";}
+		elsif(@tmp[-1]==0){print FO"C0\n";}
 	}
 	$row=0;
 }

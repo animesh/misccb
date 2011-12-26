@@ -1,38 +1,29 @@
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#    Code base of Animesh Sharma [ sharma.animesh@gmail.com ]
+
 #!/usr/bin/perl
 # match_string.pl     krishna_bhakt@BHAKTI-YOGA     2006/09/04 10:45:58
+
 use warnings;
-my $other_file_pattern=shift @ARGV;
+use strict;
+$|=1;
+use Data::Dumper;
+my $seq_i=shift @ARGV;
 my $seq_o=shift @ARGV;
 my $start_motif=4;
 my $length_motif=4;
-my $seq;
-        open(FO,$other_file_pattern)||die "can't open";
-        while ($line = <FO>) {
-                chomp ($line);
-                $line=~s/^M//g;
-        if ($line =~ /^>/){
-                $snames=$line;
-                chomp $snames;
-             push(@gseqname,$snames);
-                        if ($seq ne ""){
-                        push(@gseq,$seq);
-                        $seq = "";
-                }
-        } 
-                else {
-                        $seq=$seq.$line;
-        }
-        }
-        push(@gseq,$seq);
-        $seq="";
-        close FO;
-        my $noseq=length(@gseq);
-for($fot=0;$fot<=$#gseq;$fot++){
-        
-my $slname=@gseqname[$fot];
-        my $seq_i=@gseq[$fot];
-        my $wseqlen=length($gseq[$fot]);
-        my $slnamews=$slname;$slnamews=~s/\s+/\./g;
 	    while ($seq_o =~ /$seq_i/g) {
 		my $posi= ((pos $seq_o) - length($&) +1);
 		my $start_posi=$posi-$start_motif-1;
@@ -41,7 +32,6 @@ my $slname=@gseqname[$fot];
 		(pos $seq_o)=(pos $seq_o)-length($&) +1;
 		print ">Pos in Seq $seq_o- $posi - $start_posi ($length_motif)\t$moti\n$seq_o\n$seq_i\n";
 	    }
-}
 
 
 

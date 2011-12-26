@@ -19,7 +19,7 @@ my $bpti_file = "../../t/data/pdb1bpt.ent";
 # After that we look at the annotation in PDB file
 # 
 # Author: Kris Boulez (kris.boulez@algonomics.com)
-# $Id: struct_example2.pl,v 1.1 2002/08/27 18:17:19 bosborne Exp $
+# $Id: struct_example2.pl,v 1.1 2002/02/18 20:12:34 krbou Exp $
 
 use Bio::Structure::IO;
 

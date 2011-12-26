@@ -1,7 +1,7 @@
 my $main_file_pattern=shift @ARGV;chomp $main_file_pattern;
 open(F,$main_file_pattern)||die "can't open";
 my ($line,$snames,@seqname,@seq,$fresall,$seq,$seqname);
-$sl=300;
+$sl=500;
 while ($line = <F>) {
         chomp ($line);
         if ($line =~ /^>/){

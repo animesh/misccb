@@ -6,56 +6,36 @@ sub createOverlapJobs($) {
 
     return if (-d "$wrk/$asm.ovlStore");
 
-    caFailure("overlapper detected no fragments", undef) if ($numFrags == 0);
-    caFailure("overlapper needs to know if trimming or assembling", undef) if (!defined($isTrim));
+    caFailure("createOverlapJobs()-- Help!  I have no frags!\n") if ($numFrags == 0);
+    caFailure("createOverlapJobs()-- I need to know if I'm trimming or assembling!\n") if (!defined($isTrim));
 
     my $ovlThreads        = getGlobal("ovlThreads");
     my $ovlMemory         = getGlobal("ovlMemory");
+    my $scratch           = getGlobal("scratch");
 
     my $outDir  = "1-overlapper";
     my $ovlOpt  = "";
-    my $merSize = getGlobal("ovlMerSize");
+    my $merSize = getGlobal("merSizeOvl");
     my $merComp = getGlobal("merCompression");
 
     if ($isTrim eq "trim") {
         $outDir  = "0-overlaptrim-overlap";
         $ovlOpt  = "-G";
-        $merSize = getGlobal("obtMerSize");
+        $merSize = getGlobal("merSizeObt");
     }
 
     system("mkdir $wrk/$outDir") if (! -d "$wrk/$outDir");
 
-    return if (-e "$wrk/$outDir/overlap.sh");
-
-    #  umd overlapper here
-    #
-    if (getGlobal("ovlOverlapper") eq "umd") {
-        #  For Sergey:
-        #
-        #  UMDoverlapper() needs to dump the gkpstore, run UMD, build
-        #  the ovlStore and update gkpStore with new clear ranges.
-        #  The explicit call to UMDoverlapper in main() can then go away.
-        #  OBT is smart enough to disable itself if umd is enabled.
-        #
-        UMDoverlapper();
-        return;
-    }
+    return if (-e "$wrk/$outDir/jobsCreated.success");
 
     #  mer overlapper here
-    #
-    if ((($isTrim eq "trim") && (getGlobal("obtOverlapper") eq "mer")) ||
-        (($isTrim ne "trim") && (getGlobal("ovlOverlapper") eq "mer"))) {
+
+    if ((getGlobal("merOverlap") eq "both") ||
+        ((getGlobal("merOverlap") eq "obt") && ($isTrim eq "trim")) ||
+        ((getGlobal("merOverlap") eq "ovl") && ($isTrim ne "trim"))) {
         merOverlapper($isTrim);
         return;
     }
-
-    #  To prevent infinite loops -- stop now if the overlap script
-    #  exists.  This will unfortunately make restarting from transient
-    #  failures non-trivial.
-    #
-    #  FAILUREHELPME
-    #
-    caFailure("overlapper failed\nmanual restart needed to prevent infinite loops\nremove file '$wrk/$outDir/overlap.sh'", undef) if (-e "$wrk/$outDir/overlap.sh");
 
     meryl();
 
@@ -68,8 +48,8 @@ sub createOverlapJobs($) {
     #  -r $refBeg-$refEnd).  From those, we can construct the command
     #  to run.
     #
-    open(F, "> $wrk/$outDir/overlap.sh") or caFailure("can't open '$wrk/$outDir/overlap.sh'", undef);
-    print F "#!" . getGlobal("shell") . "\n";
+    open(F, "> $wrk/$outDir/overlap.sh") or caFailure("Can't open '$wrk/$outDir/overlap.sh'\n");
+    print F "#!/bin/sh\n";
     print F "\n";
     print F "perl='/usr/bin/env perl'\n";
     print F "\n";
@@ -91,32 +71,54 @@ sub createOverlapJobs($) {
     print F "  mkdir $wrk/$outDir/\$bat\n";
     print F "fi\n";
     print F "\n";
-    print F "if [ -e $wrk/$outDir/\$bat/\$job.ovb.gz ]; then\n";
+    #print F "echo bat = \$bat\n";
+    #print F "echo job = \$job\n";
+    #print F "echo opt = \$opt\n";
+    #print F "\n";
+    #print F "echo out = $scratch/\$bat-\$job.\$jid.ovl\n";
+    #print F "echo out = $wrk/$outDir/\$bat/\$job.ovl";
+    print F "\n";
+    print F "if [ -e $wrk/$outDir/\$bat/\$job.success ]; then\n";
     print F "  echo Job previously completed successfully.\n";
     print F "  exit\n";
-    print F "fi\n";
-    print F "\n";
-    print F "if [ x\$bat = x ]; then\n";
-    print F "  echo Error: Job index out of range.\n";
-    print F "  exit 1\n";
     print F "fi\n";
     print F "\n";
     print F "AS_OVL_ERROR_RATE=", getGlobal("ovlErrorRate"), "\n";
     print F "AS_CNS_ERROR_RATE=", getGlobal("cnsErrorRate"), "\n";
     print F "AS_CGW_ERROR_RATE=", getGlobal("cgwErrorRate"), "\n";
     print F "export AS_OVL_ERROR_RATE AS_CNS_ERROR_RATE AS_CGW_ERROR_RATE\n";
-
-    print F getBinDirectoryShellCode();
-
-    print F "\$bin/overlap $ovlOpt -M $ovlMemory -t $ovlThreads \\\n";
+    print F "\n";
+    print F "echo \\\n";
+    print F "$gin/overlap $ovlOpt -M $ovlMemory -t $ovlThreads \\\n";
     print F "  \$opt \\\n";
     print F "  -k $merSize \\\n";
     print F "  -k $wrk/0-mercounts/$asm.nmers.obt.fasta \\\n" if ($isTrim eq "trim");
     print F "  -k $wrk/0-mercounts/$asm.nmers.ovl.fasta \\\n" if ($isTrim ne "trim");
-    print F "  -o $wrk/$outDir/\$bat/\$job.ovb.WORKING.gz \\\n";
+    print F "  -o $scratch/$asm.\$bat-\$job.\$jid.ovb \\\n"   if ($isTrim eq "trim");
+    print F "  -o $wrk/$outDir/\$bat/\$job.ovb \\\n"          if ($isTrim ne "trim");
+    print F "  $wrk/$asm.gkpStore\n";
+    print F "\n";
+    print F "\n";
+    print F "$gin/overlap $ovlOpt -M $ovlMemory -t $ovlThreads \\\n";
+    print F "  \$opt \\\n";
+    print F "  -k $merSize \\\n";
+    print F "  -k $wrk/0-mercounts/$asm.nmers.obt.fasta \\\n" if ($isTrim eq "trim");
+    print F "  -k $wrk/0-mercounts/$asm.nmers.ovl.fasta \\\n" if ($isTrim ne "trim");
+    print F "  -o $scratch/$asm.\$bat-\$job.\$jid.ovb \\\n"   if ($isTrim eq "trim");
+    print F "  -o $wrk/$outDir/\$bat/\$job.ovb \\\n"          if ($isTrim ne "trim");
     print F "  $wrk/$asm.gkpStore \\\n";
+
+    if ($isTrim eq "trim") {
+        print F "&& \\\n";
+        print F "$gin/acceptableOBToverlap \\\n";
+        print F "  < $scratch/$asm.\$bat-\$job.\$jid.ovb \\\n";
+        print F "  > $wrk/$outDir/\$bat/\$job.ovb \\\n";
+    }
+
     print F "&& \\\n";
-    print F "mv $wrk/$outDir/\$bat/\$job.ovb.WORKING.gz $wrk/$outDir/\$bat/\$job.ovb.gz\n";
+    print F "touch $wrk/$outDir/\$bat/\$job.success\n";
+    print F "\n";
+    print F "rm -f $scratch/$asm.\$bat-\$job.\$jid.ovb \\\n";
     print F "\n";
     print F "exit 0\n";
     close(F);
@@ -143,7 +145,7 @@ sub createOverlapJobs($) {
     my $batchSize = 0;
     my $batch     = 1;
 
-    my $batchName = substr("0000000000" . $batch, -10);
+    my $batchName = substr("0000000000" . $batch, -8);
 
     while ($hashBeg < $numFrags) {
         $hashEnd = $hashBeg + $ovlHashBlockSize - 1;
@@ -158,8 +160,8 @@ sub createOverlapJobs($) {
             #print STDERR "hash: $hashBeg-$hashEnd ref: $refBeg-$refEnd\n";
 
             my $jobName;
-            $jobName .= "h" . substr("0000000000" . $hashBeg, -10);
-            $jobName .= "r" . substr("0000000000" . $refBeg, -10);
+            $jobName .= "h" . substr("0000000000" . $hashBeg, -8);
+            $jobName .= "r" . substr("0000000000" . $refBeg, -8);
 
             push @bat, "$batchName";
             push @job, "$jobName";
@@ -170,7 +172,7 @@ sub createOverlapJobs($) {
             $batchSize++;
             if ($batchSize >= $batchMax) {
                 $batch++;
-                $batchName = substr("0000000000" . $batch, -10);
+                $batchName = substr("0000000000" . $batch, -8);
                 $batchSize = 0;
             }
         }
@@ -178,7 +180,7 @@ sub createOverlapJobs($) {
         $hashBeg = $hashEnd + 1;
     }
 
-    open(SUB, "> $wrk/$outDir/ovlopts.pl") or caFailure("failed to open '$wrk/$outDir/ovlopts.pl'", undef);
+    open(SUB, "> $wrk/$outDir/ovlopts.pl") or caFailure("Failed to open '$wrk/$outDir/ovlopts.pl'\n");
     print SUB "#!/usr/bin/env perl\n";
     print SUB "use strict;\n";
     print SUB "my \@bat = (\n";  foreach my $b (@bat) { print SUB "\"$b\",\n"; }  print SUB ");\n";
@@ -199,7 +201,7 @@ sub createOverlapJobs($) {
     print SUB "exit(0);\n";
     close(SUB);
 
-    open(SUB, "> $wrk/$outDir/ovljobs.dat") or caFailure("failed to open '$wrk/$outDir/ovljobs.dat'", undef);
+    open(SUB, "> $wrk/$outDir/ovljobs.dat") or caFailure("Failed to open '$wrk/$outDir/ovljobs.dat'\n");
     foreach my $b (@bat) { print SUB "$b "; }  print SUB "\n";
     foreach my $b (@job) { print SUB "$b "; }  print SUB "\n";
     close(SUB);
@@ -212,27 +214,35 @@ sub createOverlapJobs($) {
     #
     if (getGlobal("useGrid") && getGlobal("ovlOnGrid")) {
         my $sge        = getGlobal("sge");
-        my $sgeName    = getGlobal("sgeName");
         my $sgeOverlap = getGlobal("sgeOverlap");
 
-        $sgeName = "_$sgeName" if (defined($sgeName));
-
         my $SGE;
-        $SGE  = "qsub $sge $sgeOverlap -cwd -N ovl_$asm$sgeName \\\n";
-        $SGE .= "  -t 1-$jobs \\\n";
+        $SGE  = "qsub $sge $sgeOverlap -r y -N NAME \\\n";
+        $SGE .= "  -t MINMAX \\\n";
         $SGE .= "  -j y -o $wrk/$outDir/overlap.\\\$TASK_ID.out \\\n";
         $SGE .= "  $wrk/$outDir/overlap.sh\n";
 
-	submitBatchJobs($SGE, "ovl_$asm$sgeName");
-        exit(0);
+	my $waitTag = submitBatchJobs("ovl", $SGE, $jobs, $ovlThreads);
+
+        if (runningOnGrid()) {
+            touch("$wrk/$outDir/jobsCreated.success");
+            submitScript("$waitTag");
+            exit(0);
+        } else {
+            touch("$wrk/$outDir/jobsCreated.success");
+            exit(0);
+        }
     } else {
+        my $failures = 0;
         for (my $i=1; $i<=$jobs; $i++) {
             my $out = substr("0000" . $i, -4);
-            &scheduler::schedulerSubmit("$wrk/$outDir/overlap.sh $i > $wrk/$outDir/overlap.$out.out 2>&1");
+            if (runCommand("$wrk/$outDir", "$wrk/$outDir/overlap.sh $i > $wrk/$outDir/overlap.$out.out 2>&1")) {
+                $failures++;
+            }
         }
-
-        &scheduler::schedulerSetNumberOfProcesses(getGlobal("ovlConcurrency"));
-        &scheduler::schedulerFinish();
+        if ($failures == 0) {
+            touch("$wrk/$outDir/jobsCreated.success");
+        }
     }
 }
 

@@ -215,11 +215,8 @@ sub setDefaults () {
     $global{"utgErrorRate"}                = 0.015;
     $synops{"utgErrorRate"}                = "Overlaps above this error rate are not used to construct unitigs";
 
-    $global{"utgErrorLimit"}               = undef;
+    $global{"utgErrorLimit"}               = 0;
     $synops{"utgErrorLimit"}               = "Overlaps with more than this number of errors are not used to construct unitigs";
-
-    $global{"utgShortOverlapModelDefault"} = 2.5;
-    $synops{"utgShortOverlapModelDefault"} = "If short overlap model is used, the default number of errors used to construct unitigs";
 
     $global{"cnsErrorRate"}                = 0.06;
     $synops{"cnsErrorRate"}                = "Consensus expects alignments at about this error rate";
@@ -1282,7 +1279,7 @@ sub checkMerOverlapper ($) {
     }
 
     my $batchSize  = getGlobal("merOverlapperExtendBatchSize");
-    my $jobs       = int($numFrags / $batchSize) + (($numFrags % $batchSize == 0) ? 0 : 1);
+    my $jobs       = int($numFrags / ($batchSize-1)) + 1;
     my $failedJobs = 0;
 
     for (my $i=1; $i<=$jobs; $i++) {
@@ -1615,10 +1612,10 @@ sub merOverlapper($) {
     system("mkdir $wrk/3-overlapcorrection") if ((! -d "$wrk/3-overlapcorrection") && ($isTrim ne "trim"));
 
     my $ovmBatchSize = getGlobal("merOverlapperSeedBatchSize");
-    my $ovmJobs      = int($numFrags / $ovmBatchSize) + (($numFrags % $ovmBatchSize == 0) ? 0 : 1);
+    my $ovmJobs      = int(($numFrags - 1) / $ovmBatchSize) + 1;
 
     my $olpBatchSize = getGlobal("merOverlapperExtendBatchSize");
-    my $olpJobs      = int($numFrags / $olpBatchSize) + (($numFrags % $olpBatchSize == 0) ? 0 : 1);
+    my $olpJobs      = int(($numFrags - 1) / $olpBatchSize) + 1;
 
     #  Need mer counts, unless there is only one partition.
     meryl() if (($ovmJobs > 1) || ($merylNeeded));
@@ -1852,7 +1849,7 @@ sub merOverlapper($) {
     #  Submit to the grid (or tell the user to do it), or just run
     #  things here
     #
-    if (findOlapFromSeedsSuccess($outDir, $olpJobs) == 0) {
+    if (findOlapFromSeedsSuccess($outDir, $ovmJobs) == 0) {
         if (getGlobal("useGrid") && getGlobal("ovlOnGrid")) {
             my $sge        = getGlobal("sge");
             my $sgeName    = getGlobal("sgeName");
@@ -2731,7 +2728,7 @@ sub overlapCorrection {
     if ((getGlobal("ovlOverlapper") eq "ovl") && (! -e "$wrk/3-overlapcorrection/frgcorr.sh")) {
         my $batchSize   = getGlobal("frgCorrBatchSize");
         my $numThreads  = getGlobal("frgCorrThreads");
-        my $jobs        = int($numFrags / $batchSize) + (($numFrags % $batchSize == 0) ? 0 : 1);
+        my $jobs        = int($numFrags / ($batchSize-1)) + 1;
 
         open(F, "> $wrk/3-overlapcorrection/frgcorr.sh") or caFailure("failed to write to '$wrk/3-overlapcorrection/frgcorr.sh'", undef);
         print F "#!" . getGlobal("shell") . "\n\n";
@@ -2818,7 +2815,7 @@ sub overlapCorrection {
 
     if (! -e "$wrk/3-overlapcorrection/$asm.frgcorr") {
         my $batchSize  = (getGlobal("ovlOverlapper") eq "mer") ? getGlobal("merOverlapperExtendBatchSize") : getGlobal("frgCorrBatchSize");
-        my $jobs       = int($numFrags / $batchSize) + (($numFrags % $batchSize == 0) ? 0 : 1);
+        my $jobs       = int($numFrags / ($batchSize-1)) + 1;
         my $failedJobs = 0;
 
         open(F, "> $wrk/3-overlapcorrection/cat-corrects.frgcorrlist");
@@ -2877,8 +2874,8 @@ sub overlapCorrection {
     #
 
     if (! -e "$wrk/3-overlapcorrection/ovlcorr.sh") {
-        my $batchSize  = getGlobal("ovlCorrBatchSize");
-        my $jobs       = int($numFrags / $batchSize) + (($numFrags % $batchSize == 0) ? 0 : 1);
+        my $ovlCorrBatchSize  = getGlobal("ovlCorrBatchSize");
+        my $jobs              = int($numFrags / ($ovlCorrBatchSize-1)) + 1;
 
         open(F, "> $wrk/3-overlapcorrection/ovlcorr.sh") or caFailure("failed to write '$wrk/3-overlapcorrection/ovlcorr.sh'", undef);
         print F "jobid=\$SGE_TASK_ID\n";
@@ -2895,8 +2892,8 @@ sub overlapCorrection {
         print F "fi\n";
         print F "\n";
         print F "jobid=`printf %04d \$jobid`\n";
-        print F "frgBeg=`expr \$jobid \\* $batchSize - $batchSize + 1`\n";
-        print F "frgEnd=`expr \$jobid \\* $batchSize`\n";
+        print F "frgBeg=`expr \$jobid \\* $ovlCorrBatchSize - $ovlCorrBatchSize + 1`\n";
+        print F "frgEnd=`expr \$jobid \\* $ovlCorrBatchSize`\n";
         print F "if [ \$frgEnd -ge $numFrags ] ; then\n";
         print F "  frgEnd=$numFrags\n";
         print F "fi\n";
@@ -2954,10 +2951,10 @@ sub overlapCorrection {
     #
 
     if (! -e "$wrk/3-overlapcorrection/$asm.erates.updated") {
-        my $batchSize   = getGlobal("ovlCorrBatchSize");
-        my $bin         = getBinDirectory();
-        my $failedJobs  = 0;
-        my $jobs        = int($numFrags / $batchSize) + (($numFrags % $batchSize == 0) ? 0 : 1);
+        my $ovlCorrBatchSize = getGlobal("ovlCorrBatchSize");
+        my $bin              = getBinDirectory();
+        my $failedJobs       = 0;
+        my $jobs             = int($numFrags / ($ovlCorrBatchSize-1)) + 1;
         my $cmd;
 
         open(F, "> $wrk/3-overlapcorrection/cat-erates.eratelist");
@@ -4341,12 +4338,10 @@ sub terminate () {
 
         caFailure("contig consensus didn't find any checkpoints in '$wrk/7-CGW'", undef) if (!defined($tigVersion));
 
-        $cmd  = "$bin/terminator";
-        $cmd .= " -E $uidServer" if (defined($uidServer));
-        $cmd .= " -s $fakeUIDs" if ($fakeUIDs > 0);
-        $cmd .= " -g $wrk/$asm.gkpStore";
-        $cmd .= " -t $wrk/$asm.tigStore $tigVersion";
-        $cmd .= " -c $wrk/7-CGW/$asm $ckpVersion";
+        $cmd  = "$bin/terminator ";
+        $cmd .= " -g $wrk/$asm.gkpStore ";
+        $cmd .= " -t $wrk/$asm.tigStore $tigVersion ";
+        $cmd .= " -c $wrk/7-CGW/$asm $ckpVersion ";
         $cmd .= " -o $wrk/9-terminator/$asm";
         $cmd .= " > $wrk/9-terminator/$asm.asm.err";
 
@@ -4785,16 +4780,6 @@ sub unitigger () {
                setGlobal("unitigger", "bog");
             }
         }
-        
-		#  Default to overlap error %, unless the gkpStore says otherwise.
-		#
-		if (!defined(getGlobal("utgErrorLimit"))) {
-			setGlobal("utgErrorLimit", 0);
-
-			if (system("$bin/gatekeeper -isfeatureset 0 shortOverlapModel $wrk/$asm.gkpStore") == 0) {
-				setGlobal("utgErrorLimit", getGlobal("utgShortOverlapModelDefault"));
-			}
-		}
 
         system("mkdir $wrk/4-unitigger") if (! -e "$wrk/4-unitigger");
 

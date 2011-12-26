@@ -17,49 +17,25 @@ my $UTG_MESSAGES = 0;
 # 1. allow to specify clear ranges from a separate file
 # 2. error if multiple sequence or multiple contig files provided
 
-my $VERSION = '$Revision: 1.44 $ ';
+my $VERSION = '$Revision: 1.42 $ ';
 my $HELP = q~
-.USAGE.
-  toAmos (-m mates|-x traceinfo.xml|-f frg|-acc)
-         (-c contig|-a asm [-S]|-ta tasm|-ace ace|-s fasta|-q qual) 
-         (-arachne assembly.links|-scaff file.scaff)
-         -o outfile 
-         [-i insertfile | -map dstmap]
-         [-gq goodqual] [-bq badqual]
-         [-pos posfile] [-phd]
+    toAmos (-m mates|-x traceinfo.xml|-f frg|-acc)
+           (-c contig|-a asm [-S]|-ta tasm|-ace ace|-s fasta|-q qual) 
+           (-arachne assembly.links|-scaff file.scaff)
+           -o outfile 
+           [-i insertfile | -map dstmap]
+           [-gq goodqual] [-bq badqual]
+           [-pos posfile] [-phd]
 
-.DESCRIPTION.
-  toAmos is primarily designed for converting the output of an assembly
-  program into the AMOS format so that it can be stored in an AMOS bank.  
+    toAmos is primarily designed for converting the output of an assembly
+program into the AMOS format so that it can be stored in an AMOS bank.
 
-  If you simply need a program to generate assembly inputs for one the 
-  AMOS-based assemblers (e.g. minimus or AMOS-cmp) use tarchive2amos. 
+    If you simply need a program to generate assembly inputs for one the 
+AMOS-based assemblers (e.g. minimus or AMOS-cmp) use tarchive2amos. 
 
-  toAmos reads the inputs specified on the command line and converts the 
-  information into AMOS message format.  The following types of 
-  information can be provided to toAmos:
-    -> Sequence and quality data (options -f, -s,  -q, -gq, or -bq)
-    -> Library and mate-pair data (options -m, -x, -f, -i,  or  -map)
-    -> Contig  data (options -c, -a, -ta, or -ace)
-    -> Scaffold data (option -a)    
-
-.OPTIONS.
-  -o <outfile> - place output in <outfile>
-  -m <matefile> - library and mate-pair information in Bambus format
-  -x <trace.xml> - ancilliary data (library, mate-pair, clear range) 
-     in Trace Archive format
-  -f <frg file> - library, mate-pair, sequence, quality, and clear 
-     range data in Celera Assembler message format
-
-
-
-  ASM File Options:
-    -S Include Surrogate Unitigs as AMOS Contigs
-    -utg Include all UTG Unitig messages as AMOS Contigs
-
-.KEYWORDS.
-  converter, universal, amos format
-
+ASM File Options:
+ -S Include Surrogate Unitigs as AMOS Contigs
+ -utg Include all UTG Unitig messages as AMOS Contigs
 ~;
 
 my $base = new TIGR::Foundation();
@@ -625,19 +601,8 @@ sub parseTraceInfoFile {
 sub parseFrgFile {
     my $IN = shift;
 
-    my $FRG_VERSION = 1;
-
-    my %seqlibrary;
-    my %liborientation;
-
     while (my $record = getRecord($IN)){
 	my ($type, $fields, $recs) = parseRecord($record);
-
-        if ($type eq "VER") {
-          $FRG_VERSION  = $$fields{ver};
-          next;
-        }
-
 	if ($type eq "FRG") {
 	    my $id = getCAId($$fields{acc});
 	    my $iid = $minSeqId++;
@@ -658,104 +623,27 @@ sub parseFrgFile {
 	    print TMPSEQ "#\n";
 	    print TMPSEQ "$$fields{qlt}";
 	    print TMPSEQ "#\n";
-
-            if ($FRG_VERSION == 2)
-            {
-              my $lib = $$fields{lib};
-              $seqlibrary{$$fields{acc}} = $lib;
-
-              ## generate the unmated insert
-              if ($liborientation{$lib} eq "U")
-              {
-                my $id = $minSeqId++;
-                $seqinsert{$iid} = $id;
-                $insid{$id} = $id;
-                $seenlib{$id} = $lib;
-                $forw{$id} = $iid;
-              }
-            }
-
 	    next;
 	}
 	
-	if (($type eq "DST") || ($type eq "LIB")){
+	if ($type eq "DST"){
 	    my $id = getCAId($$fields{acc});
 	    $libraries{$id} = "$$fields{mea} $$fields{std}";
 #	    $libid{$id} = $minSeqId++;
-
-            if ($FRG_VERSION == 2)
-            {
-              $liborientation{$id} = $$fields{ori};
-            }
 	    next;
 	}
 	
 	if ($type eq "LKG"){
 	    my $id = $minSeqId++;
 #	    $insertlib{$$fields{dst}} .= "$id ";
-
-            if ($FRG_VERSION == 2)
-            {
-              my $frgcount = 0;
-              my $lib1 = undef;
-              my $frg1 =  undef;
-
-              ## Version 2 has 2 fields named frg, so we can't use the parseRecord results
-              foreach (split /\n/, $record)
-              {
-                chomp;
-                my ($key, $acc) = split /:/;
-
-                if ($key eq "frg")
-                {
-                  die "LKG References unknown frg $acc\n"
-                    if (!exists $seqlibrary{$acc});
-
-                  die "Only 2 frgs per LKG is supported: frg:$acc!\n"
-                    if ($frgcount == 3);
-
-                  $frgcount++;
-
-                  my $lib = $seqlibrary{$acc};
-                  $seqinsert{$seqids{$acc}} = $id;
-
-                  if ($frgcount == 1) 
-                  { 
-                    $seenlib{$id} = $lib;
-                    $forw{$id} = $seqids{$acc}; 
-                    
-                    $lib1 = $lib; 
-                    $frg1 = $acc;
-
-                    if ($liborientation{$lib} eq "I") {} # standard, nothing to do
-                    elsif ($liborientation{$lib} eq "O") { $inserttype{$id} = "T" }
-                    else
-                    {
-                      die "ERROR: Library $lib has unsupported orienation $liborientation{$lib}\n";
-                    }
-                  }
-                  elsif ($frgcount == 2) 
-                  { 
-                    $rev{$id}  = $seqids{$acc}; 
-
-                    die "ERROR: Frgs come from different libraries $frg1 [$lib1] $acc [$lib]\n"
-                      if ($lib ne $lib1);
-                  }
-                }
-              }
-            }
-            else
-            {
-              $seenlib{$id} = $$fields{dst};
-              $seqinsert{$seqids{$$fields{fg1}}} = $id;
-              $seqinsert{$seqids{$$fields{fg2}}} = $id;
-              $forw{$id} = $seqids{$$fields{fg1}};
-              $rev{$id} = $seqids{$$fields{fg2}};
-              if ($$fields{ori} eq "O"){
-              $inserttype{$id} = "T";
-              }
-            }
-
+	    $seenlib{$id} = $$fields{dst};
+	    $seqinsert{$seqids{$$fields{fg1}}} = $id;
+	    $seqinsert{$seqids{$$fields{fg2}}} = $id;
+	    $forw{$id} = $seqids{$$fields{fg1}};
+	    $rev{$id} = $seqids{$$fields{fg2}};
+	    if ($$fields{ori} eq "O"){
+		$inserttype{$id} = "T";
+	    }
 	    next;
 	}
     }

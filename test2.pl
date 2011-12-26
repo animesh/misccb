@@ -1,35 +1,64 @@
-#!/usr/local/ensembl/bin/perl -w
+#!/usr/bin/perl
 
+use lib '.','../..','./blib/lib','../../blib/lib','../..';
 use strict;
-use Getopt::Long;
-use Bio::EnsEMBL::Registry;
-use Bio::EnsEMBL::Compara::DBSQL::DBAdaptor;
+use Bio::Graphics::Panel;
+use Bio::Graphics::Feature;
 
-my $reg_conf = shift;
-die("must specify registry conf file on commandline\n") unless($reg_conf);
-Bio::EnsEMBL::Registry->load_all($reg_conf);
+chomp (my $CLASS = shift);
+$CLASS or die "\nUsage: lots_of_glyphs IMAGE_CLASS
+\t- where IMAGE_CLASS is one of GD or GD::SVG
+\t- GD generate png output; GD::SVG generates SVG.\n";
 
-# get compara DBAdaptor
-my $comparaDBA = Bio::EnsEMBL::Registry-> get_DBAdaptor('compara', 'compara');
-my $homologyDBA = Bio::EnsEMBL::Registry->get_adaptor('compara', 'compara', 'Homology');
+my $ftr = 'Bio::Graphics::Feature';
+my $segment = $ftr->new(-start=>1,-end=>2000000,-name=>'Cjejuni',-type=>'clone');
 
-# get GenomeDB for human
-my $ratGDB = $comparaDBA->get_GenomeDBAdaptor-> fetch_by_registry_name("rat");
+my $panel = Bio::Graphics::Panel->new(
+#				      -grid => [50,100,150,200,250,300,310,320,330],
+				      -gridcolor => 'lightcyan',
+				      -grid => 1,
+				      -segment => $segment,
+#				      -offset => 300,
+#				      -length  => 1700000,
+				      -spacing => 15,
+				      -width   => 600,
+				      -pad_top  => 20,
+				      -pad_bottom  => 20,
+				      -pad_left => 20,
+				      -pad_right=> 20,
+#				      -bgcolor => 'teal',
+#				      -key_style => 'between',
+				      -key_style => 'bottom',
+				      -image_class => $CLASS,
+				     );
+my @colors = $panel->color_names();
+$panel->add_track($segment,
+		  -glyph => 'arrow',
+		  -label => 'base pairs',
+		  -double => 1,
+		  -bump => 0,
+		  -height => 10,
+		  -arrowstyle=>'regular',
+		  -linewidth=>1,
+		  -tkcolor => $colors['yellow'],
+		  -tick => 2,
+		 );
 
-my $members = $comparaDBA->get_MemberAdaptor->fetch_by_source_taxon(
-  'ENSEMBLPEP', $ratGDB->taxon_id);
 
-foreach my $pep (@{$members}) {
-  next unless($pep->chr_name eq '2');
-  next unless($pep->chr_start < 10000000);
-  if($pep->get_Transcript->five_prime_utr) {
-    $pep->gene_member->print_member;
-    my $orths = $homologyDBA->fetch_by_Member_paired_species($pep->gene_member, 'Homo sapiens');
-    foreach my $homology (@{$orths}) {
-      $homology->print_homology;
-    }
-  }
-}
+my $zk154_1 = $ftr->new(-start=>50,-end=>800000,-name=>'ZK154.1',-type=>'gene');
+my $zk154_2 = $ftr->new(-start=>1000000,-end=>1100000,-name=>'ZK154.2',-type=>'gene');
+my $t = $panel->add_track(
+			  transcript => [$zk154_1,$zk154_2],
+			  -label => 1,
+			  -bump => 1,
+			  -key => 'MIRA',
+			  -tkcolor => $colors['blue'],
+			 );
 
-exit(0);
+
+
+my $gd    = $panel->gd;
+
+my $type = ($CLASS eq 'GD') ? 'png' : 'svg';
+print $gd->$type;
 

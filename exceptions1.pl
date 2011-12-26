@@ -14,7 +14,7 @@
 #
 # Author: Steve Chervitz <sac@bioperl.org>
 #
-# $Id: exceptions1.pl 5719 2003-03-07 19:25:19Z sac $
+# $Id: exceptions1.pl,v 1.1 2003/03/07 19:25:19 sac Exp $
 
 use strict;
 use lib qw(lib/ ../../);

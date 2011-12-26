@@ -1,6 +1,8 @@
 $input=shift @ARGV;
 open(F,$input);
 while($l=<F>){
+	$l=~s/^\s+//;
+	$l=~s/\s+$//;
 	@t=split(/\s+/,$l);
 	$line++;
 	if($line==1){

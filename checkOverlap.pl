@@ -15,7 +15,7 @@ sub checkOverlapper ($) {
         $ovlOpt = "-G";
     }
 
-    open(F, "< $wrk/$outDir/ovljobs.dat") or caFailure("failed to open '$wrk/$outDir/ovljobs.dat'", undef);
+    open(F, "< $wrk/$outDir/ovljobs.dat") or caFailure("Failed to open '$wrk/$outDir/ovljobs.dat'\n");
     $_ = <F>;
     my @bat = split '\s+', $_;
     $_ = <F>;
@@ -25,22 +25,41 @@ sub checkOverlapper ($) {
     my $jobIndex   = 1;
     my $failedJobs = 0;
 
+    open(F, "> $wrk/$outDir/overlap-restart.sh");
+    print F "#!/bin/sh\n\n";
+
     while (scalar(@bat) > 0) {
         my $batchName = shift @bat;
         my $jobName   = shift @job;
 
-        if ((! -e "$wrk/$outDir/$batchName/$jobName.ovb.gz") &&
-            (! -e "$wrk/$outDir/$batchName/$jobName.ovb")) {
+        if (! -e "$wrk/$outDir/$batchName/$jobName.success") {
             print STDERR "$wrk/$outDir/$batchName/$jobName failed, job index $jobIndex.\n";
+
+            if (getGlobal("useGrid") && getGlobal("ovlOnGrid")) {
+                my $sge        = getGlobal("sge");
+                my $sgeOverlap = getGlobal("sgeOverlap");
+
+                print F "qsub $sge $sgeOverlap -r y -N ovl_${asm} \\\n";
+                print F "  -t $jobIndex \\\n";
+                print F "  -j y -o $wrk/$outDir/overlap.\\\$TASK_ID.out \\\n";
+                print F "  -e $wrk/$outDir/overlap.\\\$TASK_ID.err \\\n";
+                print F "  $wrk/$outDir/overlap.sh\n";
+            } else {
+                my $out = substr("0000" . $jobIndex, -4);
+                print F "$wrk/$outDir/overlap.sh $jobIndex > $wrk/$outDir/$out.out 2>&1\n";
+            }
+
             $failedJobs++;
         }
 
         $jobIndex++;
     }
 
-    #  FAILUREHELPME
-    #
-    caFailure("$failedJobs overlapper jobs failed", undef) if ($failedJobs);
+    close(F);
+
+    if ($failedJobs) {
+        caFailure("$failedJobs failed.  See $wrk/$outDir/overlap-restart.sh for resubmission commands.\n");
+    }
 }
 
 
@@ -53,51 +72,37 @@ sub checkMerOverlapper ($) {
         $outDir = "0-overlaptrim-overlap";
     }
 
-    my $batchSize  = getGlobal("merOverlapperExtendBatchSize");
-    my $jobs       = int($numFrags / $batchSize) + (($numFrags % $batchSize == 0) ? 0 : 1);
+    my $batchSize  = getGlobal("ovlCorrBatchSize");
+    my $jobs       = int($numFrags / ($batchSize-1)) + 1;
     my $failedJobs = 0;
 
     for (my $i=1; $i<=$jobs; $i++) {
         my $job = substr("0000" . $i, -4);
 
-        if ((! -e "$wrk/$outDir/olaps/$job.ovb.gz") &&
-            (! -e "$wrk/$outDir/olaps/$job.ovb")) {
+        if (! -e "$wrk/$outDir/olaps/$job.success") {
             print STDERR "$wrk/$outDir/olaps/$job failed.\n";
             $failedJobs++;
         }
     }
-    
-    caFailure("$failedJobs overlapper jobs failed", undef) if ($failedJobs);
+    if ($failedJobs) {
+        caFailure("$failedJobs failed.  See $wrk/$outDir/overlap-restart.sh for resubmission commands.\n");
+    }
 }
 
 
 sub checkOverlap {
     my $isTrim = shift @_;
 
-    caFailure("overlap checker needs to know if trimming or assembling", undef) if (!defined($isTrim));
+    return if (-d "$wrk/$asm.ovlStore");
 
-    if ($isTrim eq "trim") {
-        return if (-d "$wrk/$asm.obtStore");
-        if      (getGlobal("obtOverlapper") eq "ovl") {
-            checkOverlapper($isTrim);
-        } elsif (getGlobal("obtOverlapper") eq "mer") {
-            checkMerOverlapper($isTrim);
-        } elsif (getGlobal("obtOverlapper") eq "umd") {
-            caError("checkOverlap() wanted to check umd overlapper for obt?\n");
-        } else {
-            caError("checkOverlap() unknown obt overlapper?\n");
-        }
+    caFailure("checkOverlap()-- I need to know if I'm trimming or assembling!\n") if (!defined($isTrim));
+
+    if ((getGlobal("merOverlap") eq "both") ||
+        ((getGlobal("merOverlap") eq "obt") && ($isTrim eq "trim")) ||
+        ((getGlobal("merOverlap") eq "ovl") && ($isTrim ne "trim"))) {
+        checkMerOverlapper($isTrim);
     } else {
-        return if (-d "$wrk/$asm.ovlStore");
-        if      (getGlobal("ovlOverlapper") eq "ovl") {
-            checkOverlapper($isTrim);
-        } elsif (getGlobal("ovlOverlapper") eq "mer") {
-            checkMerOverlapper($isTrim);
-        } elsif (getGlobal("ovlOverlapper") eq "umd") {
-            #  Nop.
-        } else {
-            caError("checkOverlap() unknown ovl overlapper?\n");
-        }
+        checkOverlapper($isTrim);
     }
 }
 

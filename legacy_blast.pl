@@ -1,5 +1,5 @@
 #! /usr/bin/perl -w
-# $Id: legacy_blast.pl 195935 2010-06-28 20:32:08Z camacho $
+# $Id: legacy_blast.pl 146314 2008-11-24 17:48:41Z camacho $
 # ===========================================================================
 #
 #                            PUBLIC DOMAIN NOTICE
@@ -68,7 +68,7 @@ if ($application eq "blastall") {
 } elsif ($application eq "seedtop") {
     $cmd = &handle_seedtop(\$print_only);
 } elsif ($application =~ /version/) {
-    my $revision = '$Revision: 195935 $';
+    my $revision = '$Revision: 146314 $';
     $revision =~ s/\$Revision: | \$//g;
     print "$0 version $revision\n";
     goto CLEAN_UP;
@@ -152,7 +152,7 @@ sub convert_filter_string($$)
 
     if ($filter_string =~ /F/) {
         if ($program eq "blastp" or $program eq "tblastn" or 
-            $program eq "blastx" or $program eq "tblastx") {
+            $program eq "blastx") {
             return "-seg no ";
         } else {
             return "-dust no ";
@@ -284,8 +284,8 @@ sub handle_blastall($)
         }
     }
     $retval .= &create_db_argument($opt_d)  if (defined $opt_d);
-    unless (($retval =~ /\/tblastn/) and defined $opt_R) {
-        $retval .= "-query $opt_i "         if (defined $opt_i);
+    if (defined $opt_i and (not $retval =~ /\/tblastn/)) {
+        $retval .= "-query $opt_i ";
     }
     $retval .= "-gilist $opt_l "            if (defined $opt_l);
     $retval .= "-dbsize $opt_z "            if (defined $opt_z);
@@ -372,8 +372,6 @@ sub handle_blastall($)
 
     if (defined $opt_F) {
         $retval .= &convert_filter_string($opt_F, $opt_p);
-    } elsif (not defined $opt_F and $opt_p eq "blastp") {
-        $retval .= &convert_filter_string("T", $opt_p);
     }
 
     return $retval;

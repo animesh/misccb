@@ -4,7 +4,7 @@
 # PURPOSE  : Demonstrate possible uses of Bio::Tools::Run::Alignment::Clustalw.pm
 # AUTHOR   : Peter Schattner schattner@alum.mit.edu
 # CREATED  : Oct 06 2000
-# REVISION : $Id: clustalw.pl,v 1.2 2002/12/25 05:23:08 peter Exp $
+# REVISION : $Id: clustalw.pl,v 1.1 2003/07/07 18:20:58 bosborne Exp $
 #
 # INSTALLATION
 #
@@ -42,8 +42,7 @@ use Bio::SeqIO;
 use strict;
 
 # set some default values
-#my $infile = 't/cysprot1a.fa';
-my $infile = Bio::Root::IO->catfile("t","data","cysprot.fa");;
+my $infile = 't/cysprot1a.fa';
 my @params = ('quiet' => 1 );
 my $do_only = '123'; 	# string listing examples to be executed. Default is to execute
 			# all tests (ie 1,2 and 3)

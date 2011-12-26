@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# $Id: version.pl 8557 2004-11-14 15:03:14Z bosborne $
+# $Id: version.pl,v 1.3 2004/11/14 15:03:14 bosborne Exp $
 #
 =head1 version
 

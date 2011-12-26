@@ -6,7 +6,7 @@
 # This may not work if the blastdb to index is est depending on 
 # wha your machine supports
 
-# $Id: blast_fetch_local.pl,v 1.3 2002/10/28 01:09:37 jason Exp $
+# $Id: blast_fetch_local.pl,v 1.1 2001/08/01 17:47:05 jason Exp $
 
 use strict;
 use Bio::Tools::BPlite;
@@ -73,13 +73,10 @@ sub parse_ncbi_id {
     if( $_[0] =~ /^>(\S+)/ ) {
 	my $val = $1;
 	my (@elements) = split(/\|/, $val);
-	while ( @elements ) {
+	while( @elements ) {
 	    my $id = shift @elements;
-	    if( $id =~ /(gb|emb|ref|dbj|sp|pir|gi|tpg|pdb|prf)/ ) {
-		my $next = shift @elements;
-	        unless ( $next ) { $next = shift @elements } # handle pir
-		push @retvals, ($next, "$id|$next");
-		next;
+	    if( $id eq 'gb' || $id eq 'gi' ) {
+		$id = $id . '|' . shift @elements;
 	    }
 	    push @retvals, $id;
 	}

@@ -1,48 +1,83 @@
-#!/usr/local/ensembl/bin/perl -w
+#!/usr/bin/perl
 
+use lib '.','../..','./blib/lib','../../blib/lib','../..';
 use strict;
-use Getopt::Long;
-use Bio::EnsEMBL::Registry;
-use Bio::EnsEMBL::Compara::DBSQL::DBAdaptor;
-use Time::HiRes qw { time };
+use Bio::Graphics::Panel;
+use Bio::Graphics::Feature;
 
-my $reg_conf = shift;
-die("must specify registry conf file on commandline\n") unless($reg_conf);
-Bio::EnsEMBL::Registry->load_all($reg_conf);
+chomp (my $CLASS = shift);
+$CLASS or die "\nUsage: lots_of_glyphs IMAGE_CLASS
+\t- where IMAGE_CLASS is one of GD or GD::SVG
+\t- GD generate png output; GD::SVG generates SVG.\n";
 
-###########################
-# 
-# advanced example which uses a recursive approach
-# to build single linkage clusters within a species set
-#
-###########################
+my $ftr = 'Bio::Graphics::Feature';
+my $segment = $ftr->new(-start=>1,-end=>2000000,-name=>'Cjejuni',-type=>'clone');
 
-# get compara DBAdaptor
-my $comparaDBA = Bio::EnsEMBL::Registry-> get_DBAdaptor('compara', 'compara');
-my $pafDBA = $comparaDBA-> get_PeptideAlignFeatureAdaptor;
-$pafDBA->final_clause("ORDER BY score desc");
-
-my $humanGDB = $comparaDBA->get_GenomeDBAdaptor-> fetch_by_registry_name("human");
-my $ratGDB = $comparaDBA->get_GenomeDBAdaptor-> fetch_by_registry_name("rat");
-
-my $members = $comparaDBA->get_MemberAdaptor->fetch_by_source_taxon(
-  'ENSEMBLPEP', $ratGDB->taxon_id);
-
-foreach my $pep (@{$members}) {
-  next unless($pep->chr_name eq '15');
-  next unless($pep->chr_start < 4801065 );
-  next unless($pep->chr_end > 4791387 );
-
-  $pep->print_member;
-
-  my $pafs = $pafDBA->fetch_all_RH_by_member_genomedb($pep->dbID, $humanGDB->dbID);
-
-  foreach my $paf (@{$pafs}) {
-    $paf->display_short;
-    $paf->hit_member->gene_member->print_member;
-  }
-}
-
+my $panel = Bio::Graphics::Panel->new(
+#				      -grid => [50,100,150,200,250,300,310,320,330],
+				      -gridcolor => 'lightcyan',
+				      -grid => 1,
+				      -segment => $segment,
+#				      -offset => 300,
+#				      -length  => 1700000,
+				      -spacing => 15,
+				      -width   => 600,
+				      -pad_top  => 20,
+				      -pad_bottom  => 20,
+				      -pad_left => 20,
+				      -pad_right=> 20,
+#				      -bgcolor => 'teal',
+#				      -key_style => 'between',
+				      -key_style => 'bottom',
+				      -image_class => $CLASS,
+				     );
+my @colors = $panel->color_names();
+$panel->add_track($segment,
+		  -glyph => 'arrow',
+		  -label => 'base pairs',
+		  -double => 1,
+		  -bump => 0,
+		  -height => 10,
+		  -arrowstyle=>'regular',
+		  -linewidth=>1,
+		  -tick => 2,
+		 );
 
 
-exit(0);
+my $cjgenome = $ftr->new(-start=>1,-end=>1628115,-name=>'C.jejuni',-type=>'genome');
+my $t = $panel->add_track(
+			  transcript => [$cjgenome],
+			  -label => 1,
+			  -bump => 1,
+ 			  -bgcolor => 'black',
+			  -key => 'CjGenome',
+			 );
+
+
+my $zk154_1 = $ftr->new(-start=>50,-end=>800000);
+my $zk154_2 = $ftr->new(-start=>1000000,-end=>1100000,-name=>'ZK154.2',-type=>'gene');
+my $t = $panel->add_track(
+			  transcript => [$zk154_1,$zk154_2],
+			  -label => 1,
+			  -bump => 1,
+ 			  -bgcolor => 'blue',
+			  -key => 'MIRA',
+			 );
+
+
+my $zk154_3 = $ftr->new(-start=>50,-end=>800000,-name=>'ZK154.1',-type=>'gene');
+my $zk154_4 = $ftr->new(-start=>1000000,-end=>1100000,-name=>'ZK154.2',-type=>'gene');
+my $t = $panel->add_track(
+			  transcript => [$zk154_3,$zk154_4],
+			  -label => 1,
+			  -bump => 1,
+ 			  -bgcolor => 'red',
+			  -key => 'PHRAP',
+			 );
+
+
+my $gd    = $panel->gd;
+
+my $type = ($CLASS eq 'GD') ? 'png' : 'svg';
+print $gd->$type;
+

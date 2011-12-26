@@ -1,18 +1,16 @@
 #   Hej, Emacs, give us -*- perl mode here!
 #
-#   $Id$
+#   $Id: lib.pl,v 1.1.1.1 1999/07/13 08:14:45 joe Exp $
 #
 #   lib.pl is the file where database specific things should live,
 #   whereever possible. For example, you define certain constants
 #   here and the like.
 #
-# All this code is subject to being GUTTED soon
-#
-use strict;
-use vars qw($table $mdriver $dbdriver $childPid $test_dsn $test_user $test_password);
-$table= 't1';
 
-$| = 1; # flush stdout asap to keep in sync with stderr
+require 5.003;
+use strict;
+use vars qw($mdriver $dbdriver $childPid $test_dsn $test_user $test_password);
+
 
 #
 #   Driver names; EDIT THIS!
@@ -27,6 +25,9 @@ $dbdriver = $mdriver; # $dbdriver is usually just the same as $mdriver.
 #
 #   DSN being used; do not edit this, edit "$dbdriver.dbtest" instead
 #
+$test_dsn      = $ENV{'DBI_DSN'}   ||  'DBI:mysql:database=test';
+$test_user     = $ENV{'DBI_USER'}  ||  '';
+$test_password = $ENV{'DBI_PASS'}  ||  '';
 
 
 $::COL_NULLABLE = 1;
@@ -44,9 +45,6 @@ if (-f ($file = "t/$dbdriver.dbtest")  ||
 	print "1..0\n";
 	exit 0;
     }
-    $::test_dsn      = $::test_dsn || $ENV{'DBI_DSN'} || 'DBI:mysql:database=test';
-    $::test_user     = $::test_user|| $ENV{'DBI_USER'}  ||  '';
-    $::test_password = $::test_password || $ENV{'DBI_PASS'}  ||  '';
 }
 if (-f ($file = "t/$mdriver.mtest")  ||
     -f ($file = "$mdriver.mtest")    ||
@@ -87,10 +85,9 @@ if (-f ($file = "t/$mdriver.mtest")  ||
 {
     # Note the use of the pairing {} in order to get local, but static,
     # variables.
-    my (@stateStack, $count, $off, $skip_all_reason, $skip_n_reason, @skip_n);
+    my (@stateStack, $count, $off);
 
     $count = 0;
-    @skip_n = ();
 
     sub Testing(;$) {
 	my ($command) = shift;
@@ -151,14 +148,6 @@ if (-f ($file = "t/$mdriver.mtest")  ||
 #
     sub Test ($;$$) {
 	my($result, $error, $diag) = @_;
-	return Skip($skip_all_reason) if (defined($skip_all_reason));
-	if (scalar(@skip_n)) {
-	    my $skipped = 0;
-	    my $t = $::numTests + 1;
-	    foreach my $n (@skip_n) {
-		return Skip($skip_n_reason) if ($n == $t);
-	    }
-	}
 	++$::numTests;
 	if ($count == 2) {
 	    if (defined($diag)) {
@@ -168,8 +157,7 @@ if (-f ($file = "t/$mdriver.mtest")  ||
 		print "ok $::numTests\n";
 		return 1;
 	    } else {
-		my ($pack, $file, $line) = caller();
-		printf("not ok $::numTests%s at line $line\n",
+		printf("not ok $::numTests%s\n",
 			(defined($error) ? " $error" : ""));
 		return 0;
 	    }
@@ -192,22 +180,14 @@ if (-f ($file = "t/$mdriver.mtest")  ||
 	}
 	return 1;
     }
-    sub SkipAll($) {
-	$skip_all_reason = shift;
-    }
-    sub SkipN($@) {
-	$skip_n_reason = shift;
-	@skip_n = @_;
-    }
 }
 
 
 #
 #   Print a DBI error message
 #
-# TODO - This is on the chopping block
 sub DbiError ($$) {
-    my ($rc, $err) = @_;
+    my($rc, $err) = @_;
     $rc ||= 0;
     $err ||= '';
     print "Test $::numTests: DBI error $rc, $err\n";
@@ -233,7 +213,7 @@ sub DbiError ($$) {
 	}
 
 	if (!$listed) {
-	    @tables = grep {s/(?:^.*\.)|`//g} $dbh->tables();
+	    @tables = map{ $_ =~ s/^.*\.//; $_ } $dbh->tables();
 	    $listed = 1;
 	}
 
@@ -257,25 +237,6 @@ sub DbiError ($$) {
     }
 }
 
-sub connection_id {
-    my $dbh = shift;
-    return 0 unless $dbh;
-
-    # Paul DuBois says the following is more reliable than
-    # $dbh->{'mysql_thread_id'};
-    my @row = $dbh->selectrow_array("SELECT CONNECTION_ID()");
-
-    return $row[0];
-}
-
-# nice function I saw in DBD::Pg test code
-sub byte_string {
-    my $ret = join( "|" ,unpack( "C*" ,$_[0] ) );
-    return $ret;
-}
-
-sub SQL_VARCHAR { 12 };
-sub SQL_INTEGER { 4 };
 
 sub ErrMsg (@) { print (@_); }
 sub ErrMsgF (@) { printf (@_); }

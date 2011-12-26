@@ -16,12 +16,10 @@ while(<F2>){
 	$c2{@t2[0]}=$_;
 }
 foreach $r1 (keys %c1) {
-	$c++;$cc=0;
+	$c++;
 	foreach $r2 (keys %c2) {
-		$cc++;
 		if($r1 eq $r2){
 			print F"$r1-$r2\t$c1{$r1}\t$c2{$r2}\n";
-			last;
 		}
 	}
 	if($c%1000==0){print "$c\n";}
