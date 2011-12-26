@@ -1,10 +1,5 @@
-# Auto-configure options for Mac OS X Universal build
+# Auto-configure options to fix TK directory access to 64bit NFS volumes from 32bit hosts
 
 # Written by Duncan Mortimer
 
-macosx_universal_opts="-arch ppc -arch i386"
-cflags="${cflags} ${macosx_universal_opts} -mmacosx-version-min=10.4"
-cxxflags="${cxxflags} ${macosx_universal_opts} -mmacosx-version-min=10.4"
-ldflags="${ldflags} -Wl,-search_paths_first ${macosx_universal_opts}"
-configure_opts="${configure_opts} --disable-dependency-tracking --x-includes=/usr/X11/include --x-libraries=/usr/X11/lib"
-
+cflags="${cflags} -DHAVE_STRUCT_DIRENT64=1"

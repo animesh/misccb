@@ -18,7 +18,7 @@ cp ${WORKDIR}/setRef/src/{*.cpp,*.h} ../../cpp/setRef/src
 cp ${WORKDIR}/stopRun/src/{*.cpp,*.h} ../../cpp/stopRun/src
 cp ${WORKDIR}/sfffile/src/{*.c,*.h} ../../sfftools/sfffile
 cp ${WORKDIR}/qualVal/src/{*.cc,*.cpp,*.h} ../../sfftools/sfffile
-cp ${WORKDIR}/core/src/{SffToolsProxy.*,Util.*,Types.*,InputFile.*,MIDParser.*,Logger.*,DiffUtil.*,DiffAlign.*,SeqUtil.*,stringbuffer.*,ConfigParser.*} ../../sfftools/sfffile
+cp ${WORKDIR}/core/src/{SffToolsProxy.*,Util.*,Types.*,InputFile.*,MIDParser.*,Logger.*,DiffUtil.*,DiffAlign.*,DiffAlignBuffer.h,SeqUtil.*,stringbuffer.*,ConfigParser.*} ../../sfftools/sfffile
 #cp ~/developersEnv/AppCRelease/sfftools/sffinfo/*.c ../../sfftools/sffinfo
 #cp ~/developersEnv/AppCRelease/sfftools/sff2scf/*.c ../../sfftools/sff2scf
 #cp ~/developersEnv/AppCRelease/sfftools/fnafile/{*.c,*.h} ../../sfftools/fnafile

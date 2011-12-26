@@ -20,7 +20,7 @@ y2 <- predict(nlsfit,data.frame(Pf_m=x))
 lines(x, y2)
 y1 <- (Bm*x)/(Kd+x)
 lines(x, y1, lty="dotted", col="red")
-write.table((cbind(c(x),c(y1),c(y2))), file = "apip_otp.txt", sep = "\t",col.names = FALSE, row.names = FALSE )
+write.table((cbind(c(x),c(y1),c(y2))), file = "apip_m_otp.txt", sep = "\t",col.names = FALSE, row.names = FALSE )
 
 
 fl_m$Pb_mtrans <- fl_m$Pf_m/fl_m$Pb_m
@@ -40,4 +40,4 @@ y2 <- predict(nlsfit,data.frame(Pf_m=x))
 lines(x, y2)
 y1 <- (Bm*x)/(Kd+x)
 lines(x, y1, lty="dotted", col="red")
-write.table((cbind(c(x),c(y1),c(y2))), file = "fl_otp.txt", sep = "\t",col.names = FALSE, row.names = FALSE )
+write.table((cbind(c(x),c(y1),c(y2))), file = "fl_m_otp.txt", sep = "\t",col.names = FALSE, row.names = FALSE )

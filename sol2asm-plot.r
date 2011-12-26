@@ -1,17 +1,17 @@
-jpeg("sol-read-map-asm.jpg");
-t=read.table('sr2cs.pairdist.txt.t10000',sep='\t')
+jpeg("sol-read-map-asm-new.jpg");
+t=read.table('sr2cs.pairdist.txt',sep='\t')
 summary(t)
 t=t$V7[t$V7<10000];
-plot(density(abs(t)),col="red",xlab="Distance in bp",main="gsMapped unique solexa reads",ylab="Density of Pairs",xlim=c(0,1000))
-t=read.table('sr2ns.pairdist.txt.t10000',sep='\t')
+plot(density(abs(t)),col="red",xlab="Distance in bp",main="gsMapped unique solexa reads",ylab="Density of Pairs",xlim=c(0,500))
+t=read.table('sr2ns.pairdist.txt',sep='\t')
 summary(t)
 t=t$V7[t$V7<10000];
 lines(density(abs(t)),col="blue")
-t=read.table('sr2es.pairdist.txt.t10000',sep='\t')
+t=read.table('sr2es.pairdist.txt',sep='\t')
 summary(t)
 t=t$V7[t$V7<10000];
 lines(density(abs(t)),col="green")
-t=read.table('sr2Cs.pairdist.txt.t10000',sep='\t')
+t=read.table('sr2Cs.pairdist.txt',sep='\t')
 summary(t)
 t=t$V7[t$V7<10000];
 lines(density(abs(t)),col="magenta")
