@@ -1,10 +1,10 @@
 #!/bin/sh
 
-prefix=/usr/local/nrn
-exec_prefix=/usr/local/nrn/x86_64
+prefix=/home/animesh/export/nest2.1.9349pre/neuron/nrn
+exec_prefix=/home/animesh/export/nest2.1.9349pre/neuron/nrn/x86_64
 NRNBIN=${exec_prefix}/bin
 ARCH=x86_64
-NEURONHOME=/usr/local/nrn/share/nrn
+NEURONHOME=/home/animesh/export/nest2.1.9349pre/neuron/nrn/share/nrn
 
 cd $1
 

@@ -1,6 +1,9 @@
-setwd('D:\\animesh\\projects\\research\\mohan\\res')
-
-res1 <- read.table("WT347356.txt")
+ress <- read.table("scene_p.txt")
+rese <- read.table("e_p.txt")
+resm <- read.table("m_p.txt")
+resf <- read.table("f_p.txt")
+resp <- read.table("pr.txt")
+resa <- read.table("allp.txt")
 
 t.test(res1$WT,res1$WT_347)
 t.test(res1$WT,res1$WT_356)

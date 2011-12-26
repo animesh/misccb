@@ -1,23 +1,29 @@
-resdata <- read.table("data.txt")
-resconc <- read.table("concval.txt")
+resap <- read.table("ap.txt")
+resfl <- read.table("fl.txt")
+resm347 <- read.table("m347.txt")
+resm356 <- read.table("m356.txt")
+resdm <- read.table("dm.txt")
+resapc3 <- resap[-c(3),]
+resflc3 <- resfl[-c(3),]
 
 
-lmfit <- lm(Ap~Conc, data=resdata, na.action=na.omit)
-summary(lmfit)
-plot(resdata$Conc,resdata$Ap)
+resap$Pbtrans <- resap$Pf/resap$Pb
+lmfit <- lm(Pbtrans~Pf, data=resap, na.action=na.omit)
+plot(resap$Pf, resap$Pbtrans)
 abline(coef(lmfit))
-
-
-lmfit <- lm(Ap_Ip~Conc, data=resdata, na.action=na.omit)
-summary(lmfit)
-plot(resdata$Conc,resdata$Ap_Ip)
-abline(coef(lmfit))
-
-
-lmfit <- lm(Fl~Conc, data=resdata, na.action=na.omit)
-summary(lmfit)
-plot(resdata$Conc,resdata$Fl)
-abline(coef(lmfit))
+Bm <- 1/coef(lmfit)[2]
+Kd <- Bm*coef(lmfit)[1]
+Bm
+Kd
+nlsfit <- nls(Pb~Bm*Pf/(Kd+Pf),data=resap, start=list(Kd=Kd, Bm=Bm))
+summary(nlsfit)
+plot(resap$Pf, resap$Pb)
+x <- seq(0, 60, length=120)
+y2 <- (coef(nlsfit)["Bm"]*x)/(coef(nlsfit)["Kd"]+x)
+y2 <- predict(nlsfit,data.frame(conc=x))
+lines(x, y2)
+y1 <- (Bm*x)/(Kd+x)
+lines(x, y1, lty="dotted", col="red")
 
 
 

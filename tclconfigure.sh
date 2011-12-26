@@ -1,5 +1,10 @@
-# Auto-configure options to fix TCL directory access to 64bit NFS volumes from 32bit hosts
+# Auto-configure options for Mac OS X Universal build
 
 # Written by Duncan Mortimer
 
-cflags="${cflags} -DHAVE_STRUCT_DIRENT64=1"
+macosx_universal_opts="-arch ppc -arch i386"
+cflags="${cflags} ${macosx_universal_opts} -mmacosx-version-min=10.4"
+cxxflags="${cxxflags} ${macosx_universal_opts} -mmacosx-version-min=10.4"
+ldflags="${ldflags} -Wl,-search_paths_first ${macosx_universal_opts}"
+configure_opts="${configure_opts} --disable-dependency-tracking"
+

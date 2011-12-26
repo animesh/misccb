@@ -1,20 +1,16 @@
+## stepAIC on an lme object: an example from Robert Cuffe
 library(nlme)
-data(Oxboys)
-fm1 <- lmList(Oxboys)
-fm1
-fm2 <- lme(fm1)
-fm2
+library(MASS)
+set.seed(321) # to be sure
+a <- data.frame( resp=rnorm(250), cov1=rnorm(250),
+                 cov2=rnorm(250), group=rep(letters[1:10],25) )
+mod1 <- lme(resp~cov1, a, ~cov1|group, method="ML")
+mod2 <- stepAIC(mod1, scope=list(upper=~(cov1+cov2)^2, lower=~1) )
 
-# bug report from Arne.Mueller@sanofi-aventis.com
-mod <- distance ~ age + Sex
-fm3 <- lme(mod, Orthodont, random = ~ 1)
-predict(fm3, Orthodont)
+beav <- beav2
+set.seed(123)
+beav$dummy <- rnorm(nrow(beav))
+beav.gls <- gls(temp ~ activ + dummy, data = beav,
+                 corr = corAR1(0.8), method = "ML")
+stepAIC(beav.gls)
 
-## bug report and fix from Dimitris Rizopoulos and Spencer Graves:
-## when 'returnObject = TRUE', do not stop() but give warning() on non-convergence:
-fm1 <- lme(distance ~ age, data = Orthodont,
-	   control = lmeControl(msMaxIter = 1, returnObject = TRUE))
-
-## based on bug report on R-help
-predict(fm3, Orthodont[1,])
-# failed in 3.1-88

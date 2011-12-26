@@ -1,29 +1,19 @@
+# copyright John Maddock 2005
+# Use, modification and distribution are subject to the 
+# Boost Software License, Version 1.0. (See accompanying file 
+# LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
 # locate all the header dependencies:
-for file in ../../../boost/regex/*.hpp ; do
-	if [ -f $file ]; then
-		header="$header $file"
-	fi
-done
-
-for file in ../../../boost/regex/v3/*.hpp; do
-	if [ -f $file ]; then
-		header="$header $file"
-	fi
-done
-
-for file in ../../../boost/regex/v3/*.hxx; do
-	if [ -f $file ]; then
-		header="$header $file"
-	fi
-done
-
+header=""
 #
 # locate all the source files:
-for file in ../src/*.cpp; do
-	if [ -f $file ]; then
-		src="$src $file"
-	fi
-done
+src=link_test.cpp
+
+boost_version=$(grep 'define.*BOOST_LIB_VERSION' ../../../../boost/version.hpp | sed 's/.*"\([^"]*\)".*/\1/')
+
+
+
+
+
 
 

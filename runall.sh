@@ -1,5 +1,3 @@
-for x in *; do 
-  if ! [ -x $x ]; then continue; fi; 
-  echo '<<' $x '>>';  
-  ./$x; 
-done;
+#!/bin/bash
+
+R --slave < runalltests.R
