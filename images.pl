@@ -1,68 +1,50 @@
-# LaTeX2HTML 99.1 release (March 30, 1999)
-# Associate images original text with physical files.
+#!/usr/bin/perl -w
+
+#######################################################################
+#
+# Example of how to insert images into an Excel worksheet using the
+# Spreadsheet::WriteExcel insert_image() method.
+#
+# reverse('©'), October 2001, John McNamara, jmcnamara@cpan.org
+#
+
+use strict;
+use Spreadsheet::WriteExcel;
+
+# Create a new workbook called simple.xls and add a worksheet
+my $workbook   = Spreadsheet::WriteExcel->new("images.xls");
+my $worksheet1 = $workbook->add_worksheet('Image 1');
+my $worksheet2 = $workbook->add_worksheet('Image 2');
+my $worksheet3 = $workbook->add_worksheet('Image 3');
+my $worksheet4 = $workbook->add_worksheet('Image 4');
+
+# Insert a basic image
+$worksheet1->write('A10', "Image inserted into worksheet.");
+$worksheet1->insert_image('A1', 'republic.png');
 
 
-$key = q/{makeimage}eqnarray{phi(lambda)&=&frac{1}{2pii}int^{c+iinfty}_{c-iinfty}expleft(ar{epsilon}&=&mbox{actualslashaverageenergyloss}eqnarray{{makeimage};MSF=1.6;AAT/;
-$cached_env_img{$key} = q|<IMG
- WIDTH="474" HEIGHT="160" ALIGN="BOTTOM" BORDER="0"
- SRC="img1.gif"
- ALT="\begin{eqnarray}
-\phi(\lambda) &amp; = &amp; \frac{1} {2 \pi i}\int^{c+i\infty}_{c-i\in...
-...\epsilon , \bar{\epsilon} &amp; = &amp; \mbox{actual/average energy loss}
-\end{eqnarray}">|; 
+# Insert an image with an offset
+$worksheet2->write('A10', "Image inserted with an offset.");
+$worksheet2->insert_image('A1', 'republic.png', 32, 10);
 
-$key = q/a^2+b^2=c^2;MSF=1.6;AAT/;
-$cached_env_img{$key} = q|<IMG
- WIDTH="88" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
- SRC="img5.gif"
- ALT="$ a^2+b^2=c^2$">|; 
+# Insert a scaled image
+$worksheet3->write('A10', "Image scaled: width x 2, height x 0.8.");
+$worksheet3->insert_image('A1', 'republic.png', 0, 0, 2, 0.8);
 
-$key = q/n>2;MSF=1.6;AAT/;
-$cached_env_img{$key} = q|<IMG
- WIDTH="43" HEIGHT="28" ALIGN="MIDDLE" BORDER="0"
- SRC="img7.gif"
- ALT="$ n&gt;2$">|; 
+# Insert an image over varied column and row sizes
+# This does not require any additional work
 
-$key = q/y=B(x);MSF=1.6;AAT/;
-$cached_env_img{$key} = q|<IMG
- WIDTH="68" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
- SRC="img4.gif"
- ALT="$ y=B(x)$">|; 
+# Set the cols and row sizes
+# NOTE: you must do this before you call insert_image()
+$worksheet4->set_column('A:A', 5);
+$worksheet4->set_column('B:B', undef, undef, 1); # Hidden
+$worksheet4->set_column('C:D', 10);
+$worksheet4->set_row(0, 30);
+$worksheet4->set_row(3, 5);
 
-$key = q/a^n+b^n=c^n;MSF=1.6;AAT/;
-$cached_env_img{$key} = q|<IMG
- WIDTH="93" HEIGHT="29" ALIGN="MIDDLE" BORDER="0"
- SRC="img6.gif"
- ALT="$ a^n+b^n=c^n$">|; 
+$worksheet4->write('A10', "Image inserted over scaled rows and columns.");
+$worksheet4->insert_image('A1', 'republic.png');
 
-$key = q/displaystylehtmlimage{thumbnail=.3}align{B_{ij}^alpha<col_mark>=left(B_{ij}^alphX_j}+frac{{d{N_k^beta}{{d{X_i}frac{{d{N_k^alpha}{{d{X_j}right)align{;MSF=1.6;AAT/;
-$cached_env_img{$key} = q|<A NAME="tex2html_wrap_indisplay268"
- HREF="img9.gif"><IMG
- WIDTH="1" HEIGHT="6" ALIGN="MIDDLE" BORDER="0"
- SRC="Timg9.gif"
- ALT="$\displaystyle \begin{align}B_{ij}^\alpha &amp; = \left(B_{ij}^\alpha\right)_0 + \le...
-...} + \frac{\d N_k^\beta}{\d X_i} \frac{\d N_k^\alpha}{\d X_j} \right)\end{align}$"></A>|; 
 
-$key = q/mathcal{N}(A)=mathcal{R}(B);MSF=1.6;AAT/;
-$cached_env_img{$key} = q|<IMG
- WIDTH="104" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
- SRC="img3.gif"
- ALT="$ \mathcal{N}(A) = \mathcal{R}(B)$">|; 
 
-$key = q/{eqnarray}htmlimage{thumbnail=.4}Vmathbf{pi}^{sr}&=&left<sum_iM_imathbf{V}_imathsum_alphamathbf{p}_{ialpha}mathbf{f}_{ialpha}right>{eqnarray};MSF=1.6;TAGS=R;AAT/;
-$cached_env_img{$key} = q|<A NAME="eqnarray52"
- HREF="img8.gif"><IMG
- WIDTH="140" HEIGHT="29" ALIGN="LEFT"
- SRC="Timg8.gif"
- ALT="\begin{eqnarray}V \mathbf{\pi}^{sr} &amp; = &amp; \left&lt; \sum_i M_i \mathbf{V}_i \mathbf...
-...m_i \sum_\alpha \mathbf{p}_{i\alpha} \mathbf{f}_{i\alpha} \right&gt;
-\end{eqnarray}"></A>|; 
-
-$key = q/deltamathbf{c};MSF=1.6;AAT/;
-$cached_env_img{$key} = q|<IMG
- WIDTH="20" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
- SRC="img2.gif"
- ALT="$ \delta\mathbf{c}$">|; 
-
-1;
 

@@ -1,13 +1,5 @@
 #!/usr/local/bin/perl
 
-use strict;
-use File::Spec;
-use TIGR::Foundation;
-my $base = new TIGR::Foundation;
-if (! defined $base){
-    die ("Foundation cannot be created.  FATAL!\n");
-}
-
 print STDERR "Usage: contig2contig <seqfile> <contigfile> <outcontigfile>\n";
 my @names;
 open(FASTA, "$ARGV[0]") || die("Cannot open $ARGV[0]: $!\n");
@@ -24,12 +16,11 @@ open(OUT, ">$ARGV[2]") || die ("Cannot open $ARGV[2]: $!\n");
 my $contig_id;
 my $contig_len;
 my $nseqs;
-my $tmpfile = File::Spec->catfile($base->getTempDir(),"tmp.txt");
 while (<CONTIG>){
     if (/^\s*$/){ # end of a contig
 	close(TMP);
 	print OUT "##$contig_id $nseqs $contig_len bases\n";
-	open(TMP, $tmpfile) || die ("Cannot open $tmpfile: $!\n");
+	open(TMP, "TMP") || die ("Cannot open TMP: $!\n");
 	while (<TMP>){
 	    print OUT;
 	}
@@ -38,7 +29,7 @@ while (<CONTIG>){
 	$contig_id = $1;
 	$contig_len = 0;
 	$nseqs = 0;
-	open(TMP, ">$tmpfile") || die ("Cannot open $tmpfile: $!\n");
+	open(TMP, ">TMP") || die ("Cannot open TMP: $!\n");
     } elsif (/^(\d+) (\d+) (\d+)/){
 	my $id = $1;
 	my $asml = $2;
@@ -67,7 +58,7 @@ while (<CONTIG>){
 
 close(TMP);
 print OUT "##$contig_id $nseqs $contig_len bases\n";
-open(TMP, "$tmpfile") || die ("Cannot open $tmpfile: $!\n");
+open(TMP, "TMP") || die ("Cannot open TMP: $!\n");
 while (<TMP>){
     print OUT;
 }

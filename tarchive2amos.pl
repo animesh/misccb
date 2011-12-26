@@ -5,14 +5,16 @@ use strict;
 use AMOS::AmosLib;
 use AMOS::ParseFasta;
 use AMOS::AmosFoundation;
-use TIGR::Foundation;
 use XML::Parser;
 use IO::Handle;
-use File::Spec;
+use POSIX qw(tmpnam);
+$ENV{TMPDIR} = ".";
 
 my $MINSEQ = 0;
 my $MAXSEQ = undef;
 my $DEFAULT_QUAL = 20;
+
+my $tmprefix = "tmp.$$";		#tmpnam();
 
 my $tag;						# XML tag
 my $library;
@@ -42,24 +44,15 @@ my @pairregexp;					# read mating regular expressions
 
 my $gzip = "gzip";
 
-#getTempDir() function is located in TIGR::Foundation
-my $tigrbase = new TIGR::Foundation;
-if (! defined $tigrbase)
-{
-    die ("Walk, do not run, to the nearest exit!\n");
-}
-
-my $tmprefix = "tmp.$$";
-my $tmpdir   = $tigrbase->getTempDir();
-my $tmpfile  = File::Spec->catfile($tmpdir, "$tmprefix.red");
-
 my $base = new AMOS::AmosFoundation;
+
 if (! defined $base) {
     die ("Walk, do not run, to the nearest exit!\n");
 }
+
 #$base->setLogLevel(1);
 
-my $VERSION = '$Revision: 1.34 $ ';
+my $VERSION = '$Revision: 1.31 $ ';
 $base->setVersion($VERSION);
 
 $base->setLogFile("tarchive2amos.log");
@@ -425,7 +418,7 @@ print STDERR "Processing the files\n" unless $silent;
 open(FRAG, ">$fragname") || $base->bail("Cannot open $fragname: $!");
 printFragHeader(\*FRAG);
 
-open(TMPRED, ">$tmpfile") || $base->bail("Cannot open $tmpfile: $!\n");
+open(TMPRED, ">$tmprefix.red") || $base->bail("Cannot open $tmprefix.red: $!\n");
 
 ## now we are ready to print the library information
 while (my ($lib, $mean) = each %libraries) {
@@ -639,9 +632,9 @@ for (my $f = 0; $f <= $#seqfiles; $f++) {
 	    #	    print $fid, "\n";
 	    #	    print $qid, "\n";
 	    #	    print $qrec, "\n";
-	    $qrec =~ s/^\s+//;
+	    $qrec =~ s/^ //;
 	    #	    $qrec =~ s/ +/ /g;
-	    @quals = split(/\s+/, $qrec);
+	    @quals = split(/ +/, $qrec);
 	    #	    print join(',', @quals), "\n";
 	    if ($#quals + 1 != $seqlen) {
 		#		print join(',', @quals), "\n";
@@ -772,13 +765,13 @@ if (! defined $silent) {
     print STDERR "putting it together\n";
 }
 
-if (-f $tmpfile) {
-    open(TMPRED, $tmpfile) || $base->bail("Cannot open $tmpfile:$!\n");
+if (-f "$tmprefix.red") {
+    open(TMPRED, "$tmprefix.red") || $base->bail("Cannot open $tmprefix.red:$!\n");
     while (<TMPRED>) {
         print FRAG;
     }
     close(TMPRED);
-    unlink($tmpfile) || $base->bail("Cannot remove $tmpfile: $!\n");
+    unlink("$tmprefix.red") || $base->bail("Cannot remove $tmprefix.red: $!\n");
 }
 
 ###
