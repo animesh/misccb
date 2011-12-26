@@ -1,32 +1,21 @@
 #!/bin/sh
 
-# this is a demo for a nice and simple genome MAPPING assembly with data which
-# was downloaded from the NCBI trace archive, we have ancillary information in
-# a XML file and TIGR made the reads, so we use that naming scheme
+# this is a quick demo on how to use miraEST for EST assembly and
+#  SNP analysis
+#
+# For the time being, the input files MUST have the prefix 'step1_in' to 
+#  be processed correctly by miraeST, I'm sorry.
 
-# We also turn on html output
+echo "This demo must be reworked wor 2.9.x and is currently not available, sorry."
+exit
 
-# using the "accurate" assembly qualifier turns on MIRA in high quality mode,
-#  ready to tackle a fair number of problems one can encounter in genome
-#  assembly.  
-# It's not really needed for this small set, but neither does it harm.
+echo "Cleaning the provided fasta file"
+uncover_at ../data/fasta_estset1/triphysaria_versicolor.masked.fasta -P "-CL:mbc=on:mbcmeg=240" -n -a -r ../data/fasta_estset1/triphysaria_versicolor.fasta step1_in.fasta >ttt
+ln -s ../data/fasta_estset1/triphysaria_versicolor.fasta.qual step1_in.fasta.qual
+touch step1_straindata_in.txt
 
-# The data itself is pretty good, but has a few reads that show distinct signs
-#  "extended too long", i.e., they contain really bad quality. This is why we
-#  turn on -CL:bsqc with standard parameters
-
-# the difference to bbdemo1: we map reads from C.jejuni RM1221 against 
-#  a backbone (the first 40kb of C.jejuni NCTC1168)
-
-ln -f -s ../data/bbdataset1/cjejuni_demo* .
-
-echo "Running mira"
-mira -parameters=parameters.par | tee run.log
+echo "Running miraSearchESTSNPs"
+miraSearchESTSNPs --fasta | tee run.log
 echo "Done."
-echo "Load the project into the GAP4 editor to have a look at the first 40kb of"
-echo " Campylobacter jejuni RM1221 mapped against Campylobacter jejuni NCTC1168"
-echo "HTML output was also switched on so that you can load 'cjejuni_demo_out.html'"
-echo " into a CSS compliant browser."
-#echo ""
-#echo "Look for SNPs between NCTC1168 (represented as 'read' named NC_002163) and"
-#echo " reads from RM1221: search for the SROc tags which MIRA conveniently set for you."
+echo "If all went well, the results are in 'step3_results' directory."
+echo "Consult run.log and/or stderr if errors occured."
