@@ -7,7 +7,7 @@ def plot_spikes():
     dt = 0.25 # time resolution
     nbins = 1000
     N = 500 # number of neurons
-    
+
     spikes = load('spike_detector-503-0.gdf')
 
     figure(1)

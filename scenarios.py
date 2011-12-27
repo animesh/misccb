@@ -6,6 +6,11 @@ import numpy
 from pyNN.utility import init_logging, assert_arrays_equal, assert_arrays_almost_equal, sort_by_column
 
 
+def set_simulator(sim):
+    common.simulator = sim.simulator
+    recording.simulator = sim.simulator
+
+
 scenarios = []
 def register(exclude=[]):
     def inner_register(scenario):
@@ -22,6 +27,7 @@ def scenario1(sim):
     """
     Balanced network of integrate-and-fire neurons.
     """
+    set_simulator(sim)
     cell_params = {
         'tau_m': 20.0, 'tau_syn_E': 5.0, 'tau_syn_I': 10.0, 'v_rest': -60.0,
         'v_reset': -60.0, 'v_thresh': -50.0, 'cm': 1.0, 'tau_refrac': 5.0,
@@ -88,6 +94,7 @@ def scenario1a(sim):
     Balanced network of integrate-and-fire neurons, built with the "low-level"
     API.
     """
+    set_simulator(sim)
     cell_params = {
         'tau_m': 10.0, 'tau_syn_E': 2.0, 'tau_syn_I': 5.0, 'v_rest': -60.0,
         'v_reset': -65.0, 'v_thresh': -55.0, 'cm': 0.5, 'tau_refrac': 2.5,
@@ -147,6 +154,7 @@ def scenario2(sim):
     we set the refractory period to be very large, so each neuron fires only
     once (except neuron[0], which never reaches threshold).
     """
+    set_simulator(sim)
     n = 100
     t_start = 25.0
     duration = 100.0
@@ -194,6 +202,7 @@ def scenario3(sim):
     the presynaptic neurons fires faster than the second half, so their
     connections should be potentiated more.
     """
+    set_simulator(sim)
 
     init_logging(logfile=None, debug=True)
     second = 1000.0
@@ -291,6 +300,7 @@ def ticket166(sim):
         import pylab
         pylab.rcParams['interactive'] = interactive
     
+    set_simulator(sim)
     sim.setup(timestep=dt)
     
     spikesources = sim.Population(2, sim.SpikeSourceArray)
@@ -397,8 +407,9 @@ def test_setup(sim):
     for rec in data:
         assert_arrays_equal(rec, data[0])
 
-@register(exclude=['pcsim', 'moose'])
+@register(exclude=['pcsim'])
 def test_EIF_cond_alpha_isfa_ista(sim):
+    set_simulator(sim)
     sim.setup(timestep=0.01, min_delay=0.1, max_delay=4.0)
     ifcell = sim.create(sim.EIF_cond_alpha_isfa_ista,
                         {'i_offset': 1.0, 'tau_refrac': 2.0, 'v_spike': -40})   
@@ -436,10 +447,11 @@ def test_HH_cond_exp(sim):
     assert first_spike - 2.95 < 0.01 
     
 
-@register(exclude=['pcsim', 'moose'])
+@register(exclude=['pcsim'])
 def test_record_vm_and_gsyn_from_assembly(sim):
     from pyNN.utility import init_logging
     init_logging(logfile=None, debug=True)
+    set_simulator(sim)
     dt = 0.1
     tstop = 100.0
     sim.setup(timestep=dt)
@@ -479,18 +491,3 @@ def test_record_vm_and_gsyn_from_assembly(sim):
     assert_arrays_equal(vm_p1[vm_p1[:,0]==3][:,2], vm_all[vm_all[:,0]==8][:,2])
 
     sim.end()
-
-@register()
-def ticket195(sim):
-    """
-    Check that the `connect()` function works correctly with single IDs (see
-    http://neuralensemble.org/trac/PyNN/ticket/195)
-    """
-    sim.setup(timestep=0.01)
-    pre = sim.Population(10, sim.SpikeSourceArray, cellparams={'spike_times':range(1,10)})
-    post = sim.Population(10, sim.IF_cond_exp)
-    sim.connect(pre[0], post[0], weight=0.01, delay=0.1, p=1)
-    post.record()
-    sim.run(100.0)
-    assert_arrays_almost_equal(post.getSpikes(), numpy.array([[0.0, 13.4]]), 0.5)
-

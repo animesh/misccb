@@ -11,9 +11,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # create two generators with different frequencies, phases, amplitudes
-g = nest.Create('smp_generator', n=2, params=[{'dc': 10000.0, 'ac': 5000.0, 
+g = nest.Create('smp_generator', n=2, params=[{'dc': 10000.0, 'ac': 5000.0,
                                               'freq': 10.0, 'phi': 0.0},
-                                             {'dc': 0.0, 'ac': 10000.0, 
+                                             {'dc': 0.0, 'ac': 10000.0,
                                               'freq': 5.0, 'phi': np.pi/2.}])
 
 # create multimeters and spike detectors
