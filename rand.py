@@ -1,18 +1,13 @@
-import random
-oddCount= 0
-for s in range(100):
-    lastSpin= s
-    n= random.randrange(38)
-    # Zero
-    if n == 0 or n == 37: # treat 37 as 00
-        oddCount = 0
-        continue
-    # Odd
-    if n%2 == 1:
-        oddCount += 1
-        if oddCount == 6: break
-        continue
-    # Even
-    assert n%2 == 0 and 0 < n <= 36
-    oddCount == 0
-print oddCount, lastSpin
+# Module 'rand'
+# Don't use unless you want compatibility with C's rand()!
+
+import whrandom
+
+def srand(seed):
+    whrandom.seed(seed%256, seed/256%256, seed/65536%256)
+
+def rand():
+    return int(whrandom.random() * 32768.0) % 32768
+
+def choice(seq):
+    return seq[rand() % len(seq)]
