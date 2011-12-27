@@ -21,3 +21,4 @@ nest.Simulate(500.0)
 nest.voltage_trace.from_device(voltmeter)
 nest.voltage_trace.show()
 
+
