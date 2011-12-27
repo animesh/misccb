@@ -1,4 +1,2 @@
-import glob, os
-
-def post_run():
-    [os.unlink(f) for f in glob.glob("*.data")]
+install_dir = r'D:\drvers\progz\bio\dock\Modeller9v1'
+license = r'MODELIRANJE'
