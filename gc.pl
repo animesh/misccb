@@ -34,12 +34,13 @@ for($c=0;$c<=$#n1;$c++) {
 		$r2=@n2[$cc];
                 #print "$c\t$cc\t$r1\t$r2\n";
                 if($r1 eq $r2){
-                        print "$r1-$r2\t$c1{$r1}\t$c2{$r2}\n";
+                        #print "$r1-$r2\t$c1{$r1}\t$c2{$r2}\n";
 			@n2=@n2[$cc+1..$#n2];
-                        last;
+                        $nf{$r1}++;
+			last;
                 }
-		else{$nf{$r1}++}
+		#else{$nf{$r1}++}
         }
-	if($nf{$r1}){print FO"$r1\n";}
+	if($nf{$r1}<1){print F"$r1\n";}
 }
 
