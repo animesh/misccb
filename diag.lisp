@@ -4,6 +4,7 @@
 (start-environment)
 (load "/media/DATA/actr6/tutorial/unit1/count.lisp")
 (run 1)
+(stop-environment)
 
 
 
