@@ -1,5 +1,5 @@
 use strict;
-use warnings;
+#use warnings;
 
 #Simulate circular genome of length $seqlen
 sub genseq{
@@ -13,7 +13,7 @@ sub genseq{
 		$seq.=@b[int(rand(4))];
 		$c++; 
 	}
-	print "$sn\n$seq\n";
+	print "Simulated Genome $seq\n";
 	return($sn,$seq);
 }
 
@@ -31,11 +31,12 @@ sub splitseq{
 		if($c%$slen+$len>$slen){$ss.=substr($seq,0,($c+$len)%$slen)}
 		$cnt++;
 		push(@seqscoll,$ss);
-		#print "$cnt\t$c-$len-$slen\t$ss\n";
 	}
+	print "Generated k-mers ",join(" ",@seqscoll),"\n";
 	return(\@seqscoll);
 }
 
+#Search (waiting to be completed!)
 sub breadth{
            my $reads = shift;
            my @read = @$reads;
@@ -66,16 +67,38 @@ my $seqs=splitseq($seq,$ARGV[1],$ARGV[2],$ARGV[3]);
 my @seqsc=@$seqs;
 my $fo="Genome.L$ARGV[0].K$ARGV[1].C$ARGV[2].O$ARGV[3].cg";
 open(FO,">$fo");
-for(my $c1=0;$c1<=$#seqsc;$c1++){
-	if($c1<$#seqsc){print FO"$seqsc[$c1]\t$seqsc[$c1+1]\t";}
-	if($c1>0){print FO"$seqsc[$c1-1]\t";}
-	for(my $c2=$c1+1;$c2<$#seqsc;$c2++){
-		if(($seqsc[$c1] eq $seqsc[$c2]) and ($seqsc[$c1-1] ne $seqsc[$c2-1]) and ($seqsc[$c1+1] ne $seqsc[$c2+1])){
-			print "$c1\t$seqsc[$c1]\t$c2\t$seqsc[$c2]\n";
-			print FO"\t$seqsc[$c2+1]\t$seqsc[$c2-1]\t";
+my %exist = ();
+my @seqscu = grep { ! $exist{$_} ++ } @seqsc;
+for(my $c1=0;$c1<=$#seqscu;$c1++){
+	print FO"$seqscu[$c1]";
+	#print FO"$seqsc[$c1-1]\t";
+	for(my $c2=0;$c2<=$#seqsc;$c2++){
+		if($seqscu[$c1] eq $seqsc[$c2]){
+			#print "$c1\t$seqsc[$c1]\t$c2\t$seqsc[$c2]\n";
+			print FO" $seqsc[$c2+1]";
+			#print FO"\t$seqsc[$c2-1]\t";
 		}
 	}
 	print FO"\n";
 }
 close FO;
-print "Genome written into file $fg , Connectivity into $fo\n";
+print "Genome file $fg\nConnectivity file $fo\nRunning shell Hamiltonian path finder and writing output to $fo.ham\n";
+system("bash ham.sh < $fo > $fo.ham");
+print "Collapsed ham.sh output from $fo.ham written to $fg.ham\n";
+open(FH,"$fo.ham");
+open(FHW,">$fg.ham");
+my $sgh;
+while(<FH>){
+	chomp;
+	my @th=split(/\s+/);
+	$sgh=$th[0];
+	for(my $ch=1;$ch<=$#th;$ch++){
+		$sgh.=substr($th[$ch],$ARGV[3],$ARGV[1]-$ARGV[3]);
+	}
+	if(length($sgh)>$ARGV[0]){$sgh=substr($sgh,0,$ARGV[0]);}
+}
+print "Assembled Genome $sgh\n";
+print FHW">HamStringGenome\n$sgh\n";
+close FHW;
+close FG;
+

@@ -1,3 +1,8 @@
-a b c
-b c a
-c a b
+AAC ACT
+CTT TTT
+AGA GAA
+TTT TTA
+TTA TAG
+ACT CTT
+TAG AGA
+GAA AAC
