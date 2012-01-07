@@ -1,0 +1,12 @@
+tox1<-read.table('toxdr_nn.txt')
+tox_percent1=tox1/tox1$WT*100
+boxplot(tox_percent1)
+tox2<-read.table('res244219_wnc_nn.txt')
+tox_percent2=tox2/tox2$WT*100
+tox4<-read.table('ecol_nn.txt')
+tox_percent4=tox4/tox4$WT*100
+boxplot(tox_percent2)
+a=c(tox_percent2,tox_percent1,tox_percent4)
+b=a[-6]
+b=b[-9]
+boxplot(b)

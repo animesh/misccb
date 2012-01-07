@@ -1,0 +1,1000 @@
+  109  ls -aslh
+  110  emacs23-nox Selecting454pyrosequencingreadsandassessingperform.tex 
+  111  cd
+  112  sudo add-apt-repository ppa:weather-indicator-team/ppa
+  113  sudo apt-get update
+  114  sudo apt-get install indicator-weather
+  115  ls
+  116  rm PamelaMeyer_2011G.mp4 
+  117  rm results.txt 
+  118  lks
+  119  sudo apt-get install indicator-cpufreq 
+  120  sudo add-apt-repository ppa:artfwo/ppa
+  121  sudo apt-get update
+  122  sudo apt-get install indicator-cpufreq 
+  123  indicator-cpufreq
+  124  indicator-cpufreq-selector 
+  125  indicator-cpufreq
+  126  sudo apt-get install indicator-sysmonitor
+  127  sudo add-apt-repository ppa:alexeftimie/ppa
+  128  sudo apt-get update
+  129  sudo apt-get install indicator-sysmonitor
+  130  sudo apt-get install indicator-sensors
+  131  sudo add-apt-repository ppa:alexmurray/indicator-sensors
+  132  sudo apt-get update
+  133  sudo apt-get install indicator-sensors
+  134  sudo apt-get install caffeine
+  135  sudo add-apt-repository ppa:caffeine-developers/ppa
+  136  sudo apt-get update
+  137  sudo apt-get install caffeine
+  138  cd Desktop/
+  139  ls
+  140  mv science rajeevbhai.pdf
+  141  perl -e 'print 9/207'
+  142  perl -e 'print 81/477'
+  143  ls -aslh
+  144  ii
+  145  perl -e 'print 0.01*0.9+0.99*0.2
+  146  perl -e 'print 0.01*0.9+0.99*0.2'
+  147  perl -e 'print (()/(()+()))'
+  148  perl -e 'print 10/703'
+  149  perl -e 'print 90/189'
+  150  perl -e 'print 90/999'
+  151  perl -e 'print 9/108'
+  152  perl -e 'print 1/27'
+  153  perl -e 'print 9/108'
+  154  perl -e 'print 9/198'
+  155  scp Desktop/sequence.gb animesh@login.ii.uib.no:public_html/.
+  156  ssh -X animesh@astrakan.bccs.uib.no
+  157  cdd Desktop/
+  158  cd Desktop/
+  159  java
+  160  sudo add-apt-repository "deb http://archive.canonical.com/ lucid partner"
+  161  sudo apt-get update
+  162  sudo apt-get install sun-java6-jre 
+  163  cd LigPlus
+  164  ls
+  165  java -jar LigPlus.jar 
+  166  mv ../components.cif 
+  167  mv ../components.cif .
+  168  ls
+  169  cd Desktop/
+  170  ls
+  171  cd bmc_article/ml
+  172  ls
+  173  emacs Selecting454pyrosequencingreadsandassessingperform.tex
+  174  cd Desktop/
+  175  less Exported\ Items.bib 
+  176  cd bmc_article/ml
+  177  vim Selecting454pyrosequencingreadsandassessingperform.bib
+  178  bibtex Selecting454pyrosequencingreadsandassessingperform.aux
+  179  bibtex Selecting454pyrosequencingreadsandassessingperform
+  180  ls
+  181  cd Desktop/
+  182  ls
+  183  less Selecting454pyrosequencingreadsandassessingperform.tex 
+  184  ls
+  185  less Selecting454pyrosequencingreadsandassessingperform.tex 
+  186  ls
+  187  less cckrcck/CCKRCCK_210_250/cluster1_1.pdb 
+  188  sudo apt-get install rasmol
+  189  /home/ash022/LigPlus/lib/exe_linux/hbadd
+  190  chmod 755 -R /home/ash022/LigPlus/lib/exe_linux
+  191  cd ..
+  192  cd LigPlus/
+  193  cp /home/ash022/Desktop/cckrcck/CCKRCCK_210_250/cluster1_1.pdb .
+  194  mv cluster1_1_210_250.pdb 
+  195  mv cluster1_1.pdb cluster1_1_210_250.pdb 
+  196  cp /home/ash022/Desktop/cckrcck/CCKRCCK_370_390/cluster1_1.pdb .
+  197  mv cluster1_1.pdb cluster1_1_370_390.pdb 
+  198  mplayer Videos/16 
+  199  mv Videos/16 /media/DATA/deb.flv
+  200  pkill cpuset 
+  201  sudo pkill cpuset 
+  202  cd /media/DATA/
+  203  cd LigPlus/
+  204  ls
+  205  java -jar LigPlus.jar 
+  206  sudo apt-get install pysdm
+  207  pysdm 
+  208  sudo pysdm 
+  209  cd ..
+  210  cd 
+  211  sudo pysdm 
+  212  ls /media/DATA/
+  213  ls
+  214  ls /media/DATA/
+  215  sudo vim /etc/fstab 
+  216  rm -rf /media/DATA/
+  217  sudp rm -rf /media/DATA/
+  218  sudo rm -rf /media/DATA/
+  219  ls /media/DATA/
+  220  sudo vim /etc/fstab 
+  221  sudo apt-cache search mount | less
+  222  sudo apt-get remove pysdm
+  223  sudo apt-get remove mountmanager
+  224  sudo apt-get install mountmanager
+  225  mountmanager 
+  226  sudo apt-get remove mountmanager
+  227  sudo vim /etc/fstab 
+  228  sudo vim /boot/grub/configfile.mod 
+  229  sudo find  /boot/ -name *conf*
+  230  sudo vim /boot/config-3.0.0-12-generic
+  231  sudo find  /boot/ -name *boot*
+  232  sudo find  /boot/ -name *cfg*
+  233  vim /boot/grub/grub.cfg
+  234  sudo apt-get startup mountmanager
+  235  sudo apt-get install startupmanager
+  236  sudo startupmanager 
+  237  ls /media/DATA/
+  238  java -jar /media/DATA/LigPlus/LigPlus.jar 
+  239  cd /media/DATA/LigPlus/
+  240  java -jar LigPlus.jar 
+  241  ps2pdf Interact_370_390.pdf 
+  242  ps2pdf Interact_370_390.ps
+  243  evince Interact_370_390.pdf
+  244  /media/DATA/matlab_linux/bin/matlab
+  245  dir
+  246  ii
+  247  ks
+  248  ls
+  249  bibtex bmc_article
+  250  evince bmc_article.pdf 
+  251  less bmc_article.bbl 
+  252  cd Desktop/bmc_article/ml
+  253  less Selecting454pyrosequencingreadsandassessingperform.tex
+  254  ls -alsh
+  255  emacs Selecting454pyrosequencingreadsandassessingperform.tex
+  256  gedit Selecting454pyrosequencingreadsandassessingperform.tex
+  257  emacs Selecting454pyrosequencingreadsandassessingperform.tex
+  258  cat Selecting454pyrosequencingreadsandassessingperform.tex Selecting454pyrosequencingreadsandassessingperform.bib > SR.tex
+  259  less SR.tex 
+  260  gedit Selecting454pyrosequencingreadsandassessingperform.tex
+  261  gedit Selecting454pyrosequencingreadsandassessingperform.tex &
+  262  gedit ../bmc_article.tex &
+  263  gedit ../../bmc_article/Selecting454pyrosequencingreadsandassessingperform. &
+  264  gedit Selecting454pyrosequencingreadsandassessingperform.tex &
+  265  cp Selecting454pyrosequencingreadsandassessingperform.bst ../bmc_article.bst 
+  266  cp Selecting454pyrosequencingreadsandassessingperform.bib ../bmc_article.bib 
+  267  cd ..
+  268  emacs bmc_article.tex
+  269  for i in $(pgrep -f libflashplayer.so); do ls -l /proc/$i/fd/* | grep '/tmp/Flash' | grep -o "/proc/$i/fd/\\S*" | xargs cp -t ~/Videos/ ; done
+  270  cd Videos/
+  271  ls
+  272  mplayer 16 
+  273  mplayer 24
+  274  sudp apt-get install emboss
+  275  sudo apt-get install emboss
+  276  cd ..
+  277  rm Videos/*
+  278  cd Desktop/raja/
+  279  needle sequence.needle seqnew.fas 
+  280  needle cckmr.fas seqnew.fas 
+  281  less cckmr.needle 
+  282  ii
+  283  dir
+  284  cd bmc_article/
+  285  ls
+  286  less bmc_article.tex 
+  287  cd ..
+  288  rm -rf bmc_article/
+  289  ls
+  290  cd Desktop/
+  291  ls
+  292  cd bmc_article/
+  293  ls
+  294  cp -rf ml/images .
+  295  ls
+  296  less images/
+  297  rm -rf images
+  298  cp -rf ml/images .
+  299  ls images/
+  300  cd ..
+  301  ls
+  302  rm -rf Selecting454pyrosequencingreadsandassessingperform*
+  303  ls
+  304  cd bmc_article/
+  305  ls
+  306  rm -rf ml*
+  307  ls
+  308  rm -rf files/
+  309  ls
+  310  rm Selecting454pyrosequencingreadsandassessingperform.pdf 
+  311  ls
+  312  ls -aslh
+  313  cd ..
+  314  tar cvzf SR.tgz bmc_article
+  315  ls
+  316  mv Weightless.mp3 /media/DATA/music/Torrs/.
+  317  ls
+  318  rm *
+  319  ls
+  320  rm -rf maindb.tmp/
+  321  less dotfiles/
+  322  ls dotfiles/
+  323  rm -rf dotfiles
+  324  ls
+  325  ls manual/
+  326  ls manual/DataAnalysis_2.6_All/
+  327  less manual/Documentation_2.6_All/
+  328  ls manual/Documentation_2.6_All/
+  329  ls manual/Documentation_2.6_All/packages/
+  330  rm -rf manual/
+  331  ls
+  332  mv cckrcck raja/.
+  333  mv raja /media/DATA/.
+  334  ls
+  335  rm -rf helsevest.bibtex
+  336  ls
+  337  dir
+  338  ii
+  339  ls -aslh
+  340  cd /media/DATA/raja/
+  341  ls
+  342  echo /etc/fstab 
+  343  cat /etc/fstab 
+  344  ls
+  345  cd ..
+  346  cd LigPlus/
+  347  scp fimm.bccs.uib.no:/migrate/ash022/raja/model5/*all.* .
+  348  gedit scoreall.txt &
+  349  tar xvzf cck8_model5_all.tgz 
+  350  firefox cck_all/index.html 
+  351  java -jar LigPlus.jar 
+  352  mv cck_all/*ps .
+  353  for i in *ps ; echo $i; done
+  354  for i in *ps ; do echo $i; done
+  355  for i in cl*ps ; do echo $i; done
+  356  for i in cl*ps ; do ps2pdf $i; done
+  357  ls
+  358  rm c'*ps
+  359  rm c*ps
+  360  rm *ps
+  361  ls
+  362  evince cluster_1_1.pdf 
+  363  cd
+  364  for i in $(pgrep -f libflashplayer.so); do ls -l /proc/$i/fd/* | grep '/tmp/Flash' | grep -o "/proc/$i/fd/\\S*" | xargs cp -t ~/Videos/ ; done
+  365  ls
+  366  less Videos/
+  367  ls -aslh Videos/16 
+  368  mplayer 1
+  369  mplayer Videos/16 
+  370  cd /media/DATA/LigPlus/
+  371  ls
+  372  tar xvzf /home/ash022/Desktop/cck8_model5.tgz 
+  373  ls
+  374  java -jar LigPlus.jar 
+  375  firefox cck*/index.html
+  376  java -jar LigPlus.jar 
+  377  mv cck*/*ps .
+  378  ls
+  379  for i in cl*ps ; do ps2pdf $i; done
+  380  ls
+  381  rm *ps
+  382  ls
+  383  cd Videos/
+  384  mplayer 16 
+  385  vlc 16
+  386  dir
+  387  ls -aslh
+  388  less .sudo_as_admin_successful 
+  389  less .profile 
+  390  ii
+  391  cd Desktop/
+  392  scp ash022@fimm.bccs.uib.no:codall.mugsywga.stderr .
+  393  less codall.mugsywga.stderr 
+  394  ssh -X animesh@astrakan.bccs.uib.no
+  395  ii
+  396  q
+  397  ii
+  398  v
+  399  set -o vi
+  400  v
+  401  ii
+  402  ipconfig
+  403  ifconfig
+  404  nc -lp 1234 |mplayer -
+  405  ifconfig
+  406  nc -lp 1234 |mplayer -
+  407  nc -lp 1234 | mplayer -
+  408  sudo apt-get  install netcat-traditional
+  409  nc -lp 1234 | mplayer -
+  410  ddate 
+  411  xxd 
+  412  ipcalc
+  413  sensible-editor 
+  414  sensible-browser 
+  415  ssh -X animesh@astrakan.bccs.uib.no
+  416  nc 158.37.83.185 1234 < /media/DATA/music/old/Misc/AfreenAfreen.mp3 
+  417  sudo apt-get install youtube
+  418  sudo apt-cache search youtube
+  419  sudo apt-get install quvi
+  420  quvi http://www.youtube.com/watch?v=Yjt9o_fQdQE&feature=autoplay&list=PL584037B0FBCA6DAF&lf=plpp_play_all&playnext=6&shuffle=678288
+  421  quvi 
+  422  man quvi
+  423  quvi -f youtube
+  424  quvi -f list youtube
+  425  quvi -f list http://www.youtube.com/watch?v=Yjt9o_fQdQE&feature=autoplay&list=PL584037B0FBCA6DAF&lf=plpp_play_all&playnext=6&shuffle=678288
+  426  quvi -f list http://www.youtube.com/watch?v=Yjt9o_fQdQE&feature=autoplay&list=PL584037B0FBCA6DAF&lf=plpp_play_all&playnext=6&shuffle=678288 1
+  427  quvi http://www.youtube.com/watch?v=Yjt9o_fQdQE&feature=autoplay&list=PL584037B0FBCA6DAF&lf=plpp_play_all&playnext=6&shuffle=678288 1
+  428  sudo apt-get install youtube-dl
+  429  youtube-dl http://www.youtube.com/watch?v=Yjt9o_fQdQE&feature=autoplay&list=PL584037B0FBCA6DAF&lf=plpp_play_all&playnext=6&shuffle=678288
+  430  ls
+  431  mplayer Yjt9o_fQdQE.webm.part 
+  432  rm 
+  433  ls
+  434  mplayer Yjt9o_fQdQE.webm 
+  435  file Yjt9o_fQdQE.webm 
+  436  rm Yjt9o_fQdQE.webm 
+  437  ls
+  438  sudo apt-get install netsurf
+  439  netsurf http://www.youtube.com/watch?v=Yjt9o_fQdQE&feature=autoplay&list=PL584037B0FBCA6DAF&lf=plpp_play_all&playnext=6&shuffle=678288
+  440  sudo apt-cache search netsurf
+  441  stat
+  442  ip r g "google.com"
+  443  ip r g "ww.google.com"
+  444  ip r g "www.google.com"
+  445  ip r g "192.168.129.138"
+  446  lsof -iTCP
+  447  lsof -i| grep LISTEN 
+  448  ls
+  449  less examples.desktop 
+  450  ii
+  451  cd
+  452  cd Desktop/
+  453  ii
+  454  cd Desktop/
+  455  mv Animesh.pdf Nathalie.pdf
+  456  ii
+  457  dir
+  458  ii
+  459  ssh animesh@login.ii.uib.no
+  460  ii
+  461  dir
+  462  ls -aslh
+  463  less .xsession-errors 
+  464  tail -f .xsession-errors 
+  465  rm -rf .ssh
+  466  ssh animesh@login.ii.uib.no
+  467  ls -aslh
+  468  less .viminfo 
+  469  less .xsession-errors 
+  470  less .zoteroIntegrationPipe 
+  471  tail -f .zoteroIntegrationPipe 
+  472  les -f .zoteroIntegrationPipe 
+  473  less -f .zoteroIntegrationPipe 
+  474  ii
+  475  ssh fimm.bccs.uib.no
+  476  ii
+  477  dur
+  478  cd Desktop/
+  479  dir
+  480  less seqlen
+  481  grep "genomic_scaffold" seqlen | less
+  482  grep "genomic_scaffold" seqlen | wc
+  483  wc seqlen
+  484  file SCAN20111109111037.pdf
+  485  display SCAN20111109111037.pdf
+  486  ii
+  487  ssh -X animesh@astrakan.bccs.uib.no
+  488  ls
+  489  xhost +
+  490  ssh -X animesh@astrakan.bccs.uib.no
+  491  cd Desktop/
+  492  scp Screenshot\ at\ 2011-11-29\ 14\:45\:30.png animesh@astrakan.bccs.uib.no:.
+  493  mv Screenshot\ at\ 2011-11-29\ 14\:45\:30.png scrshot.jpg
+  494  scp scrshot.jpg  animesh@astrakan.bccs.uib.no:.
+  495  mv scrshot.jpg scrshot.png
+  496  scp scrshot.png   animesh@astrakan.bccs.uib.no:.
+  497  ls
+  498  display viewer.png 
+  499  scp fish* fimm.bccs.uib.no:/migrate/ash022/assemblathon/ncbi/.
+  500  mplayer /media/DATA/music/Torrs/Conan\ the\ Barbarian\[2011\]BRRip\ XviD-ExtraTorrentRG/Conan\ the\ Barbarian\[2011\]BRRip\ XviD-ExtraTorrentRG.avi 
+  501  pwd
+  502  gedit fishnucncbi.fa 
+  503  for i in $(pgrep -f libflashplayer.so); do ls -l /proc/$i/fd/* | grep '/tmp/Flash' | grep -o "/proc/$i/fd/\\S*" | xargs cp -t ~/Videos/ ; done
+  504  mplayer ../Videos/16 
+  505  scp 10827_2011_353_MOESM1_ESM.zip  fimm.bccs.uib.no:/migrate/ash022/.
+  506  cd /media/DATA/java/idea-IC-111.69/bin/
+  507  ls
+  508  sh idea.sh 
+  509  sudo apt-get install sun-java6-jdk
+  510  sh idea.sh 
+  511  dir
+  512  ls
+  513  cd
+  514  ls
+  515  dir
+  516  ls
+  517  ii
+  518  dir
+  519  ls
+  520  ii
+  521  cd Desktop/
+  522  vim MCS.pl
+  523  perl MCS.pl 
+  524  perl -e 'print 5/sqrt(2)'
+  525  sudo apt-get install anki
+  526  sudo apt-get install r-studio
+  527  sudo apt-get install rstudio
+  528  ank
+  529  anki
+  530  perl -e 'print 0.2+0.2+0.9*3'
+  531  vim sm.pl
+  532  perl sm.pl 
+  533  vim sm.pl
+  534  perl sm.pl 
+  535  vim sm.pl
+  536  perl sm.pl 
+  537  vim sm.pl
+  538  dir
+  539  l
+  540  less examples.desktop 
+  541  ii
+  542  svn co https://neuralensemble.org/svn/PyNN/trunk pyNN
+  543  sudo apt-get install svn
+  544  sudo apt-get install subversion
+  545  svn co https://neuralensemble.org/svn/PyNN/trunk pyNN
+  546  cd pyNN/
+  547  ls
+  548  python setup.py 
+  549  sudo python setup.py install
+  550  ls
+  551  less README 
+  552  ls
+  553  cd examples/
+  554  ls
+  555  python IF_cond_alpha.py 
+  556  python IF_cond_alpha.py nest
+  557  python brunel.py 
+  558  python brunel.py nest
+  559  cd ..
+  560  ls
+  561  cd ..
+  562  mkdir /media/DATA/simbrain
+  563  mv pyNN /media/DATA/simbrain/.
+  564  ls
+  565  sudo mv pyNN /media/DATA/simbrain/.
+  566  sudo mv nest-2.1.9349-pre /media/DATA/simbrain/.
+  567  cd /media/DATA/simbrain/
+  568  lsa
+  569  ls
+  570  ash022@fimm.bccs
+  571  scp -r  ash022@fimm.bccs.uib.no:/migrate/ash022/simtest test
+  572  ls
+  573  cd test/
+  574  ls
+  575  cp ../nest-2.1.9349-pre/pynest/examples/* .
+  576  ls
+  577  cp ../pyNN/examples/* .
+  578  ls
+  579  python aef.py 
+  580  rm voltmeter-*
+  581  python aef.py 
+  582  python brunel.py 
+  583  python brn.py 
+  584  ls
+  585  ls *mpi*
+  586  ls *par*
+  587  ls
+  588  python testnumpy.py 
+  589  ls
+  590  python small_network.py  nest
+  591  ls
+  592  python one-neuron.py 
+  593  ls
+  594  ls | less
+  595  python distrib_example.py 
+  596  python distrib_example.py nest
+  597  vim distrib_example.py 
+  598  python distrib_example.py nest
+  599  python distrib_example.py nest 4ls
+  600  vim distrib_example.py 
+  601  ls
+  602  chmod 644 *
+  603  ls
+  604  python CampbellSiegert.py 
+  605  for i in ls; do echo $i ; done
+  606  for i in *.py; do echo $i ; done
+  607  for i in *.py; do python $i nest  ; done
+  608  for i in *.py; do echo $i >> all.txt ; python $i nest  1>>1.txt 2>>2.txt 0>>0.txt >> all.txt ; done
+  609  less all.txt 
+  610  less 1.txt 
+  611  less 2.txt 
+  612  python VAbenchmarks.py nest COBA
+  613  python VAbenchmarks.py nest 
+  614  python VAbenchmarks.py nest CUBA
+  615  pwd
+  616  ls
+  617  python single.py 
+  618  python brunel.py 
+  619  python brunel.py nest
+  620  python small_network.py 
+  621  python small_network.py nest
+  622  less voltmeter-4-0.dat 
+  623  ii
+  624  python small_network.py nest
+  625  cd /media/DATA/simbrain/test/
+  626  python small_network.py nest
+  627  python small_network.py neuron
+  628  dir
+  629  ls -aslh
+  630  python small_network.py neuron
+  631  cd Desktop/
+  632  sudo dpkg -i nrn-7.2.x86_64.deb 
+  633  neurondemo 
+  634  dr
+  635  sudo apt-get install python-pynn
+  636  sudo apt-get remove python-pynn
+  637  sudo apt-get install python-pynn
+  638  pwd
+  639  sudo apt-cache search neuron
+  640  sudo apt-get install nrn
+  641  sudo apt-get remove python-pynn
+  642  sudo apt-cache search nineml
+  643  sudo apt-get remove python-pynn
+  644  sudo apt-get autoremove
+  645  sudo apt-get autoclean 
+  646  sudo apt-get update 
+  647  sudo apt-get upgrade 
+  648  idr
+  649  ls
+  650  less nrn-7.2.x86_64.deb 
+  651  less nrn-7.2.x86_64.deb  
+  652  /usr/local/bin/nrniv
+  653  ls
+  654  java -jar tmrpres2d.jar 
+  655  cd Desktop/
+  656  mv science 1.pdf
+  657  mv science\(1\) 2.pdf
+  658  mv science\(2\) 5.pdf
+  659  ls
+  660  evince Document.pdf 
+  661  evince Document\(1\).pdf 
+  662  pdftk
+  663  sudo apt-get install pdftk
+  664  java
+  665  javac
+  666  sudo apt-get install pdftk
+  667  pdftk 
+  668  pdftk cat Document.pdf Document\(1\).pdf output coe.pdf
+  669  pdftk input Document.pdf Document\(1\).pdf output coe.pdf
+  670  pdftk  Document.pdf Document\(1\).pdf cat coe.pdf
+  671  man pdftk 
+  672  pdftk  Document.pdf Document\(1\).pdf cat output coe.pdf
+  673  mv Document\(1\).pdf Document1.pdf
+  674  pdftk  Document.pdf Document1.pdf cat output coe.pdf
+  675  pdftk  Document.pdf Document1.pdf 
+  676  sudo apt-get remove gcj*
+  677  sudo apt-get remove gcj
+  678  sudo apt-get remove gcj-4.6-*
+  679  pdftk  Document.pdf Document1.pdf 
+  680  pdftk
+  681  scp Document* 129.177.122.138:.
+  682  scp Document* fimm.bccs.uib.no:.
+  683  scp  fimm.bccs.uib.no:coe.pdf .
+  684  display coe.pdf 
+  685  evince coe.pdf 
+  686  mv ../*pdf .
+  687  evince tik.pdf 
+  688  mv ../*pdf .
+  689  evince nnl.pdf 
+  690  scp *pdf fimm.bccs.uib.no:.
+  691  evince nnlapp.pdf 
+  692  scp  fimm.bccs.uib.no:nnlc* .
+  693  evince nnl.pdf 
+  694  evince nnlcom.pdf 
+  695  evince tik.pdf 
+  696  evince coe.pdf 
+  697  ping uib-vpn-gw
+  698  rm -rf pyNN
+  699  sudo rm -rf pyNN
+  700  sudo rm -rf nest-2.1.9349-pre.tar.gz 
+  701  ls
+  702  tar cvjf nestpyNNexamples.tbz /media/DATA/simbrain
+  703  ls -aslh
+  704  ls -aslh nestpyNNexamples.tbz 
+  705  matlab &
+  706  sudo apt-get install indicator-sysmonitor
+  707  indicator-sysmonitor 
+  708  cd Desktop/
+  709  vim 2ks9A.fasta
+  710  vim model5.fasta
+  711  needle model5.fasta 2ks9A.fasta 
+  712  vim cckbr7.needle 
+  713  needle  2ks9A.fasta  model5.fasta 
+  714  less sequence.needle 
+  715  kill -9 23549
+  716  pkill soft*
+  717  pkill ubunt*
+  718  cd /media/DATA/simbrain/test
+  719  ls
+  720  cp OF$HOME/Desktop/ama
+  721  cp $HOME/Desktop/amat.c .
+  722  cc amat.c 
+  723  ./a.out 
+  724  ls
+  725  less amat.c 
+  726  mkdir ../Satoshi
+  727  mv amat.c ../Satoshi/.
+  728  ls
+  729  cd ..
+  730  cd Satoshi/
+  731  cc amat.c 
+  732  ./a.out 
+  733  ls
+  734  less OUT01/threshold.dat 
+  735  ls
+  736  cd
+  737  cd Desktop/
+  738  less model5.fasta 
+  739  wget http://www.nest-initiative.org/download/HUY1iV6ghtyhi/nest-2.1.9349-pre.tar.gz
+  740  sudo apt-get install nest
+  741  tar xvzf nest-2.1.9349-pre.tar.gz 
+  742  cd nest-2.1.9349-pre/
+  743  ls
+  744  sh configure
+  745  sudo apt-get install mpi
+  746  sudo apt-get install python-devel
+  747  sudo apt-cache search python-devel
+  748  sudo apt-cache search python | grep devel
+  749  sudo apt-cache search python | grep devel | less
+  750  sudo apt-get install python-all-devel
+  751  sudo apt-cache search python | grep devel | less
+  752  sudo apt-get install python-dev
+  753  less INSTALL 
+  754  dir
+  755  ./configure --with-mpi
+  756  sudo apt-get install python-mpi
+  757  ./configure --with-mpi
+  758  sudo apt-get install mpi-dev
+  759  sudo apt-cache search mpi
+  760  sudo apt-cache search mpi | less
+  761  sudo apt-cache search mpi | grep python
+  762  sudo apt-cache search mpi | grep python | less
+  763  sudo apt-get install mpichpython
+  764  ./configure --with-mpi
+  765  sudo apt-get install lampython
+  766  ./configure --with-mpi
+  767  sudo apt-get install mpich
+  768  sudo apt-get install lam
+  769  sudo apt-get install lam-runtime
+  770  sudo apt-get install liblam4
+  771  sudo apt-get install openmpi-bin libopenmpi-dev
+  772  ./configure --with-mpi
+  773  sudo apt-get install gsl
+  774  sudo apt-get install gsl-bin
+  775  ./configure --with-mpi
+  776  sudo apt-cache search "GNU Scientific"
+  777  sudo apt-cache search "GNU Scientific" | less
+  778  sudo apt-get install libgsl0-dev
+  779  ./configure --with-mpi
+  780  sudo make installcheck
+  781  sudo apt-get install pynest
+  782  cd pynest/
+  783  ls
+  784  cd examples/
+  785  ls
+  786  python brunel-alpha-numpy.py 
+  787  sudo apt-get install scipy
+  788  sudo apt-get install pylab
+  789  sudo apt-cache search numpy
+  790  sudo apt-get install python-mpi4py
+  791  sudo apt-get install python-scipy
+  792  python brunel-alpha-numpy.py 
+  793  cd ..
+  794  sudo make installcheck
+  795  less /usr/local/share/nest/extras/do_tests.s
+  796  sudo make install
+  797  sudo make installcheck
+  798  vim ~/.nestrc
+  799  sudo make installcheck
+  800  vim ~/.nestrc
+  801  sudo make installcheck
+  802  ls
+  803  top
+  804  display ex
+  805  display export.jpg 
+  806  ls -aslh export.jpg 
+  807  cd Desktop/
+  808  less model5.
+  809  less model5.fasta 
+  810  mplayer /media/DATA/music/Torrs/*USA*ebt*/*avi
+  811  ls /media/DATA/music/Torrs/*USA*ebt*/*avi
+  812  ls /media/DATA/music/Torrs/*USA*ebt*/
+  813  ls /media/DATA/music/Torrs/*USA*/
+  814  ls /media/DATA/music/Torrs/*U*/
+  815  ls /media/DATA/music/Torrs/*U*ebt*/*avi
+  816  mplayer /media/DATA/music/Torrs/*U*ebt*/*avi
+  817  startupmanager 
+  818  ii
+  819  ssh -X animesh@astrakan.bccs.uib.ni
+  820  ssh -X animesh@astrakan.bccs.uib.no
+  821  mousetweaks 
+  822  sudo apt-get update
+  823  sudo apt-get autoremove 
+  824  sudo apt-get upgrade 
+  825  sudo apt-get dist-upgrade 
+  826  sudo apt-get upgrade 
+  827  sudo apt-get dist-upgrade 
+  828  sudo apt-get autoremove 
+  829  sudo apt-get autoclean 
+  830  sudo apt-get autoremove 
+  831  sudo apt-get dist-upgrade 
+  832  sudo apt-get check 
+  833  sudo apt-get update 
+  834  sudo apt-get dist-upgrade 
+  835  sudo apt-get autoremove 
+  836  sudo apt-get upgrade 
+  837  sudo apt-get install cups
+  838  sudo apt-get install cups-pdf 
+  839  sudo apt-get install sun-java6-plugin 
+  840  less Desktop/model5.fasta 
+  841  cd /media/DATA/simbrain/pyNN/
+  842  LS
+  843  ls
+  844  sudo apt-get install sl
+  845  LS
+  846  ls
+  847  sudo python setup.py install
+  848  cd examples/
+  849  ls
+  850  python small_network.py 
+  851  python small_network.py next
+  852  python small_network.py nest
+  853  python small_network.py neuron
+  854  python small_network.py neuron --with-python
+  855  nrniv --with-python
+  856  nrniv -with-python
+  857  nrniv --with--python
+  858  man nrni
+  859  man nrnib
+  860  man nrniv
+  861  nrniv
+  862  python small_network.py nrniv
+  863  python small_network.py neuron
+  864  ls /usr/local/lib/python2.7/dist-packages
+  865  rm -rf /usr/local/lib/python2.7/dist-packages/pyNN/
+  866  sudo rm -rf /usr/local/lib/python2.7/dist-packages/pyNN/
+  867  rm -rf /usr/local/lib/python2.7/dist-packages/ConnPlotter*
+  868  sudo rm -rf /usr/local/lib/python2.7/dist-packages/ConnPlotter*
+  869  sudo rm -rf /usr/local/lib/python2.7/dist-packages/PyN*
+  870  python small_network.py neuron
+  871  python small_network.py neuron --with-python
+  872  cd ..
+  873  sudo python setup.py install
+  874  cd examples/
+  875  python small_network.py nest
+  876  python small_network.py neuron
+  877  sudo apt-cache  search neuron
+  878  sudo apt-cache  search nrn
+  879  sudo apt-cache  search nrniv
+  880  python
+  881  wget http://neuralensemble.org/people/eilifmuller/neuron_packages/neuron_example.py
+  882  python neuron_example.py 
+  883  ls
+  884  python small_network.py nest
+  885  python small_network.py neuron
+  886  python neuron_example.py 
+  887  sudo apt-get install xfonts-100dpi
+  888  python small_network.py neuron
+  889  python neuron_example.py 
+  890  pwd
+  891  cd /media/DATA/simbrain/pyNN/examples
+  892  python neuron_example.py 
+  893  cd /media/DATA/raja/
+  894  ls
+  895  rasmol CHAIN.PDB 
+  896  ls
+  897  less cck4.pdb 
+  898  rasmol CHAIN.PDB 
+  899  less cck4p.pdb 
+  900  grep "S" CHAIN.PDB 
+  901  grep "S" CHAIN.PDB  | less
+  902  ii
+  903  ls
+  904  rm nestpyNNexamples.tbz 
+  905  ls
+  906  rm export.jpg 
+  907  ls
+  908  mkdir neuron
+  909  cd neuron/
+  910  mv ../ .
+  911  ls
+  912  lsii
+  913  sudo apt-cache search lisp | less
+  914  sudo apt-get  install clisp
+  915  ls
+  916  pwd
+  917  cd ..
+  918  rm -rf neuron/
+  919  cd Desktop/
+  920  vim decipher.pl
+  921  perl decipher.pl 
+  922  vim decipher.pl
+  923  perl decipher.pl 
+  924  vim decipher.pl
+  925  perl decipher.pl 
+  926  vim decipher.pl
+  927  perl decipher.pl 
+  928  vim decipher.pl
+  929  perl decipher.pl 
+  930  vim decipher.pl
+  931  perl decipher.pl 
+  932  vim decipher.pl
+  933  perl decipher.pl 
+  934  vim decipher.pl
+  935  perl decipher.pl 
+  936  vim decipher.pl
+  937  perl decipher.pl 
+  938  vim decipher.pl
+  939  perl decipher.pl 
+  940  vim decipher.pl
+  941  perl decipher.pl 
+  942  vim decipher.pl
+  943  perl decipher.pl 
+  944  vim decipher.pl
+  945  perl decipher.pl 
+  946  vim decipher.pl
+  947  perl decipher.pl 
+  948  vim decipher.pl
+  949  perl decipher.pl 
+  950  vim decipher.pl
+  951  perl decipher.pl 
+  952  vim decipher.pl
+  953  perl decipher.pl 
+  954  vim decipher.pl
+  955  perl decipher.pl 
+  956  vim decipher.pl
+  957  perl decipher.pl 
+  958  ssh -X animesh@astrakan.bccs.uib.no
+  959  cd /media/DATA/
+  960  ls
+  961  ii
+  962  sudo apt-cache search ACT-R
+  963  sudo apt-cache search ACT
+  964  cd actr6/
+  965  ls
+  966  ./load-act-r-6.lisp 
+  967  clisp load-act-r-6.lisp 
+  968  ./load-act-r-6.lisp 
+  969  clisp
+  970  ssh -X animesh@ii.uib.no
+  971  ssh -X animesh@login.ii.uib.no
+  972  ssh  animesh@login.ii.uib.no
+  973  cd Desktop/
+  974  ls
+  975  mplayer /media/DATA/music/Torrs/*The*Dir*/*avi
+  976  sudo apt-get install ACL
+  977  sudo apt-cache search allegro
+  978  sudo apt-cache search allegro | less 
+  979  sudo apt-cache search ACL | less
+  980  sudo apt-cache search LispWorks | less
+  981  sudo apt-cache search CMUCL | less
+  982  sudo apt-cache search cmucl | less
+  983  sudo apt-cache search ccl | less
+  984  sudo apt-get install cmucl
+  985  sudo apt-get install sbcl
+  986  sudo apt-get remove clisp
+  987  sbcl 
+  988  cd /media/DATA/actr6
+  989  sbcl load-act-r-6.lisp 
+  990  sbcl
+  991  cd /media/DATA/actr6/environment/GUI/
+  992  ls
+  993  wish starter.tcl &
+  994  less bin/desk 
+  995  ssh ash022@129.177.122.138
+  996  ii
+  997  cd /media/DATA/raja/
+  998  ls
+  999  less seqnew.fas 
+ 1000  perl getGRK.pl 
+ 1001  perl getGRK.pl > motif_result_new.txt 
+ 1002  perl getGRK.pl 
+ 1003  perl getGRK.pl > motif_result_new.txt 
+ 1004  vim t10.txt
+ 1005  grep "h2" t10.txt 
+ 1006  grep "h2" t10.txt  | less
+ 1007  vim t100p.txt
+ 1008  grep "[A-Z]" t100p.txt 
+ 1009  grep "[A-Z]" t100p.txt | sed 's/h2//g'
+ 1010  grep "[A-Z]" t100p.txt | sed 's/h2//g' | sed 's/<//g'
+ 1011  grep "[A-Z]" t100p.txt | sed 's/h2//g' | sed 's/<//g' | sed 's/>//g'
+ 1012  grep "[A-Z]" t100p.txt | sed 's/h2//g' | sed 's/<//g' | sed 's/>//g' |sed 's/\///g'
+ 1013  grep "[A-Z]" t100p.txt | sed 's/h2//g' | sed 's/<//g' | sed 's/>//g' |sed 's/\///g' | sed 's/ ///g'
+ 1014  grep "[A-Z]" t100p.txt | sed 's/h2//g' | sed 's/<//g' | sed 's/>//g' |sed 's/\///g' | sed 's/\s+/ /g'
+ 1015  ii
+ 1016  ps -ae | grep chrome
+ 1017  ps -ae | grep google
+ 1018  ps -ae 
+ 1019  ps -ae | grep chrom
+ 1020* kill -9 
+ 1021  ps -ae | grep defunct
+ 1022  ps -ae | grep defunct | awk '{print $1}'
+ 1023  ps -ae | grep defunct | awk '{print $1}' | xargs  kill -9
+ 1024  ps -ae | grep defunct | awk '{print $1}'
+ 1025  ps -ae | grep defunct | awk '{print $1}' | xargs  'kill -9' 
+ 1026  for i in 'ps -ae | grep defunct | awk '{print $1}'' ; do echo $i; done
+ 1027  for i in 'ps -ae | grep defunct' ; do echo $i; done
+ 1028  for i in 'ps -ae | grep defunct` ; do echo $i; done
+ 1029  for i in `ps -ae | grep defunct` ; do echo $i; done
+ 1030  for i in `ps -ae | grep defunct | awk '{print $1}'` ; do echo $i; done
+ 1031  for i in `ps -ae | grep defunct | awk '{print $1}'` ; do echo $i; kill -9 $i ; done
+ 1032  for i in `ps -ae | grep defunct | awk '{print $1}'` ; do echo $i; done
+ 1033  for i in `ps -ae | grep defunct | awk '{print $1}'` ; do echo $i; kill  $i ; done
+ 1034  for i in `ps -ae | grep defunct | awk '{print $1}'` ; do echo $i; done
+ 1035  for i in `ps -ae | grep defunct | awk '{print $1}'` ; do kill -9 $i ; done
+ 1036  for i in `ps -ae | grep defunct | awk '{print $1}'` ; do echo $i; done
+ 1037  ps -ae | grep defunct | awk '{print $1}'
+ 1038  ps -ae | grep defunct 
+ 1039  kill -9 18596
+ 1040  ps -ae | grep defunct 
+ 1041  ps -ae | grep chromium
+ 1042  kill -9 18603
+ 1043  ps -ae | grep chromium
+ 1044  kill -9 17180
+ 1045  ps -ae | grep chromium
+ 1046  kill -9 17120
+ 1047  ps -ae | grep chromiu
+ 1048  kill -9 17118
+ 1049  ps -ae | grep chromiu
+ 1050  kill -9 1383
+ 1051  ps -ae | grep chromiu
+ 1052  chromium-browser 
+ 1053  dir
+ 1054  ls
+ 1055  du -kh gsutil/
+ 1056  df -kh
+ 1057  ls
+ 1058  du -kh .*
+ 1059  du -kh .* | grep -e "^[0-9]G"
+ 1060  du -kh .* | grep -e "^[0-9]M"
+ 1061  du -kh .* | grep -e "^[0-9]*G"
+ 1062  du -kh .* | grep -e "^[0-9]*M"
+ 1063  rm -rf .cache/chromium/Default/
+ 1064  rm -rf .config/chromium*
+ 1065  rm -rf Videos/*
+ 1066  du -kh .* | grep -e "^[0-9]*M"
+ 1067  df -kh
+ 1068  pkill chromiun
+ 1069  pkill chromium
+ 1070  top
+ 1071  pkill fire
+ 1072  cd Documents/pdfdoctexjpeg/
+ 1073  ls
+ 1074  ls | less
+ 1075  wc *
+ 1076  cd ..
+ 1077  wc *
+ 1078  ls
+ 1079  cd pdfdoctexjpeg/
+ 1080  wc ??
+ 1081  perl gc.pl lf gd
+ 1082  perl gc.pl lf gd 1000
+ 1083  less lf.gd.out 
+ 1084  wc lf.gd.out 
+ 1085  wc lf
+ 1086  wc gd
+ 1087  less lf.gd.out 
+ 1088  cd ..
+ 1089  history | grep google
+ 1090  ls
+ 1091  cd 
+ 1092  cd misccb/
+ 1093  ls
+ 1094  perl gc.pl gd lf
+ 1095  less gd.lf.out 
+ 1096  perl gc.pl gd lf
+ 1097  less gd.lf.out 
+ 1098  perl gc.pl gd lf
+ 1099  less gd.lf.out 
+ 1100  wc gd.lf.out 
+ 1101  perl gc.pl gd lf
+ 1102  less gd.lf.out 
+ 1103  perl gc.pl lf gd
+ 1104  less lf.gd.out 
+ 1105  wc lf.gd.out 
+ 1106  less lf.gd.out 
+ 1107  hihistory > history.txt
+ 1108  history >> history.txt
