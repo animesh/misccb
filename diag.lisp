@@ -8,6 +8,7 @@
 (run 1)
 (reset)
 (stop-environment)
+(load "/media/DATA/actr6/tutorial/unit2/demo2.lisp")
 
 
 
