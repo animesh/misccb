@@ -3,10 +3,6 @@
 /* A global variable */
 double Foo = 3.0;
 
-void print_Foo() {
-   printf("In C, Foo = %f\n",Foo);
-}
-
 /* Compute the greatest common divisor of positive integers */
 int gcd(int x, int y) {
   int g;
@@ -17,6 +13,11 @@ int gcd(int x, int y) {
     y = g;
   }
   return g;
+}
+
+int fact(int n) {
+  if (n <= 0) return 1;
+  return n*fact(n-1);
 }
 
 
