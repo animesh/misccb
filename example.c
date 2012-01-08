@@ -1,25 +1,16 @@
 /* File : example.c */
 
-/* A global variable */
-double Foo = 3.0;
-
-int add1(int x, int y)
-{
-   return x+y;
+void add(double *x, double *y, double  *result) {
+  *result = *x + *y;
 }
 
-void add2(int x, int *y, int *z)
-{
-   *z = x+*y;
+void sub(int *x, int *y, int *result) {
+  *result = *x - *y;
 }
 
-int add3(int x, int y, int *z)
-{
-   *z = x-y;
-   return x+y;
-}
-
-void add4(int x, int *y)
-{
-   *y += x;
+int divide(int n, int d, int *r) {
+   int q;
+   q = n/d;
+   *r = n - q*d;
+   return q;
 }
