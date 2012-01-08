@@ -1,16 +1,18 @@
 /* File : example.c */
 
-void add(int *x, int *y, int *result) {
-  *result = *x + *y;
+/* A global variable */
+double Foo = 3.0;
+
+/* Compute the greatest common divisor of positive integers */
+int gcd(int x, int y) {
+  int g;
+  g = y;
+  while (x > 0) {
+    g = x;
+    x = y % x;
+    y = g;
+  }
+  return g;
 }
 
-void sub(int *x, int *y, int *result) {
-  *result = *x - *y;
-}
 
-int divide(int n, int d, int *r) {
-   int q;
-   q = n/d;
-   *r = n - q*d;
-   return q;
-}
