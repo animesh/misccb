@@ -1,23 +1,17 @@
 /* File : example.c */
 
-/* A global variable */
-double Foo = 3.0;
-
-/* Compute the greatest common divisor of positive integers */
-int gcd(int x, int y) {
-  int g;
-  g = y;
-  while (x > 0) {
-    g = x;
-    x = y % x;
-    y = g;
-  }
-  return g;
+int do_op(int a, int b, int (*op)(int,int)) {
+  return (*op)(a,b);
 }
 
-int fact(int n) {
-  if (n <= 0) return 1;
-  return n*fact(n-1);
+int add(int a, int b) {
+  return a+b;
 }
 
+int sub(int a, int b) {
+  return a-b;
+}
 
+int mul(int a, int b) {
+  return a*b;
+}
