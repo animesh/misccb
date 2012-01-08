@@ -1,18 +1,25 @@
-void divide_l(int a, int b, int *quotient_p, int *remainder_p)
+/* File : example.c */
+
+/* A global variable */
+double Foo = 3.0;
+
+int add1(int x, int y)
 {
-  *quotient_p = a/b;
-  *remainder_p = a%b;
+   return x+y;
 }
 
-void divide_v(int a, int b, int *quotient_p, int *remainder_p)
+void add2(int x, int *y, int *z)
 {
-  *quotient_p = a/b;
-  *remainder_p = a%b;
+   *z = x+*y;
 }
 
-void divide_mv(int a, int b, int *quotient_p, int *remainder_p)
+int add3(int x, int y, int *z)
 {
-  *quotient_p = a/b;
-  *remainder_p = a%b;
+   *z = x-y;
+   return x+y;
 }
 
+void add4(int x, int *y)
+{
+   *y += x;
+}
