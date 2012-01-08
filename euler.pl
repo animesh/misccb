@@ -36,17 +36,18 @@ sub eulerPath {
 
     while (@stack) {
         my $v = $stack[-1];
-
-        if ( $graph{$v} ) {
-            my $u = ( @{ $graph{$v} } )[0];
-            push @stack, $u;
+	#suggestion http://stackoverflow.com/a/4031608
+        if ( @{$graph{$v}} ) {
+        	my $u = ( @{ $graph{$v} } )[0];
+		push @stack, $u;
 
             # Find index of vertice v in graph{$u}
 
             my @graphu = @{ $graph{$u} };  # This is line 54.
             my ($index) = grep $graphu[$_] eq $v, 0 .. $#graphu;
-            delete @{ $graph{$u} }[$index];
-            delete @{ $graph{$v} }[0];
+	    #suggestion http://stackoverflow.com/a/4031608
+            splice @{ $graph{$u} }, $index, 1;
+            splice @{ $graph{$v} }, 0, 1;
 
         }
         else {
