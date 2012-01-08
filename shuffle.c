@@ -36,6 +36,8 @@ void main()
 	
 	printf("\nnoofdata = %d\n",noofdata);
 	
+	
+	
 	/********** Memory Allocation ***********/
 	inpfp = fopen(inpfile,"r");
 	x = (double **)calloc(noofdata,sizeof(double *));
@@ -45,7 +47,7 @@ void main()
 	
 	for(i=0;i<noofdata;i++)
 	{
-		printf("\n%ld",i);		
+		/*printf("\n%ld",i);		*/
 		for(j=0;j<noofcol;j++)
 		{
 			
@@ -53,16 +55,7 @@ void main()
 		}
 	}
 	fclose(inpfp);
-	FILE *g;
-	g=fopen("in.txt","w");
-	for(i=0;i<noofdata;i++)
-	{
-		
-		
-			fprintf(g,"%lf  %lf\n",x[i][1001],x[i][1002]);
-			
-	}
-	fclose(g);
+	
 	
 	tag = (long *)calloc(noofdata,sizeof(long));
 	for(long g=0;g<noofdata;g++)
@@ -123,9 +116,15 @@ void main()
 		{	
 			fprintf(outfp,"%030.25lf  ",x[k2][j]);
 		}
-		fprintf(outfp,"%030.25lf",x[k2][j]);
-
-		fprintf(data,"%11ld  %02.2lf  %02.2lf\n",k2,x[k2][j-1],x[k2][j]);
+		fprintf(outfp,"%030.25lf",x[k2][j]); 
+			
+			int i5;
+			fprintf(data,"%11ld  ",k2);
+			for( i5=26;i5>0;i5--)
+			fprintf(data,"%01.1lf  ",x[k2][j-i5]);
+			fprintf(data,"%01.1lf\n",x[k2][j-i5]);
+		
+			
 		fclose(data);
 		
 		fprintf(outfp,"\n");

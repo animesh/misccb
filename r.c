@@ -1,41 +1,19 @@
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-
-void fun(char *c,int len,int l)
-{
-	if(l>len)
-	{
-			return;
-	}
-	if(l>=0)
-	{
-		fun(c,len,l++);
-	}
-		printf("%c",c[len]);
-	
-
-}
-
 void main(){
-char *c,f;
-int index=0;
-c=(char*)malloc((index+1)*sizeof(char));
-	printf ("%d",index);
+int c,f;
+scanf("%d",&c);
+f=fact(c);
+printf("fact is =%d\n",f);
 
-while (f=getchar()!='\n')
+
+}
+int fact(int n)
 {
-	c[index]=f;
-	index++;
-	printf ("%d",index);
-
-	c=(char*)realloc(c,(index+1)*sizeof(char));
+if (n == 0|| n==1)
+{
+return 1;
 }
-//scanf("%s",&c);
-c[index]='\0';
-printf ("%s",c);
-int len;
-len = index-1;
-fun(c,len,0);
+else{
+return(n*fact(n-1));
 }
-
+}

@@ -1,15 +1,15 @@
 #include<stdio.h>
-main {
-fopen(fp, gene, "r")
+#include<stdlib.h>
 
-c=fgetc();
-c=fgetc();
-while (c!=EOF){
-i=0;
-arr[i]=c;
-c=fgetc();
-i++;
-}
+main()
+{ long Seed;
+  int i;
 
+   Seed = (long) time(NULL);
 
+   srand(Seed);
+
+   for(i=0; i<10; i++)
+      printf("%d \n", rand()%100);
+   printf("\n");
 }

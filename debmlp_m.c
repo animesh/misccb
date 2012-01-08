@@ -127,8 +127,7 @@ void initialization()
                                       }
                 }
 
-  srand48((long int)time(&t));
-//   rand((long int)time(&t));
+   rand((long int)time(&t));
 
 
    for(i = 0; i < nClass ; i++)
