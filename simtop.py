@@ -1,6 +1,6 @@
 import nest
 import numpy as np
-from NeuroTools import signals
+#from NeuroTools import signals
 nest.ResetKernel()
 nest.SetKernelStatus({"resolution":.01})
 nest.SetKernelStatus({"overwrite_files":True})

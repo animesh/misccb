@@ -9,6 +9,8 @@
 (reset)
 (stop-environment)
 (load "/media/DATA/actr6/tutorial/unit2/demo2.lisp")
+(do-demo2 'human)
+
 
 
 
