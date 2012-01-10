@@ -1,19 +1,26 @@
 #source http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Longest_common_substring#Perl
-$str1=$ARGV[0];
-$str2=$ARGV[1];
-@reads=<>;
-for($c1=0;$c1<=$#reads;$c1++){
-	$str1=$reads[$c1];
-	$str1=~s/\s+|\n//g;
-	for($c2=$c1+1;$c2<=$#reads;$c2++){
-		$str2=$reads[$c2];
-		$str2=~s/\s+|\n//g;
-		if($str2 ne $str1 and $str1 ne "" and $str2 ne ""){
-			print overlap($str1,$str2),"\n";
+use strict;
+use warnings;
+my @reads=<>;
+for(my $c1=0;$c1<=$#reads;$c1++){
+	my $str1=$reads[$c1];
+	chomp $str1;
+	my $len1=length($str1);
+	$str1=~s/\s+//g;
+	for(my $c2=$c1+1;$c2<=$#reads;$c2++){
+		my $str2=$reads[$c2];
+		chomp $str2;
+		my $len2=length($str2);
+		$str2=~s/\s+//g;
+		if($str2 ne $str1 and $str1 ne "" and $str2 ne "" and $len1 == $len2){
+			my @ovl=overlap($str1,$str2);
+			my $lenovl=length($ovl[0]);
+			if($lenovl==($len2-1)){print "$str1\t$len1\t$str2\t$len2\t@ovl\t$lenovl\n";}
+			#print "$str1\t$len1\t$str2\t$len2\t@ovl\t$lenovl\n";
 		}
 	}
 }
-#print overlap($str1,$str2),"\n";
+
 sub overlap{
   my ($str1, $str2) = @_; 
   my $l_length = 0; # length of longest common substring
