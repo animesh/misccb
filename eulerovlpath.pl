@@ -1,5 +1,8 @@
 use strict;
 use warnings;
+use Data::Dumper;
+use Carp;
+
 my @reads=<>;
 my %ovlidx;
 for(my $c1=0;$c1<=$#reads;$c1++){
@@ -26,6 +29,7 @@ for(my $c1=0;$c1<=$#reads;$c1++){
 	}
 }
 
+my @path=eulerPath(%ovlidx);
 #source http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Longest_common_substring#Perl
 sub overlap{
   my ($str1, $str2) = @_; 

@@ -1,0 +1,12 @@
+crs=read.csv('~/Desktop/crsWP.csv',header=F)
+save=read.csv('~/Desktop/saveWP.csv',header=F)
+wv=read.csv('~/Desktop/wvWP.csv',header=F)
+cor(wv,save)
+cor(crs,save)
+cor(wv,crs)
+plot(save$V6~crs$V7)
+abline(reg)
+cor.test(crs$V5,crs$V6)
+cor.test(save$V5,save$V6)
+cor.test(wv$V5,wv$V6)
+
