@@ -26,15 +26,12 @@ Type 'q()' to quit R.
 > 
 > jpeg('result/crs.jpg')
 > plot(crs)
+> 
 > jpeg('result/save.jpg')
 > plot(save)
+> 
 > jpeg('result/wv.jpg')
 > plot(wv)
-> 
-> jpeg('result/regsaveV6crsV7.jpg')
-> reg=glm(save$V6~crs$V7)
-> plot(save$V6~crs$V7)
-> abline(reg)
 > 
 > cor.test(crs$V5,crs$V6)
 
@@ -171,7 +168,7 @@ Monte-Carlo test
 Observation: 0.01367843 
 Call: mantelnoneuclid(m1 = m1, m2 = m2, nrepet = nrepet)
 Based on 100 replicates
-Simulated p-value: 0.4158416 
+Simulated p-value: 0.3663366 
 > 
 > summary(glm(wv$V5~wv$V6))
 
@@ -320,8 +317,12 @@ AIC: 110.43
 Number of Fisher Scoring iterations: 2
 
 > 
+> jpeg('result/regsaveV6crsV7.jpg')
+> plot(save$V6~crs$V7)
+> abline(glm(save$V6~crs$V7))
+> 
 > 
 > 
 > proc.time()
    user  system elapsed 
-  1.016   0.076   1.085 
+  1.048   0.060   1.153 
