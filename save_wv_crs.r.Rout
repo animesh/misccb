@@ -23,37 +23,19 @@ Type 'q()' to quit R.
 > crs=read.csv('data/crsWP.csv',header=F)
 > save=read.csv('data/saveWP.csv',header=F)
 > wv=read.csv('data/wvWP.csv',header=F)
-> cor(wv,save)
-   V1 V2 V3 V4 V5 V6 V7
-V1 NA NA NA NA NA NA NA
-V2 NA NA NA NA NA NA NA
-V3 NA NA NA NA NA NA NA
-V4 NA NA NA NA NA NA NA
-V5 NA NA NA NA NA NA NA
-V6 NA NA NA NA NA NA NA
-V7 NA NA NA NA NA NA NA
-> cor(crs,save)
-   V1 V2 V3 V4          V5         V6 V7
-V1 NA NA NA NA          NA         NA NA
-V2 NA NA NA NA          NA         NA NA
-V3 NA NA NA NA          NA         NA NA
-V4 NA NA NA NA          NA         NA NA
-V5 NA NA NA NA -0.13233123 -0.3229697 NA
-V6 NA NA NA NA  0.03211644 -0.1137295 NA
-V7 NA NA NA NA -0.04884942  0.2498855 NA
-> cor(wv,crs)
-   V1 V2 V3 V4 V5 V6 V7
-V1 NA NA NA NA NA NA NA
-V2 NA NA NA NA NA NA NA
-V3 NA NA NA NA NA NA NA
-V4 NA NA NA NA NA NA NA
-V5 NA NA NA NA NA NA NA
-V6 NA NA NA NA NA NA NA
-V7 NA NA NA NA NA NA NA
+> 
+> jpeg('result/crs.jpg')
+> plot(crs)
+> jpeg('result/save.jpg')
+> plot(save)
+> jpeg('result/wv.jpg')
+> plot(wv)
+> 
 > jpeg('result/regsaveV6crsV7.jpg')
 > reg=glm(save$V6~crs$V7)
 > plot(save$V6~crs$V7)
 > abline(reg)
+> 
 > cor.test(crs$V5,crs$V6)
 
 	Pearson's product-moment correlation
@@ -93,6 +75,7 @@ sample estimates:
       cor 
 0.2534987 
 
+> 
 > t.test(save$V6,wv$V6,paired=T)
 
 	Paired t-test
@@ -132,10 +115,9 @@ sample estimates:
 mean of the differences 
                5.363636 
 
+> 
 > jpeg('result/boxplotV6.jpg')
 > boxplot(crs$V6,save$V6,wv$V6)
-> jpeg('result/boxplotV5.jpg')
-> boxplot(crs$V5,save$V5,wv$V5)
 > var.test(crs$V6,save$V6)
 
 	F test to compare two variances
@@ -175,45 +157,6 @@ sample estimates:
 ratio of variances 
         0.07284331 
 
-> var.test(save$V5,crs$V5)
-
-	F test to compare two variances
-
-data:  save$V5 and crs$V5 
-F = 4.1245, num df = 13, denom df = 13, p-value = 0.01581
-alternative hypothesis: true ratio of variances is not equal to 1 
-95 percent confidence interval:
-  1.324065 12.847993 
-sample estimates:
-ratio of variances 
-          4.124509 
-
-> var.test(save$V5,wv$V5)
-
-	F test to compare two variances
-
-data:  save$V5 and wv$V5 
-F = 1.7579, num df = 13, denom df = 12, p-value = 0.3374
-alternative hypothesis: true ratio of variances is not equal to 1 
-95 percent confidence interval:
- 0.5426899 5.5430151 
-sample estimates:
-ratio of variances 
-          1.757915 
-
-> var.test(crs$V5,wv$V5)
-
-	F test to compare two variances
-
-data:  crs$V5 and wv$V5 
-F = 0.4262, num df = 13, denom df = 12, p-value = 0.1413
-alternative hypothesis: true ratio of variances is not equal to 1 
-95 percent confidence interval:
- 0.1315768 1.3439212 
-sample estimates:
-ratio of variances 
-          0.426212 
-
 > 
 > library(ade4)
 
@@ -228,7 +171,7 @@ Monte-Carlo test
 Observation: 0.01367843 
 Call: mantelnoneuclid(m1 = m1, m2 = m2, nrepet = nrepet)
 Based on 100 replicates
-Simulated p-value: 0.3861386 
+Simulated p-value: 0.4158416 
 > 
 > summary(glm(wv$V5~wv$V6))
 
@@ -381,4 +324,4 @@ Number of Fisher Scoring iterations: 2
 > 
 > proc.time()
    user  system elapsed 
-  0.768   0.040   0.800 
+  1.016   0.076   1.085 
