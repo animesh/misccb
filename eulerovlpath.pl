@@ -20,8 +20,8 @@ for(my $c1=0;$c1<=$#reads;$c1++){
 			my $lenovl=length($ovl[0]);
 			if($lenovl==($len2-1)){
 				print "$str1\t$len1\t$str2\t$len2\t@ovl\t$lenovl\n";
-				$ovlidx{$ovl[0]}=substr($ovl[0],1,$lenovl-1).substr($str2,$lenovl,1);				
-				$ovlidx{substr($str1,0,$lenovl-1).substr($ovl[0],$lenovl-1,1)}=$ovl[0];
+				push(@($ovlidx{$ovl[0]}),substr($ovl[0],1,$lenovl-1).substr($str2,$lenovl,1));				
+				push(@($ovlidx{substr($str1,0,$lenovl-1).substr($ovl[0],$lenovl-1,1)}),$ovl[0]);
 				print "$ovl[0]\t$ovlidx{$ovl[0]}\t",substr($str1,0,$lenovl-1).substr($ovl[0],$lenovl-1,1),"\t$ovl[0]\n";				
 			}
 			#print "$str1\t$len1\t$str2\t$len2\t@ovl\t$lenovl\n";
