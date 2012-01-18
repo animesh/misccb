@@ -294,7 +294,7 @@ def phiInit(pos, lam, alpha):
     '''
     return 2.0 * math.pi / lam * (math.cos(alpha) * pos[0] + math.sin(alpha) * pos[1]) 
 
-nest.CopyModel('ht_generator', 'RetinaNode',
+nest.CopyModel('smp_generator', 'RetinaNode',
                params = {'ac'    : Params['retAC'],
                          'dc'    : Params['retDC'],
                          'freq'  : Params['f_dg'],
@@ -346,7 +346,7 @@ retina = topo.CreateLayer(layerProps)
 
 #! Now set phases of retinal oscillators; we use a list comprehension instead
 #! of a loop.
-[nest.SetStatus([n], {"phi": phiInit(topo.GetPosition([n]), 
+[nest.SetStatus([n], {"phi": phiInit(topo.GetPosition([n])[0], 
                                       Params["lambda_dg"],
                                       Params["phi_dg"])})
  for n in nest.GetLeaves(retina)[0]]
@@ -412,7 +412,7 @@ nest.PrintNetwork()
 
 #! We can also try to plot a single layer in a network. For
 #! simplicity, we use Rp, which has only a single neuron per position.
-Rppos = zip(*[topo.GetPosition([n]) for n in nest.GetLeaves(Rp)[0]])
+Rppos = zip(*[topo.GetPosition([n]) for n in nest.GetLeaves(Rp)[0]])[0]
 #! The line above works as follows:
 #!
 #! 1. ``GetLeaves`` extracts all neurons from the `Rp` layer
@@ -605,18 +605,19 @@ corRet.update({"sources": {"model": "L56pyr"}, "weights": 2.5})
 #! -----------------------------------------
 
 #! Cortico-cortical, same orientation
-[topo.ConnectLayer(Vp_h, Vp_h, conn) for conn in ccConnections]
-[topo.ConnectLayer(Vp_v, Vp_v, conn) for conn in ccConnections]
+print ccConnections
+[topo.ConnectLayers(Vp_h, Vp_h, conn) for conn in ccConnections]
+[topo.ConnectLayers(Vp_v, Vp_v, conn) for conn in ccConnections]
 
 #! Cortico-cortical, cross-orientation
-[topo.ConnectLayer(Vp_h, Vp_v, conn) for conn in ccxConnections]
-[topo.ConnectLayer(Vp_v, Vp_h, conn) for conn in ccxConnections]
+[topo.ConnectLayers(Vp_h, Vp_v, conn) for conn in ccxConnections]
+[topo.ConnectLayers(Vp_v, Vp_h, conn) for conn in ccxConnections]
 
 #! Cortico-thalamic connections
-[topo.ConnectLayer(Vp_h, Tp, conn) for conn in ctConnections]
-[topo.ConnectLayer(Vp_v, Tp, conn) for conn in ctConnections]
-topo.ConnectLayer(Vp_h, Rp, corRet) 
-topo.ConnectLayer(Vp_v, Rp, corRet) 
+[topo.ConnectLayers(Vp_h, Tp, conn) for conn in ctConnections]
+[topo.ConnectLayers(Vp_v, Tp, conn) for conn in ctConnections]
+topo.ConnectLayers(Vp_h, Rp, corRet) 
+topo.ConnectLayers(Vp_v, Rp, corRet) 
 
 #! Thalamo-cortical connections
 #! ----------------------------
@@ -639,7 +640,7 @@ thalCorRect.update({"mask": {"rectangular": {"lower_left" : [-4.0*dpc, -1.0*dpc]
 for conn in [{"targets": {"model": "L4pyr" }, "kernel": 0.5},
              {"targets": {"model": "L56pyr"}, "kernel": 0.3}]:
     thalCorRect.update(conn)
-    topo.ConnectLayer(Tp, Vp_h, thalCorRect)
+    topo.ConnectLayers(Tp, Vp_h, thalCorRect)
 
 #! Vertically tuned
 thalCorRect.update({"mask": {"rectangular": {"lower_left" : [-1.0*dpc, -4.0*dpc],
@@ -647,7 +648,7 @@ thalCorRect.update({"mask": {"rectangular": {"lower_left" : [-1.0*dpc, -4.0*dpc]
 for conn in [{"targets": {"model": "L4pyr" }, "kernel": 0.5},
              {"targets": {"model": "L56pyr"}, "kernel": 0.3}]:
     thalCorRect.update(conn)
-    topo.ConnectLayer(Tp, Vp_v, thalCorRect)
+    topo.ConnectLayers(Tp, Vp_v, thalCorRect)
 
 #! Diffuse connections
 thalCorDiff = {"connection_type": "convergent",
@@ -661,8 +662,8 @@ thalCorDiff = {"connection_type": "convergent",
 for conn in [{"targets": {"model": "L4pyr" }},
              {"targets": {"model": "L56pyr"}}]:
     thalCorDiff.update(conn)
-    topo.ConnectLayer(Tp, Vp_h, thalCorDiff)
-    topo.ConnectLayer(Tp, Vp_v, thalCorDiff)
+    topo.ConnectLayers(Tp, Vp_h, thalCorDiff)
+    topo.ConnectLayers(Tp, Vp_v, thalCorDiff)
 
 #! Thalamic connections
 #! --------------------
@@ -715,7 +716,7 @@ for src, tgt, conn in [(Tp, Rp, {"sources": {"model": "TpRelay"},
                                  "mask": {"circular": {"radius": 12.0 * dpc}},
                                  "kernel": {"gaussian": {"p_center": 0.5, "sigma": 7.5 * dpc}}})]:
     thalBase.update(conn)
-    topo.ConnectLayer(src, tgt, thalBase)
+    topo.ConnectLayers(src, tgt, thalBase)
 
 #! Thalamic input
 #! --------------
@@ -734,7 +735,7 @@ retThal = {"connection_type": "divergent",
 for conn in [{"targets": {"model": "TpRelay"}},
              {"targets": {"model": "TpInter"}}]:
     retThal.update(conn)
-    topo.ConnectLayer(retina, Tp, retThal)
+    topo.ConnectLayers(retina, Tp, retThal)
 
 
 #! Checks on connections
@@ -773,13 +774,13 @@ def connPlot(spop, smod, tmod, syn, titl):
     # convert list of (x,y) pairs to pair of x- and y-lists
     pos = zip(*[topo.GetPosition([n]) 
                 for n in tgts if nest.GetStatus([n],
-                                                'model')[0]==tmod])
+                                                'model')[0]==tmod])[0]
 
     # plot source neuron in red, slightly larger, targets on blue
     pylab.clf()
     pylab.plot(pos[0], pos[1], 'bo', markersize=5, zorder=99, label='Targets')
-    pylab.plot(srcpos[:1], srcpos[1:], 'ro', markersize=10, 
-               markeredgecolor='r', zorder=1, label='Source')
+    #pylab.plot(srcpos[:1], srcpos[1:], 'ro', markersize=10, 
+    #           markeredgecolor='r', zorder=1, label='Source')
     axsz = Params['visSize']/2 + 0.2
     pylab.axis([-axsz,axsz,-axsz,axsz])
     pylab.title(titl)
@@ -789,7 +790,7 @@ def connPlot(spop, smod, tmod, syn, titl):
     pylab.show()
 
 #! show Retina to TpRelay
-connPlot(retina, '', 'TpRelay', 'AMPA', 'Connections Retina -> TpRelay')
+connPlot(retina, 'Retina', 'TpRelay', 'AMPA', 'Connections Retina -> TpRelay')
 
 #! show TpRelay to L4pyr
 connPlot(Tp, 'TpRelay', 'L4pyr', 'AMPA', 'Connections TpRelay -> Vp L4pyr')
