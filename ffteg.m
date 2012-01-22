@@ -3,15 +3,15 @@
 a=5;
 c=1;
 m=2;
-f=4;
+f=50;
 n=10;%no of sample per second?
 fs=100*f;% @least twice by nequist
 ts=1/fs;
 t=0:ts:n/f;
-x = c+a*sin(2*pi*f*t)+m*a*sin(2*pi*2*m*f*t)+3*m*a*sin(2*pi*4*m*f*t);
+x = c+a*sin(2*pi*f*t)+a*sin(2*pi*m*f*t)+a*sin(2*pi*2*m*f*t);
 plot(x);
 fx=fft(x);
-plot(real(fx(1:fs)))
+plot(real(fx))
 [idx val]=max(real(fx))
 
 
@@ -25,9 +25,17 @@ x=A*sin(2*pi*f*t);
 plot(x),grid on;
 F=fft(x);
 plot(real(F)),grid on
+[idx val]=max(real(F))
+
+%% mix signal
 x1=A*sin(2*pi*(f+50)*t);
 x2=A*sin(2*pi*(f+250)*t);
 x=x+x1+x2; 
+F=fft(x);
+plot(real(F)),grid on
+[idx val]=max(real(F))
+
+%% extract main 
 F2=zeros(length(F),1);
 F2(10:11)=F(10:11);
 xr=ifft(F2);
