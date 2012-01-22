@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.2"
+    ComputedModelVersion    "1.1"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -19,15 +19,15 @@ Model {
   MinMaxOverflowLogging	  "UseLocalSettings"
   MinMaxOverflowArchiveMode "Overwrite"
   MaxMDLFileLineLength	  120
-  Created		  "Fri Jan 20 12:46:21 2012"
+  Created		  "Sun Jan 22 17:18:58 2012"
   Creator		  "ash022"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "ash022"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Jan 20 21:50:13 2012"
-  RTWModifiedTimeStamp	  248980155
-  ModelVersionFormat	  "1.%<AutoIncrement:2>"
+  LastModifiedDate	  "Sun Jan 22 17:19:39 2012"
+  RTWModifiedTimeStamp	  249153545
+  ModelVersionFormat	  "1.%<AutoIncrement:1>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -650,7 +650,7 @@ Model {
   }
   System {
     Name		    "sinsl"
-    Location		    [85, 506, 665, 766]
+    Location		    [70, 200, 650, 460]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -668,16 +668,16 @@ Model {
     Block {
       BlockType		      Integrator
       Name		      "Integrator"
-      SID		      3
+      SID		      1
       Ports		      [1, 1]
-      Position		      [120, 55, 150, 85]
+      Position		      [145, 65, 175, 95]
     }
     Block {
       BlockType		      Mux
       Name		      "Mux"
-      SID		      4
+      SID		      2
       Ports		      [2, 1]
-      Position		      [185, 26, 190, 64]
+      Position		      [210, 36, 215, 74]
       ShowName		      off
       Inputs		      "2"
       DisplayOption	      "bar"
@@ -685,9 +685,9 @@ Model {
     Block {
       BlockType		      Scope
       Name		      "Scope"
-      SID		      2
+      SID		      3
       Ports		      [1]
-      Position		      [235, 44, 265, 76]
+      Position		      [260, 54, 290, 86]
       Floating		      off
       Location		      [188, 390, 512, 629]
       Open		      off
@@ -702,9 +702,9 @@ Model {
     Block {
       BlockType		      Sin
       Name		      "Sine Wave"
-      SID		      1
+      SID		      4
       Ports		      [0, 1]
-      Position		      [40, 20, 70, 50]
+      Position		      [65, 30, 95, 60]
       Amplitude		      "1"
       Bias		      "0"
       Frequency		      "1"
@@ -718,12 +718,12 @@ Model {
       SrcPort		      1
       Points		      [25, 0]
       Branch {
-	DstBlock		"Mux"
+	Points			[0, 35]
+	DstBlock		"Integrator"
 	DstPort			1
       }
       Branch {
-	Points			[0, 35]
-	DstBlock		"Integrator"
+	DstBlock		"Mux"
 	DstPort			1
       }
     }
