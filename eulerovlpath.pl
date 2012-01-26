@@ -1,7 +1,4 @@
 use strict;
-use warnings;
-use Data::Dumper;
-use Carp;
 
 my @reads=<>;
 my %ovlidx;
@@ -19,21 +16,17 @@ for(my $c1=0;$c1<=$#reads;$c1++){
 			my @ovl=overlap($str1,$str2);
 			my $lenovl=length($ovl[0]);
 			if($lenovl and ($len2-1) and $lenovl == ($len2-1)){
-				#push(@{$ovlidx{$ovl[0]}},substr($ovl[0],1,$lenovl-1).substr($str2,$lenovl,1));
 				push(@{$ovlidx{substr($ovl[0],1,$lenovl-1).substr($str2,$lenovl,1)}},$ovl[0]);				
-				#@{$ovlidx{$ovl[0]}}=substr($ovl[0],1,$lenovl-1).substr($str2,$lenovl,1);				
-				#push(@{$ovlidx{substr($str1,0,$lenovl-1).substr($ovl[0],$lenovl-2,1)}},$ovl[0]);
 				push(@{$ovlidx{$ovl[0]}},substr($str1,0,$lenovl-1).substr($ovl[0],$lenovl-2,1));
-				#@{$ovlidx{substr($str1,0,$lenovl-1).substr($ovl[0],$lenovl-2,1)}}=$ovl[0];
-				print "$str1\t$str2\t$ovl[0]\t",substr($ovl[0],1,$lenovl-1),",",substr($str2,$lenovl,1),"\t",substr($str1,0,$lenovl-1),",",substr($ovl[0],$lenovl-2,1),"\t$lenovl\n";
 			}
 		}
 	}
 }
-#%ovlidx = ( 1 => [2,3], 2 => [1,3,4,5], 3 =>[1,2,4,5], 4 => [2,3,5], 5 => [2,3,4]);
-foreach (keys %ovlidx){print "$_ => $ovlidx{$_} @{$ovlidx{$_}}\n"}
+
+#Call Euler sub and pick the last base from subsequent overlap
 my @path=eulerPath(%ovlidx);
-foreach (@path){print "$_\n"}
+for(my $c=1;$c<=$#path;$c++){$path[0].=substr($path[$c],length($path[$c])-1,1);}
+print "$path[0]\n";
 
 #source http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Longest_common_substring#Perl
 sub overlap{
@@ -68,31 +61,21 @@ sub overlap{
 #source http://stackoverflow.com/questions/4031325/finding-eulerian-path-in-perl
 
 sub eulerPath {
-
     my %graph = @_;
-
-    # count the number of vertices with odd degree
     my @odd = ();
     foreach my $vert ( sort keys %graph ) {
         my @edg = @{ $graph{$vert} };
-
         my $size = scalar(@edg);
         if ( $size % 2 != 0 ) {
             push @odd, $vert;
-		print "ODD:$vert\n";
         }
     }
-
     push @odd, ( keys %graph )[0];
-
     if ( scalar(@odd) > 3 ) {
         return "None";
-
     }
-
     my @stack = ( $odd[0] );
     my @path  = ();
-
     while (@stack) {
         my $v = $stack[-1];
         #suggestion http://stackoverflow.com/a/4031608
@@ -100,38 +83,22 @@ sub eulerPath {
                 my $u = ( @{ $graph{$v} } )[0];
                 push @stack, $u;
               # Find index of vertice v in graph{$u}
-
             my @graphu = @{ $graph{$u} };  # This is line 54.
             my ($index) = grep $graphu[$_] eq $v, 0 .. $#graphu;
             #suggestion http://stackoverflow.com/a/4031608
             splice @{ $graph{$u} }, $index, 1;
             splice @{ $graph{$v} }, 0, 1;
-
         }
         else {
-
             push @path, pop(@stack);
         }
-
     }
-
-    print Dumper \@path;
-
     return @path;
 }
 
 
 __END__
- 2076  perl -e '@b=qw/A T G C/;print "while($l<1000){print @b[int(rand(4))];$l++;}'
- 2073  perl -ne 'if ($p) { for($c=0;$c<length;$c++){print substr($_,$c,10);print "\n"}; $p = 0 } $p++ if />/' rangen.txt  > rangen.txt.kmer
- 2075  time perl overlap.pl rangen.txt.kmer
-
-perl -e '@b=qw/A T G C/;while($l<100){print @b[int(rand(4))];$l++;}' > rangen.txt
-perl -ne 'for($c=0;$c<length;$c++){print substr($_,$c,10);print "\n"};' rangen.txt > rangen.txt.kmer 
-
 perl -e '@b=qw/A T G C/;print ">RandGenomeL1000\n";while($l<1000){print @b[int(rand(4))];$l++;}' > rangen.txt
 perl -ne 'if ($p) { for($c=0;$c<length;$c++){print substr($_,$c,10);print "\n"}; $p = 0 } $p++ if />/' rangen.txt  > rangen.txt.kmer
-perl overlap.pl rangen.txt.kmer
-perl -ne 'for($c=0;$c<length;$c++){print substr($_,$c,10);print "\n"};' rangen.txt
 perl eulerovlpath.pl rangen.txt.kmer 
 
