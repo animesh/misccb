@@ -19,17 +19,22 @@ for(my $c1=0;$c1<=$#reads;$c1++){
 			my @ovl=overlap($str1,$str2);
 			my $lenovl=length($ovl[0]);
 			if($lenovl and ($len2-1) and $lenovl == ($len2-1)){
-				#print "$str1\t$len1\t$str2\t$len2\t@ovl\t$lenovl\n";
-				push(@{$ovlidx{$ovl[0]}},substr($ovl[0],1,$lenovl-1).substr($str2,$lenovl,1));				
-				push(@{$ovlidx{substr($str1,0,$lenovl-1).substr($ovl[0],$lenovl-1,1)}},$ovl[0]);
-				#print "$ovl[0]\t@{$ovlidx{$ovl[0]}}\t",substr($str1,0,$lenovl-1).substr($ovl[0],$lenovl-1,1),"\t$ovl[0]\n";				
+				#push(@{$ovlidx{$ovl[0]}},substr($ovl[0],1,$lenovl-1).substr($str2,$lenovl,1));
+				push(@{$ovlidx{substr($ovl[0],1,$lenovl-1).substr($str2,$lenovl,1)}},$ovl[0]);				
+				#@{$ovlidx{$ovl[0]}}=substr($ovl[0],1,$lenovl-1).substr($str2,$lenovl,1);				
+				#push(@{$ovlidx{substr($str1,0,$lenovl-1).substr($ovl[0],$lenovl-2,1)}},$ovl[0]);
+				push(@{$ovlidx{$ovl[0]}},substr($str1,0,$lenovl-1).substr($ovl[0],$lenovl-2,1));
+				#@{$ovlidx{substr($str1,0,$lenovl-1).substr($ovl[0],$lenovl-2,1)}}=$ovl[0];
+				print "$str1\t$str2\t$ovl[0]\t",substr($ovl[0],1,$lenovl-1),",",substr($str2,$lenovl,1),"\t",substr($str1,0,$lenovl-1),",",substr($ovl[0],$lenovl-2,1),"\t$lenovl\n";
 			}
-			#print "$str1\t$len1\t$str2\t$len2\t@ovl\t$lenovl\n";
 		}
 	}
 }
-
+#%ovlidx = ( 1 => [2,3], 2 => [1,3,4,5], 3 =>[1,2,4,5], 4 => [2,3,5], 5 => [2,3,4]);
+foreach (keys %ovlidx){print "$_ => $ovlidx{$_} @{$ovlidx{$_}}\n"}
 my @path=eulerPath(%ovlidx);
+foreach (@path){print "$_\n"}
+
 #source http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Longest_common_substring#Perl
 sub overlap{
   my ($str1, $str2) = @_; 
@@ -48,6 +53,7 @@ sub overlap{
         if ($lc_suffix[$n1][$n2] > $l_length) {
           $l_length = $lc_suffix[$n1][$n2];
           @substrings = ();
+			#prini "$str1\t$len1\t$str2\t$len2\t@ovl\t$lenovl\n";
         }
         if ($lc_suffix[$n1][$n2] == $l_length) {
           push @substrings, substr($str1, ($n1-$l_length), $l_length);
@@ -73,6 +79,7 @@ sub eulerPath {
         my $size = scalar(@edg);
         if ( $size % 2 != 0 ) {
             push @odd, $vert;
+		print "ODD:$vert\n";
         }
     }
 
