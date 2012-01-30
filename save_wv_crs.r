@@ -20,7 +20,20 @@ t.test(crs$V6,crs$V5,paired=T)
 t.test(wv$V6,wv$V5,paired=T)
 
 jpeg('result/boxplotV6.jpg')
+
 boxplot(crs$V6,save$V6,wv$V6)
+
+
+dev.off( )
+com=rbind(crs,save,wv)
+com[is.na(com)] <- 0
+pcacom<-prcomp(com,scale=T)
+plot(pcacom)
+summary(pcacom)
+biplot(pcacom)
+
+
+
 var.test(crs$V6,save$V6)
 var.test(crs$V6,wv$V6)
 var.test(save$V6,wv$V6)

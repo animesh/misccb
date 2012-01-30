@@ -1,8 +1,4 @@
-#! :Author: Hans Ekkehard Plesser
-#! :Copyright: The NEST Initiative (2009)
-#! :License: Creative Commons Attribution License
-#!   S. L. Hill and G. Tononi.
-#!   Modeling Sleep and Wakefulness in the Thalamocortical System.
+# Modified from S. L. Hill and G. Tononi implementation Author: Hans Ekkehard Plesser Copyright: The NEST Initiative (2009) :License: Creative Commons Attribution License
 import nest
 import nest.topology as topo
 nest.ResetKernel()
@@ -18,7 +14,6 @@ Params = {'N'           :     40,
           'simtime'     : 100.0,
           'sim_interval':   5.0
           }
-
 nest.CopyModel('iaf_cond_alpha', 'NeuronModel',
                params = {'C_m'       :  16.0,
                          'E_L'       : (0.2 * 30.0 + 1.5 * -90.0)/(0.2 + 1.5),
@@ -32,37 +27,23 @@ nest.CopyModel('iaf_cond_alpha', 'NeuronModel',
                          'tau_syn_in':   2.0,
                          'I_e'       :   0.0,
                          'V_m'       : -70.0})
-
 nest.CopyModel('NeuronModel', 'CtxExNeuron')
-
 nest.CopyModel('NeuronModel', 'CtxInNeuron', 
                params = {'C_m'  :   8.0,
                          'V_th' : -53.0,
                          't_ref':   1.0})
-
 nest.CopyModel('NeuronModel', 'ThalamicNeuron', 
                params = {'C_m'  :   8.0,
                          'V_th' : -53.0,
                          't_ref':   1.0,
                          'E_in' : -80.0})
-
 def phiInit(pos, lam, alpha):
-    '''Initializer function for phase of drifting grating nodes.
-
-       pos  : position (x,y) of node, in degree
-       lam  : wavelength of grating, in degree
-       alpha: angle of grating in radian, zero is horizontal
-
-       Returns number to be used as phase of AC Poisson generator.
-    '''
     return 2.0 * math.pi / lam * (math.cos(alpha) * pos[0] + math.sin(alpha) * pos[1]) 
-
 nest.CopyModel('smp_generator', 'RetinaNode',
                params = {'ac'    : Params['retAC'],
                          'dc'    : Params['retDC'],
                          'freq'  : Params['f_dg'],
                          'phi'   : 0.0})
-
 nest.CopyModel('multimeter', 'RecordingNode',
                params = {'interval'   : Params['sim_interval'],
                          'record_from': ['V_m'],
@@ -70,42 +51,17 @@ nest.CopyModel('multimeter', 'RecordingNode',
                          'withgid'    : True,
                          'withpath'   : False,
                          'withtime'   : False})
-
-
 layerProps = {'rows'     : Params['N'], 
               'columns'  : Params['N'],
               'extent'   : [Params['visSize'], Params['visSize']],
               'edge_wrap': True}
-#! This dictionary does not yet specify the elements to put into the
-#! layer, since they will differ from layer to layer. We will add them
-#! below by updating the ``'elements'`` dictionary entry for each
-#! population.
-
-#! Retina
-#! ------
 layerProps.update({'elements': 'RetinaNode'})
 retina = topo.CreateLayer(layerProps)
-
-#! Now set phases of retinal oscillators; we use a list comprehension instead
-#! of a loop.
 [nest.SetStatus([n], {"phi": phiInit(topo.GetPosition([n])[0], 
                                       Params["lambda_dg"],
                                       Params["phi_dg"])})
  for n in nest.GetLeaves(retina)[0]]
-
-#! Thalamus
-#! --------
-
-#! We first introduce specific neuron models for the thalamic relay
-#! cells and interneurons. These have identical properties, but by
-#! treating them as different models, we can address them specifically
-#! when building connections.
-#!
-#! We use a list comprehension to do the model copies.
 [nest.CopyModel('ThalamicNeuron', SpecificModel) for SpecificModel in ('TpRelay', 'TpInter')]
-
-#! Now we can create the layer, with one relay cell and one
-#! interneuron per location:
 layerProps.update({'elements': ['TpRelay', 'TpInter']})
 Tp = topo.CreateLayer(layerProps)
 

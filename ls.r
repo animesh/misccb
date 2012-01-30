@@ -5,6 +5,10 @@ library(globaltest)
 D <- read.spss("data/data.spss", to.data.frame=TRUE) 
 X <- D[,-(1:3)]  
 X <- X[,-46]
+
+plot(1:100)
+
+
 # Data exploration using globaltest (three times a pairwise comparison) library(globaltest) 
 # res1 <- gt(Donor, D[-(1:3)], data=D, levels=c("TB", "TST+")) 
 pdf("globaltest TB vs TST+.pdf") 
