@@ -8,6 +8,7 @@ excitatory_dict = {
 "rows": 30,
 "columns": 30,
 "extent": [2.0, 2.0],
+"center": [0.0, 0.0],
 "elements": "iaf_neuron",
 "edge_wrap": True}
 
@@ -34,7 +35,7 @@ exc_par = {"connection_type": "convergent",
 
 inh_par = {"connection_type": "convergent",
 "mask": {"circular": {"radius": 0.5}},
-"weights": 4.0, # the weight of inhibitory connections are four times as high as excitatory.
+"weights": -4.0, # the weight of inhibitory connections are four times as high as excitatory.
 "delays": 1.5,
 "kernel": {"gaussian": {"sigma": 0.3, "p_center": 1.3}},
 "allow_autapses": True,
@@ -42,8 +43,8 @@ inh_par = {"connection_type": "convergent",
 "number_of_connections": 22}
 
 topo.ConnectLayers(exc,exc,exc_par)
-topo.ConnectLayers(exc,inh,exc_par)
-topo.ConnectLayers(inh,inh,inh_par)
+topo.ConnectLayers(exc,inh,inh_par)
+topo.ConnectLayers(inh,inh,exc_par)
 topo.ConnectLayers(inh,exc,inh_par)
 
 
@@ -51,26 +52,80 @@ import numpy as np
 pos=[[np.random.uniform(-0.5,0.5),np.random.uniform(-0.5,0.5)]
      for j in xrange(50)]
 excr=topo.CreateLayer({'positions':pos,'elements':'iaf_neuron'})
-nest.PrintNetwork(depth=2)
-
-#excr_par = {"connection_type": "convergent",
+excr_par = {"connection_type": "convergent",
 #"mask": {"doughnut": {"inner_radius": 0.1, "outer_radius": 0.3}},
-#"mask": {"circular": {"radius": 0.5}},
-#"weights": 1.0,
-#"delays": 1.5,
-#"kernel": {"gaussian": {"sigma": 0.3,
-#"p_center": 1.0}},
-#"number_of_connections": 10}
-topo.ConnectLayers(exc,excr,exc_par)
-#topo.ConnectLayers(excr,inh,exc_par)
+"mask": {"circular": {"radius": 0.1}},
+"weights": 1.0,
+"delays": 1.5,
+"kernel": {"gaussian": {"sigma": 0.3,"p_center": 1.0,"cutoff" : 0.5}},
+#"kernel": {"linear": {"a": -0.5, "c": 1.0,"min": 0.4, "max": 0.9}},
+"number_of_connections": 10}
 
+mix_dict = {
+"rows": 10,
+"columns": 10,
+"extent": [2.0, 2.0],
+"elements": "iaf_neuron",
+"edge_wrap": True}
 
+mix = topo.CreateLayer(mix_dict)
+
+topo.ConnectLayers(exc,mix,inh_par)
+topo.ConnectLayers(mix,inh,exc_par)
 
 pois = nest.Create("poisson_generator")
 nest.DivergentConnect(pois, nest.GetNodes(exc)[0])
 nest.DivergentConnect(pois, nest.GetNodes(inh)[0])
 
 
+nest.PrintNetwork(depth=2)
+print 'iaf_neuron recordables: ', nest.GetDefaults('iaf_neuron')['recordables']
+
+nest.Simulate(100)
+#events = nest.GetStatus(mix)[0]['events']
+#t = events['times'];
+nest.CopyModel('multimeter', 'RecordingNode',
+               params = {'interval'   : 5.0,
+                         'record_from': ['V_m'],
+                         'record_to'  : ['memory'],
+                         'withgid'    : True,
+                         'withpath'   : False,
+                         'withtime'   : False})
+
+
+
+import pylab
+mixpos = zip(*[topo.GetPosition([n]) for n in nest.GetLeaves(mix)[0]])[0]
+pylab.plot(mixpos[0], mixpos[1], 'x')
+#pylab.show()
+
+recorders = {}
+for name, loc, population, model in [('exc', 1, exc  , 'exc'),
+                                     ('inh', 2, inh  , 'inh'),
+                                     ('mix', 3, mix  , 'mix')]:
+    recorders[name] = (nest.Create('RecordingNode'), loc)
+    tgts = [nd for nd in nest.GetLeaves(population)[0] 
+            if nest.GetStatus([nd], 'model')[0]==model]
+    nest.DivergentConnect(recorders[name][0], tgts) 
+
+for t in pylab.arange(5, 100, 5):
+    nest.Simulate(5)
+    pylab.clf()
+    pylab.jet()
+    for name, r in recorders.iteritems():
+        rec = r[0]
+        sp = r[1]
+        pylab.subplot(2,2,sp)
+        d = nest.GetStatus(rec)[0]['events']['V_m']
+        nest.SetStatus(rec, {'n_events': 0})
+        #pylab.imshow()
+        #pylab.colorbar()
+        #pylab.title(name + ', t = %6.1f ms' % nest.GetKernelStatus()['time'])
+        #pylab.show()
+
+print nest.GetKernelStatus()
+
+#topo.DumpLayerConnections()
 
 
 #topo.PrintLayerConnection(exc, 'static_synapse', 'out.txt')
