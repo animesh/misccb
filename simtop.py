@@ -3,6 +3,7 @@ import nest.topology as topo
 import math
 import pylab
 nest.ResetKernel()
+
 sim_int=5.0
 sim_time=100.0
 
@@ -69,12 +70,6 @@ topo.ConnectLayers(inh,exc,inh_par)
 topo.ConnectLayers(exc,mix,mix_par)
 topo.ConnectLayers(mix,inh,mix_par)
 
-
-#import numpy as np
-#pos=[[np.random.uniform(-0.5,0.5),np.random.uniform(-0.5,0.5)]
-#     for j in xrange(50)]
-#excr=topo.CreateLayer({'positions':pos,'elements':'iaf_neuron'})
-
 nest.PrintNetwork(depth=2)
 
 mixpos = zip(*[topo.GetPosition([n]) for n in nest.GetLeaves(mix)[0]])[0]
@@ -86,8 +81,8 @@ nest.CopyModel('multimeter', 'RecordingNode',
                          'record_from': ['V_m'],
                          'record_to'  : ['memory'],
                          'withgid'    : True,
-                         'withpath'   : False,
-                         'withtime'   : False})
+                         'withpath'   : True,
+                         'withtime'   : True})
 
 recorders = {}
 for name, loc, population, model in [('mix'   , 1, mix  , 'mix'),
@@ -114,7 +109,8 @@ for t in pylab.arange(sim_int, sim_time, sim_int):
         pylab.subplot(2,2,sp)
         d = nest.GetStatus(rec)[0]['events']['V_m']
         nest.SetStatus(rec, {'n_events': 0})
-        pylab.title(name + ', t = %6.1f ms' % nest.GetKernelStatus()['time'])
+        print rec,sp,d,nest.GetKernelStatus()['time']
+        #pylab.title(name + ', t = %6.1f ms' % nest.GetKernelStatus()['time'])
 #    pylab.show()
 
 
@@ -125,7 +121,8 @@ nest.DivergentConnect(pois, nest.GetNodes(exc)[0])
 nest.DivergentConnect(pois, nest.GetNodes(inh)[0])
 
 print nest.GetKernelStatus()
-#topo.PrintLayerConnections(exc, 'static_synapse', 'out.txt')
+topo.DumpLayerNodes(mix,  'mix.txt')
+topo.DumpLayerConnections(mix, 'static_synapse', 'mixc.txt')
 
 
 
