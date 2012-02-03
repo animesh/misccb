@@ -2,66 +2,76 @@ import nest
 import nest.topology as topo
 import math
 import pylab
+import time
+foo='simtop.'+str(time.time())
 nest.ResetKernel()
 
 sim_int=5.0
 sim_time=100.0
 
 excitatory_dict = {
-"rows": 30,
-"columns": 30,
-"extent": [2.0, 2.0],
-"center": [0.0, 0.0],
-"elements": "iaf_neuron",
-"edge_wrap": True}
+    "rows": 30,
+    "columns": 30,
+    "extent": [2.0, 2.0],
+    "center": [0.0, 0.0],
+    "elements": "iaf_neuron",
+    "edge_wrap": True
+    }
 
 inhibitory_dict = {
-"rows": 15,
-"columns": 15,
-"extent": [2.0, 2.0],
-"center": [0.0, 0.0],
-"elements": "iaf_neuron",
-"edge_wrap": True}
+    "rows": 15,
+    "columns": 15,
+    "extent": [2.0, 2.0],
+    "center": [0.0, 0.0],
+    "elements": "iaf_neuron",
+    "edge_wrap": True
+    }
 
 mix_dict = {
-"rows": 10,
-"columns": 10,
-"extent": [2.0, 2.0],
-"center": [0.0, 0.0],
-"elements": "iaf_neuron",
-"edge_wrap": True}
+    "rows": 10,
+    "columns": 10,
+    "extent": [2.0, 2.0],
+    "center": [0.0, 0.0],
+    "elements": "iaf_neuron",
+    "edge_wrap": True
+    }
 
 exc = topo.CreateLayer(excitatory_dict)
 inh = topo.CreateLayer(inhibitory_dict)
 mix = topo.CreateLayer(mix_dict)
 
-exc_par = {"connection_type": "convergent",
-"mask": {"circular": {"radius": 1.0}},
-"weights": 1.0,
-"delays": 1.5,
-"kernel": {"gaussian": {"sigma": 0.3,
-"p_center": 1.3}},
-"allow_autapses": True,
-"allow_multapses": True,
-"number_of_connections": 90}
+exc_par = {
+    "connection_type": "convergent",
+    "mask": {"circular": {"radius": 1.0}},
+    "weights": 4.0,
+    "delays": 1.5,
+    "kernel": {"gaussian": {"sigma": 0.3,"p_center": 1.3}},
+    "allow_autapses": True,
+    "allow_multapses": True,
+    "number_of_connections": 90
+    }
 
-inh_par = {"connection_type": "convergent",
-"mask": {"circular": {"radius": 0.5}},
-"weights": -4.0, # the weight of inhibitory connections are four times as high as excitatory.
-"delays": 1.5,
-"kernel": {"gaussian": {"sigma": 0.3, "p_center": 1.3}},
-"allow_autapses": True,
-"allow_multapses": True,
-"number_of_connections": 22}
+inh_par = {
+    "connection_type": "convergent",
+    "mask": {"circular": {"radius": 0.5}},
+    "weights": -1.0,
+    "delays": 1.5,
+    "kernel": {"gaussian": {"sigma": 0.3, "p_center": 1.3}},
+    "allow_autapses": True,
+    "allow_multapses": True,
+    "number_of_connections": 22
+    }
 
-mix_par = {"connection_type": "convergent",
-"mask": {"circular": {"radius": 0.5}},
-"weights": -2.0, # the weight of inhibitory connections are four times as high as excitatory.
-"delays": 1.0,
-"kernel": {"gaussian": {"sigma": 0.3, "p_center": 1.3}},
-"allow_autapses": True,
-"allow_multapses": True,
-"number_of_connections": 22}
+mix_par = {
+    "connection_type": "convergent",
+    "mask": {"circular": {"radius": 0.5}},
+    "weights": -2.0, 
+    "delays": 1.0,
+    "kernel": {"gaussian": {"sigma": 0.3, "p_center": 1.3}},
+    "allow_autapses": True,
+    "allow_multapses": True,
+    "number_of_connections": 12
+    }
 
 topo.ConnectLayers(exc,exc,exc_par)
 topo.ConnectLayers(exc,inh,exc_par)
@@ -77,17 +87,25 @@ mixpos = zip(*[topo.GetPosition([n]) for n in nest.GetLeaves(mix)[0]])[0]
 #pylab.show()
 
 nest.CopyModel('multimeter', 'RecordingNode',
-               params = {'interval'   : sim_int,
-                         'record_from': ['V_m'],
-                         'record_to'  : ['memory'],
-                         'withgid'    : True,
-                         'withpath'   : True,
-                         'withtime'   : True})
+               params = {'withtime': True, 
+                         'withgid': True,
+                         'to_file': True,
+                         'label': foo,
+                         'interval': sim_int,
+                         'record_from': ['V_m', 'g_ex', 'g_in'],
+                         'withpath'   : True })
+
+#mm=nest.Create('RecordingNode')
+#nest.DivergentConnect(mm, nest.GetNodes(exc)[0])
+#nest.DivergentConnect(mm, nest.GetNodes(inh)[0])
 
 recorders = {}
-for name, loc, population, model in [('mix'   , 1, mix  , 'mix'),
-                                     ('inh'        , 2, inh  , 'inh'),
-                                     ('exc', 3, exc, 'exc')]:
+for name, loc, population, model in [
+    ('mix',1,mix,'mix'),
+    ('inh',2,inh , 'inh'),
+    ('exc', 3, exc, 'exc')
+    ]:
+    #nest.DivergentConnect(mm,name)
     recorders[name] = (nest.Create('RecordingNode'), loc)
     tgts = [nd for nd in nest.GetLeaves(population)[0] 
             if nest.GetStatus([nd], 'model')[0]==model]
@@ -95,18 +113,23 @@ for name, loc, population, model in [('mix'   , 1, mix  , 'mix'),
 
 nest.SetStatus([0],{'print_time': True})
 
+pois = nest.Create("poisson_generator")
+nest.DivergentConnect(pois, nest.GetNodes(exc)[0])
+nest.DivergentConnect(pois, nest.GetNodes(inh)[0])
+
+
 nest.Simulate(sim_int)
 
-N=30
-for t in pylab.arange(sim_int, sim_time, sim_int):
+#for t in  pylab.arange(sim_int, sim_time, sim_int):
+for t in  range(0, int(sim_time)):
     print t
     nest.Simulate(sim_int)
-    pylab.clf()
-    pylab.jet()
+    #pylab.clf()
+    #pylab.jet()
     for name, r in recorders.iteritems():
         rec = r[0]
         sp = r[1]
-        pylab.subplot(2,2,sp)
+        #pylab.subplot(2,2,sp)
         d = nest.GetStatus(rec)[0]['events']['V_m']
         nest.SetStatus(rec, {'n_events': 0})
         print rec,sp,d,nest.GetKernelStatus()['time']
@@ -116,13 +139,10 @@ for t in pylab.arange(sim_int, sim_time, sim_int):
 
 
 
-pois = nest.Create("poisson_generator")
-nest.DivergentConnect(pois, nest.GetNodes(exc)[0])
-nest.DivergentConnect(pois, nest.GetNodes(inh)[0])
 
 print nest.GetKernelStatus()
-topo.DumpLayerNodes(mix,  'mix.txt')
-topo.DumpLayerConnections(mix, 'static_synapse', 'mixc.txt')
+topo.DumpLayerNodes(mix,  'mix.dat')
+topo.DumpLayerConnections(mix, 'static_synapse', 'mix.c.dat')
 
 
 
