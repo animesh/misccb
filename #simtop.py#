@@ -91,13 +91,8 @@ layerProps = {'rows'     : 10,
 layerProps.update({'elements': 'RetinaNode'})
 retina = topo.CreateLayer(layerProps)
 retThal = {"connection_type": "divergent",
-           "synapse_model": 'static_synapse',
-           "mask": {"circular": {"radius": 1.0 }},
-           "kernel": {"gaussian": {"p_center": 0.75, "sigma": 2.5 }},
-           "weights": 50.0,
-           "delays": 1.0}
-layerProps.update({'elements': 'RetinaNode'})
-retina = topo.CreateLayer(layerProps)
+           "mask": {"circular": {"radius": 1.0}}, 
+           "synapse_model": 'static_synapse'}
 
 topo.ConnectLayers(exc,exc,exc_par)
 topo.ConnectLayers(exc,inh,exc_par)
@@ -117,12 +112,12 @@ gin = nest.Create('spike_generator', params = {'spike_times': np.array([15.0, 25
 #nest.DivergentConnect(gin, nest.GetLeaves(inh)[0])
 #nest.DivergentConnect(pois, nest.GetNodes(mix)[0])
 
-[nest.SetStatus([n],{"phi": 0.1})
+[nest.SetStatus([n],{"phi": 20.0})
  for n in nest.GetLeaves(retina)[0]]
 
 topo.ConnectLayers(retina,exc,retThal)
 
-
+print retina
 #mixpos = zip(*[topo.GetPosition([n]) for n in nest.GetLeaves(mix)[0]])[0]
 #pylab.plot(mixpos[0], mixpos[1], 'x')
 #pylab.show()
@@ -140,7 +135,8 @@ recorders = {}
 for name, loc, population, model in [
     ('mix',1,mix,'mix'),
     ('inh',2,inh , 'inh'),
-    ('exc', 3, exc, 'exc')
+    ('exc', 3, exc, 'exc'),
+    ('retina', 4, retina, 'retina')
     ]:
     recorders[name] = (nest.Create('RecordingNode'), loc)
     tgts = [nd for nd in nest.GetLeaves(population)[0] 
