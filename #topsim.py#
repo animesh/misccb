@@ -24,24 +24,28 @@ gin = nest.Create('spike_generator',
 
 
 l1=tp.CreateLayer({
-        'rows':10,'columns':10,'elements':'iaf_cond_alpha', 'tau_syn_ex': 1.0, 'V_reset': -70.0})
+        'rows':20,'columns':20,'elements':'iaf_cond_alpha', 'tau_syn_ex': 1.0, 'V_reset': -70.0,'weight':  40.0})
 
 l2=tp.CreateLayer({
-        'rows':10,'columns':10,'elements':'iaf_cond_alpha', 'tau_syn_ex': 1.0, 'V_reset': -40.0})
+        'rows':10,'columns':10,'elements':'iaf_cond_alpha', 'tau_syn_ex': 1.0, 'V_reset': -70.0,'weight':  -20.0})
 
 
-conndict={'connection_type':'divergent','mask':{'circular':{'radius':0.4}},'kernel':{'gaussian':{'p_center':1.0,'sigma':0.15}}}
+conndict={'connection_type':'divergent','mask':{'circular':{'radius':0.5}},"synapse_model": "static_synapse",'kernel':{'gaussian':{'p_center':1.0,'sigma':0.15}}}
 
 tp.ConnectLayers(l1,l2,conndict)
+tp.ConnectLayers(l2,l1,conndict)
+
 
 #nest.ConvergentConnect(nest.GetLeaves(l1)[0], n) # excitatory
 #nest.ConvergentConnect(nest.GetLeaves(l2)[0], n) # excitatory
-nest.Connect(gex, l1, params={'weight':  40.0}) # excitatory
-nest.Connect(gin, l2, params={'weight':  -20.0}) # excitatory
+#nest.Connect(gex, l1, params={'weight':  40.0}) # DNW
+#nest.Connect(gin, l2, params={'weight':  -20.0}) # DNW
 nest.ConvergentConnect(m,nest.GetLeaves(l1)[0]) # excitatory
 nest.ConvergentConnect(m,nest.GetLeaves(l2)[0]) # excitatory
 nest.ConvergentConnect(gex,nest.GetLeaves(l1)[0]) # excitatory
 nest.ConvergentConnect(gin,nest.GetLeaves(l2)[0]) # excitatory
+#nest.ConvergentConnect(gex,nest.GetLeaves(l2)[0]) # excitatory
+#nest.ConvergentConnect(gin,nest.GetLeaves(l1)[0]) # excitatory
 #nest.DivergentConnect(n, nest.GetLeaves(l1)[0]) # excitatory
 #nest.Connect(gin, l1, params={'weight': -10.0}) # inhibitory
 
