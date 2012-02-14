@@ -1,9 +1,9 @@
 #from pyNN.utility import get_script_args
 #simulator_name = get_script_args(1)[0]  
 #exec("from pyNN.%s import *" % simulator_name)
-#from pyNN.neuron import *
+from pyNN.neuron import *
 from pyNN.nest import *
-setup(timestep=0.1, min_delay=0.1, max_delay=10.0)
+setup(timestep=0.1, min_delay=1.0, max_delay=2.0)
 p1 = Population(100, IF_curr_alpha, structure=space.Grid2D())
 p2 = Population(20, IF_curr_alpha, cellparams={'tau_m': 15.0, 'cm': 0.9})
 p3 = Population(10, SpikeSourceArray, label="Input Population")

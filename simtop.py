@@ -1,11 +1,8 @@
 import nest
 import nest.topology as topo
-
 import numpy as np
-
 import math
-
-import pylab
+import pylab as pl
 import time
 foo='simtop.'+str(time.time())
 
@@ -127,7 +124,7 @@ topo.ConnectLayers(retina,exc,retThal)
 #pylab.plot(mixpos[0], mixpos[1], 'x')
 #pylab.show()
 
-nest.CopyModel('multimeter', 'RecordingNode',
+nest.CopyModel('multimeter', 'm',
                params = {'withtime': True, 
                          'withgid': True,
                          'to_file': True,
@@ -142,7 +139,7 @@ for name, loc, population, model in [
     ('inh',2,inh , 'inh'),
     ('exc', 3, exc, 'exc')
     ]:
-    recorders[name] = (nest.Create('RecordingNode'), loc)
+    recorders[name] = (nest.Create('m'), loc)
     tgts = [nd for nd in nest.GetLeaves(population)[0] 
             if nest.GetStatus([nd], 'model')[0]==model]
     nest.DivergentConnect(recorders[name][0], tgts)
@@ -153,7 +150,7 @@ nest.SetStatus([0],{'print_time': True})
 
 nest.Simulate(sim_int)
 
-for t in  pylab.arange(sim_int, sim_time, sim_int):
+for t in  pl.arange(sim_int, sim_time, sim_int):
 #for t in  range(0, 0):
     print t
     nest.Simulate(sim_int)
@@ -163,11 +160,31 @@ for t in  pylab.arange(sim_int, sim_time, sim_int):
         rec = r[0]
         sp = r[1]
         #pylab.subplot(2,2,sp)
+        #d = nest.GetStatus(rec)[0]['events']['V_m']
         d = nest.GetStatus(rec)[0]['events']['V_m']
-        print rec,sp,d,nest.GetKernelStatus()['time']
+        events = nest.GetStatus(rec)[0]['events']
+        t = events['times'];
+        print rec,sp,d,nest.GetKernelStatus()['time'],t,events
         nest.SetStatus(rec, {'n_events': 0})
-        #pylab.title(name + ', t = %6.1f ms' % nest.GetKernelStatus()['time'])
+        #pylab.title(name + ', t = %6.1f ms' % nest.GetKernelStatus()pl.clf()
+        pl.subplot(211)
+        pl.plot(t, events['V_m'])
+#pl.axis([0, 100, -75, -53])
+        pl.ylabel('Membrane potential [mV]')
+        
+        pl.subplot(212)
+        pl.plot(t, events['g_ex'], t, events['g_in'])
+#pl.axis([0, 100, 0, 45])
+        pl.xlabel('Time [ms]')
+        pl.ylabel('Synaptic conductance [nS]')
+        pl.legend(('g_exc', 'g_inh'))
+#pl.show()
 #    pylab.show()
+
+#nest.Simulate(100)
+
+
+
 
 print nest.GetStatus(nest.FindConnections(exc), 'target')
 print nest.GetKernelStatus()
