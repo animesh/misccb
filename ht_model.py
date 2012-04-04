@@ -1,4 +1,3 @@
-#! Modified by me
 #! ===========================================
 #! NEST Topology Module: A Case-Based Tutorial
 #! ===========================================
@@ -134,7 +133,7 @@ import nest.topology as topo
 #! Make sure we start with a clean slate, even if we re-run the script
 #! in the same Python session. 
 nest.ResetKernel()
-nest.SetKernelStatus({'overwrite_files': True}) 
+
 #! Import math, we need Pi
 import math
 
@@ -170,8 +169,8 @@ Params = {'N'           :     40,
           'phi_dg'      :    0.0,
           'retDC'       :   30.0,
           'retAC'       :   30.0,
-          'simtime'     : 50.0,
-          'sim_interval':   10.0
+          'simtime'     : 100.0,
+          'sim_interval':   5.0
           }
 
 #! Neuron Models
@@ -314,19 +313,12 @@ nest.CopyModel('smp_generator', 'RetinaNode',
 #! potential at certain intervals to memory only. We record the GID of
 #! the recorded neurons, but not the time.
 nest.CopyModel('multimeter', 'RecordingNode',
-                   params = {'withtime': True,
-                         'withgid': True,
-                         'to_file': True,
-                         'label': 'ht_mult',
-                         'interval': Params['sim_interval'],
-                         'record_from': ['V_m', 'g_ex', 'g_in'],
-                         'withpath'   : True })
-#           params = {'interval'   : Params['sim_interval'],
-#                         'record_from': ['V_m'],
-#                         'record_to'  : ['memory'],
-#                         'withgid'    : True,
-#                         'withpath'   : False,
-#                         'withtime'   : False})
+               params = {'interval'   : Params['sim_interval'],
+                         'record_from': ['V_m'],
+                         'record_to'  : ['memory'],
+                         'withgid'    : True,
+                         'withpath'   : False,
+                         'withtime'   : False})
 
 
 #! Populations
@@ -433,7 +425,7 @@ pylab.plot(Rppos[0], Rppos[1], 'o')
 axsz = Params['visSize']/2 + 0.2
 pylab.axis([-axsz,axsz,-axsz,axsz])
 pylab.title('Layer Rp')
-#pylab.show()
+pylab.show()
 
 
 #! Synapse models
@@ -787,15 +779,15 @@ def connPlot(spop, smod, tmod, syn, titl):
     # plot source neuron in red, slightly larger, targets on blue
     pylab.clf()
     pylab.plot(pos[0], pos[1], 'bo', markersize=5, zorder=99, label='Targets')
-    #pylab.plot(srcpos[:1], srcpos[1:], 'ro', markersize=10, 
-    #           markeredgecolor='r', zorder=1, label='Source')
+    pylab.plot(srcpos[0][:1], srcpos[0][1:], 'ro', markersize=10, 
+               markeredgecolor='r', zorder=1, label='Source')
     axsz = Params['visSize']/2 + 0.2
     pylab.axis([-axsz,axsz,-axsz,axsz])
     pylab.title(titl)
     pylab.legend()
 
     # pylab.show() required for `pyreport`
-    #pylab.show()
+    pylab.show()
 
 #! show Retina to TpRelay
 connPlot(retina, 'Retina', 'TpRelay', 'AMPA', 'Connections Retina -> TpRelay')
@@ -838,6 +830,7 @@ vmn=[-80,-80,-80,-80]
 vmx=[-50,-50,-50,-50]
 
 nest.Simulate(Params['sim_interval'])
+
 #! loop over simulation intervals
 for t in pylab.arange(Params['sim_interval'], Params['simtime'], Params['sim_interval']):
 
@@ -845,32 +838,31 @@ for t in pylab.arange(Params['sim_interval'], Params['simtime'], Params['sim_int
     nest.Simulate(Params['sim_interval'])
 
     # clear figure and choose colormap
-    #pylab.clf()
-    #pylab.jet()
+    pylab.clf()
+    pylab.jet()
 
     # now plot data from each recorder in turn, assume four recorders
     for name, r in recorders.iteritems():
         rec = r[0]
         sp = r[1]
-        #pylab.subplot(2,2,sp)
+        pylab.subplot(2,2,sp)
         d = nest.GetStatus(rec)[0]['events']['V_m']
 
-        #if len(d) != Params['N']**2:
+        if len(d) != Params['N']**2:
             # cortical layer with two neurons in each location, take average
-        #    d = 0.5 * ( d[::2] + d[1::2] )
-	print rec,sp,d,nest.GetKernelStatus()['time']   
+            d = 0.5 * ( d[::2] + d[1::2] )
+
         # clear data from multimeter
         nest.SetStatus(rec, {'n_events': 0})
-        #pylab.imshow(pylab.reshape(d, (Params['N'],Params['N'])),
-        #             aspect='equal', interpolation='nearest',
-        #             extent=(0,Params['N']+1,0,Params['N']+1),
-        #             vmin=vmn[sp-1], vmax=vmx[sp-1])
-        #pylab.colorbar()
-        #pylab.title(name + ', t = %6.1f ms' % nest.GetKernelStatus()['time'])
+        pylab.imshow(pylab.reshape(d, (Params['N'],Params['N'])),
+                     aspect='equal', interpolation='nearest',
+                     extent=(0,Params['N']+1,0,Params['N']+1),
+                     vmin=vmn[sp-1], vmax=vmx[sp-1])
+        pylab.colorbar()
+        pylab.title(name + ', t = %6.1f ms' % nest.GetKernelStatus()['time'])
 
     # required by ``pyreport``
-    #pylab.show()
+    pylab.show()
 
 #! just for some information at the end
-
 print nest.GetKernelStatus()

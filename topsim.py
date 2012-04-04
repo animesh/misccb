@@ -30,14 +30,14 @@ conndict={'connection_type':'divergent','mask':{'circular':{'radius':0.5}},"syna
 tp.ConnectLayers(lexc,lexc,conndict)
 tp.ConnectLayers(linh,lexc,conndict)
 
-nest.DivergentConnect(m,nest.GetLeaves(lexc)[0])
+nest.DivergentConnect(mm,nest.GetLeaves(lexc)[0])
 nest.DivergentConnect(exc,nest.GetLeaves(lexc)[0])
 nest.DivergentConnect(inh,nest.GetLeaves(linh)[0])
 
-d = nest.GetStatus(m)[0]['events']['V_m']
+d = nest.GetStatus(mm)[0]['events']['V_m']
 nest.Simulate(100)
 
-events = nest.GetStatus(m)[0]['events']
+events = nest.GetStatus(mm)[0]['events']
 t = events['times'];
 print d,t,events
 pl.clf()
