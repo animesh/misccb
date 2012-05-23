@@ -1,5 +1,8 @@
 #pdf("gatc.pdf")
 
+plot(1)
+
+
 gi.id49175990.gatc=read.table('data/gi.id=49175990.gatc')
 #summary(t(gi.id49175990.gatc))
 #hist(t(gi.id49175990.gatc),breaks=100)
