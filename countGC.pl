@@ -19,6 +19,7 @@ for(my $cnt=0;$cnt<=$len;$cnt+=$break){
 	    my $g=$sseq=~s/G/G/g;
 	    my $c=$sseq=~s/C/C/g;
 	    my $gc=$g+$c;
-	    print "$cnt\t$g\t$c\t$gc\n";
+	    my $cntm=$cnt+$break/2;
+	    print "$cntm\t$gc\n";
 }	
 
