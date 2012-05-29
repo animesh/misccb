@@ -32,7 +32,7 @@ close F2;
 foreach my $pgn (keys %pg){
 	foreach my $mn (keys %mrna){
 		if($pgn eq $mn){
-			print "$pgn\t$mn\t$pg{$pgn}\t$mrna{$mn}\n"
+			print "$pgn,$mn,$pg{$pgn},$mrna{$mn}\n"
 		}
 	}
 }
