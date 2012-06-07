@@ -2,8 +2,8 @@ $timdif=td("01:23:57","01:12:28");#print "$timdif\n";
 while(<>){$l++;$s=$_;$s=~s/\s+//g;if($_!~/[A-Z]/i and $_!~/:/ and $s ne ""){push(@n,$_);$cnt=$_;}elsif($_=~/:/){push(@t,$_);}else{$d{$cnt+0}.=$_;}}
 for($c=0;$c<=$#t;$c++){
 if($c<670){$dn=$n[$c]+0;print $dn,"\n",$t[$dn],$d{$dn};}
-elsif($c>795&&$c<1221){
-	$dn=$n[$c]-126;
+elsif($c>794&&$c<1221){
+	$dn=$n[$c]-125;
 	$tf1=$t[$dn];
 	$tf2=$t[$c];
 	@t1=split(/,|\s+/,$tf1);
@@ -11,7 +11,7 @@ elsif($c>795&&$c<1221){
 	$tr1=td($t2[0],$timdif);
 	$tr2=td($t2[3],$timdif);
 	#print "$t2[0]\t$t2[3]\t$tr1\t$tr2\n";
-	print $dn,"\n","$tr1,$t2[1] $t2[2] $tr2,$t2[4]\n",$d{$c};
+	print $dn,"\n","$tr1,$t2[1] $t2[2] $tr2,$t2[4]\n",$d{$c+1};
 }
 else{next}
 }
