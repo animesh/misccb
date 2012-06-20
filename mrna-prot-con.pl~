@@ -35,7 +35,7 @@ foreach my $pgn (keys %pg){
 	foreach my $mn (keys %mrna){
 		if($pgn eq $mn){
 			print "$pgn,$nc{$mn},$pg{$pgn},$mrna{$mn}\n";
-			if($nc{$mn}!=2){print "$nc{$mn}\t$nc{$mn}\n";}
+			#if($nc{$mn}!=2){print "$nc{$mn}\t$nc{$mn}\n";}
 		}
 		
 	}
