@@ -23,18 +23,22 @@ uf-mzxml -c 20070522_NH_Orbi2_HelaEpo_01.RAW > d1.mzxml
 uf-mzxml -c 20070522_NH_Orbi2_HelaEpo_02.RAW > d12.mzxml
 
 %% msviewer example
+
 load sample_lo_res
 msviewer(MZ_lo_res, Y_lo_res)
+
 plot(Y_lo_res(:,2))
 hold
 plot(Y_lo_res(:,1),'r.')
 hold off
 
 %% read from MS xml
+
 out = mzxmlread('d1.mzxml');
 out2 = mzxmlread('d12.mzxml');
 
-%% plot m z from MS xml
+%% plot m z from MS xml http://www.mathworks.se/help/bioinfo/ug/features-and-functions.html#bp4mcvy
+
 plot(out.index.offset.id, out.index.offset.value)
 m = out.scan(1).peaks.mz(1:2:end);
 z = out.scan(1).peaks.mz(2:2:end);
@@ -52,12 +56,31 @@ axis equal
 [f,xi] = ksdensity(z2); 
 plot(xi,f); 
 hold
-[f,xi] = ksdensity(m2); 
+[f,xi] = ksdensity(m2);      
 plot(xi,f,'r'); 
 hold off
 
+%% peaks {Retention}(M/Z,Intensity)
+
+%[P T]=mzxml2peaks(out)
+%msdotplot(P,T, 'Quantile',0.95)
+[MZ,Y] = msppresample(P,5000);
+msheatmap(MZ,T,log(Y))
+msdotplot(P,T)
+ksdensity(T)
+plot(P{1}(:,:))
+plot(P{1}(:,1),P{1}(:,2))
+plot(P{2}(:,1),P{2}(:,2))
+ksdensity(P{1}(:,1))
+ksdensity(P{500}(:,1))
+stem(P{500}(:,1),P{500}(:,2),'marker','none')
+stem(P{1500}(:,1),P{1500}(:,2),'marker','none')
+
+
+
 
 %% stem?
+
 x=1:100
 y=1:2:200
 stem(x,x)

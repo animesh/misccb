@@ -46,12 +46,25 @@ stem(m,z,'MarkerFaceColor','g', 'MarkerSize',2, 'MarkerEdgeColor','k')
 hold
 stem(m2,z2,'MarkerFaceColor','b', 'MarkerSize',2, 'MarkerEdgeColor','k')
 hold off
-dens(z2)
+hist(z2)
 hist(m2)
-axis tight
-x = [randn(30,1); 5+randn(30,1)];
-[f,xi] = ksdensity(x); 
+axis equal
+[f,xi] = ksdensity(z2); 
 plot(xi,f); 
+hold
+[f,xi] = ksdensity(m2);      
+plot(xi,f,'r'); 
+hold off
+
+%% peaks
+
+%[P T]=mzxml2peaks(out)
+%msdotplot(P,T, 'Quantile',0.95)
+[MZ,Y] = msppresample(P,5000);
+msheatmap(MZ,T,log(Y))
+msdotplot(P,T)
+ksdensity(T)
+
 
 %% stem?
 x=1:100
