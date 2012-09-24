@@ -31,6 +31,7 @@ plot(Y_lo_res(:,2))
 hold
 plot(Y_lo_res(:,1),'r.')
 hold off
+clear MZ_lo_res Y_lo_res;
 
 %% read from MS xml
 
@@ -62,7 +63,7 @@ hold off
 
 %% peaks {Retention}(M/Z,Intensity)
 
-%[P T]=mzxml2peaks(out)
+[P T]=mzxml2peaks(out)
 %msdotplot(P,T, 'Quantile',0.95)
 [MZ,Y] = msppresample(P,5000);
 msheatmap(MZ,T,log(Y))
@@ -74,8 +75,13 @@ plot(P{2}(:,1),P{2}(:,2))
 ksdensity(P{1}(:,1))
 ksdensity(P{500}(:,1))
 stem(P{500}(:,1),P{500}(:,2),'marker','none')
-stem(P{1500}(:,1),P{1500}(:,2),'marker','none')
 
+%% Retension time sampling m/z with threshold
+
+RT=5500
+thr=800
+plot(P{RT}(P{RT}(:,1)>thr,1))
+stem(P{RT}(P{RT}(:,1)>thr,1),P{RT}(P{RT}(:,1)>thr,2),'marker','none')
 
 
 
