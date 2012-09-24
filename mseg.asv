@@ -76,12 +76,49 @@ ksdensity(P{1}(:,1))
 ksdensity(P{500}(:,1))
 stem(P{500}(:,1),P{500}(:,2),'marker','none')
 
-RT=500
-thr=800
-plot(P{RT}(P{RT}(:,1)>thr,1))
-stem(P{RT}(P{RT}(:,1)>thr,1),P{RT}(P{RT}(:,1)>thr,2),'marker','none')
+%% Retension time sampling m/z with threshold
+
+RT=2798
+thr=771
+ksdensity(P{RT}(P{RT}(:,1)>thr,1))
+%plot(P{RT}(P{RT}(:,1)>thr,1))
+%stem(P{RT}(P{RT}(:,1)>thr,1),P{RT}(P{RT}(:,1)>thr,2),'marker','none')
 
 
+
+
+%% read fasta file
+
+%HP = fastaread('C:\Users\animeshs\SkyDrive\Homo_sapiens.GRCh37.68.pep.all.fa')
+TD = fastaread('C:\Users\animeshs\SkyDrive\Sarcophilus_harrisii.DEVIL7.0.68.pep.all.fa')
+aminolookup(HP(1).Sequence)
+molweight(HP(1).Sequence)
+aacount(HP(1).Sequence,'chart','bar')
+isoelectric(HP(2).Sequence)
+isoelectric([HP.('Sequence')])
+molweight([HP.('Sequence')])
+aacount([HP.('Sequence')],'chart','bar')
+aacount([TD.('Sequence')],'chart','bar')
+
+
+%% isoelectric point and molecular weight (Da-g/Mol)
+C={HP.('Sequence')};
+molweight(regexprep(cell2mat(C(57:57)),'[UX\*]',''))
+molweight(strrep(cell2mat(C(2:2)),'U',''))
+
+%molweight(strrep(strrep(strrep(x,'U',''),'X',''),'*',''))
+%ans =  4.2358e+09
+
+G2D=zeros(size(C,2),2);
+for i=1:size(C,2)
+    G2D(i,1)=molweight(regexprep(cell2mat(C(i)),'[UX\*]',''));
+    G2D(i,2)=isoelectric(regexprep(cell2mat(C(i)),'[UX\*]',''));
+end
+   
+%% example for protein seq
+
+gpSeq = getgenpept('AAB39602')
+[pI Charge] = isoelectric(gpSeq, 'Charge', 7.38)
 
 %% stem?
 
