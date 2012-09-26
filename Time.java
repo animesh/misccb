@@ -10,7 +10,7 @@ import java.util.TimeZone;
  *
  * @author sharma.animesh@gmail.com
  */
-public class Time {
+public class time {
 
     /**
      * @param args the command line arguments

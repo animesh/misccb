@@ -78,12 +78,94 @@ stem(P{500}(:,1),P{500}(:,2),'marker','none')
 
 %% Retension time sampling m/z with threshold
 
-RT=5500
-thr=800
-plot(P{RT}(P{RT}(:,1)>thr,1))
-stem(P{RT}(P{RT}(:,1)>thr,1),P{RT}(P{RT}(:,1)>thr,2),'marker','none')
+RT=2798
+thr=771
+ksdensity(P{RT}(P{RT}(:,1)>thr,1))
+%plot(P{RT}(P{RT}(:,1)>thr,1))
+%stem(P{RT}(P{RT}(:,1)>thr,1),P{RT}(P{RT}(:,1)>thr,2),'marker','none')
 
 
+
+
+%% read fasta file
+
+%HP = fastaread('C:\Users\animeshs\SkyDrive\Homo_sapiens.GRCh37.68.pep.all.fa')
+TD = fastaread('C:\Users\animeshs\SkyDrive\Sarcophilus_harrisii.DEVIL7.0.68.pep.all.fa')
+aminolookup(HP(1).Sequence)
+molweight(HP(1).Sequence)
+aacount(HP(1).Sequence,'chart','bar')
+isoelectric(HP(2).Sequence)
+isoelectric([HP.('Sequence')])
+molweight([HP.('Sequence')])
+aacount([HP.('Sequence')],'chart','bar')  %leucine rich
+aacount([TD.('Sequence')],'chart','bar')    %lucifer ;)
+
+
+%% isoelectric point and molecular weight (Da-g/Mol)
+
+C={HP.('Sequence')};
+molweight(regexprep(cell2mat(C(57:57)),'[UX\*]',''))
+molweight(strrep(cell2mat(C(2:2)),'U',''))
+x=strrep(strrep(strrep(x,'U',''),'X',''),'*','')
+%molweight(strrep(strrep(strrep(x,'U',''),'X',''),'*',''))
+%ans =  4.2358e+09
+isoelectric(x)
+
+G2D=zeros(size(C,2),2);
+for i=1:size(C,2)
+    G2D(i,1)=molweight(regexprep(cell2mat(C(i)),'[UX\*]',''));
+    G2D(i,2)=isoelectric(regexprep(cell2mat(C(i)),'[UX\*]',''));
+end
+   
+%% Tasmanian Devil
+
+CTD={TD.('Sequence')};
+
+G2DTD=zeros(size(CTD,2),2);
+for i=1:size(CTD,2)
+    G2DTD(i,1)=molweight(regexprep(cell2mat(CTD(i)),'[UX\*]',''));
+    G2DTD(i,2)=isoelectric(regexprep(cell2mat(CTD(i)),'[UX\*]',''));
+end
+   
+%% fragment digestion http://www.mathworks.se/help/bioinfo/ref/cleave.html
+
+%[partsPK, sitesPK, lengthsPK] = cleave(gpSeq.Sequence, 'trypsin', ... 
+[partsPK, sitesPK, lengthsPK] = cleave(x, 'trypsin', ... 
+    'exception', 'KP', ... 
+    'missedsites',0);
+
+TDHPMWPI=zeros(size(sitesPK,1),2);
+for i=1:size(sitesPK,1)
+    %fprintf('%5d%5d%5d %s\n',i, sitesPK(i),lengthsPK(i),partsPK{i})
+    TDHPMWPI(i,1)=molweight(partsPK{i});
+    TDHPMWPI(i,2)=isoelectric(partsPK{i});
+    fprintf('%5d%5d%5d %s\n',i, TDHPMWPI(i,1),TDHPMWPI(i,2),partsPK{i})
+end
+
+scatterhist(TDHPMWPI(:,2),TDHPMWPI(:,1))
+hist3(TDHPMWPI,[15 15])
+
+smoothhist2D([TDHPMWPI(:,2),TDHPMWPI(:,1)],200,[100,50])
+colorbar
+ylabel('Molecular Weight')
+xlabel('Isoelectric point')
+title('Trypsin digested human proteome')
+
+smoothhist2D(TDHPMWPI,5,[100, 100])
+smoothhist2D(TDHPMWPI,5,[100, 100],[],'surf')
+
+cloudPlot(TDHPMWPI(:,2),TDHPMWPI(:,1))
+
+
+
+%% example for protein seq
+
+gpSeq = getgenpept('AAB39602')
+[pI Charge] = isoelectric(gpSeq, 'Charge', 7.38)
+
+
+gpSeq = getgenpept('NP_002760.1')
+isoelectric(gpSeq)
 
 %% stem?
 
