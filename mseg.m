@@ -106,10 +106,10 @@ aacount([TD.('Sequence')],'chart','bar')    %lucifer ;)
 C={HP.('Sequence')};
 molweight(regexprep(cell2mat(C(57:57)),'[UX\*]',''))
 molweight(strrep(cell2mat(C(2:2)),'U',''))
-x=strrep(strrep(strrep(x,'U',''),'X',''),'*','')
+x=strrep(strrep(strrep([TD.('Sequence')],'U',''),'X',''),'*','');
 %molweight(strrep(strrep(strrep(x,'U',''),'X',''),'*',''))
 %ans =  4.2358e+09
-isoelectric(x)
+isoelectric([C])
 
 G2D=zeros(size(C,2),2);
 for i=1:size(C,2)
@@ -139,7 +139,7 @@ for i=1:size(sitesPK,1)
     %fprintf('%5d%5d%5d %s\n',i, sitesPK(i),lengthsPK(i),partsPK{i})
     TDHPMWPI(i,1)=molweight(partsPK{i});
     TDHPMWPI(i,2)=isoelectric(partsPK{i});
-    fprintf('%5d%5d%5d %s\n',i, TDHPMWPI(i,1),TDHPMWPI(i,2),partsPK{i})
+    fprintf('%10d\t%10d %s\n',i, TDHPMWPI(i,2),partsPK{i})
 end
 
 scatterhist(TDHPMWPI(:,2),TDHPMWPI(:,1))
@@ -154,8 +154,12 @@ title('Trypsin digested human proteome')
 smoothhist2D(TDHPMWPI,5,[100, 100])
 smoothhist2D(TDHPMWPI,5,[100, 100],[],'surf')
 
+% does not work on this one
 cloudPlot(TDHPMWPI(:,2),TDHPMWPI(:,1))
 
+% too slow but looks good
+y=[rand(10,10);rand(10,10)]
+DataDensityPlot(y(:,2),y(:,1),10)
 
 
 %% example for protein seq
