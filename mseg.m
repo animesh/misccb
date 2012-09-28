@@ -134,13 +134,16 @@ end
     'exception', 'KP', ... 
     'missedsites',0);
 
-TDHPMWPI=zeros(size(sitesPK,1),2);
+TDHPMWPI=zeros(size(sitesPK,1),1);
+
+
 for i=1:size(sitesPK,1)
     %fprintf('%5d%5d%5d %s\n',i, sitesPK(i),lengthsPK(i),partsPK{i})
-    TDHPMWPI(i,1)=molweight(partsPK{i});
-    TDHPMWPI(i,2)=isoelectric(partsPK{i});
-    fprintf('%10d\t%10d %s\n',i, TDHPMWPI(i,2),partsPK{i})
+    %TDHPMWPI(i,1)=molweight(partsPK{i});
+    %TDHPMWPI(i,2)=isoelectric(partsPK{i});
+    %fprintf('%10d\t%10d %s\n',i, TDHPMWPI(i,2),partsPK{i})
 end
+
 
 scatterhist(TDHPMWPI(:,2),TDHPMWPI(:,1))
 hist3(TDHPMWPI,[15 15])
@@ -153,13 +156,72 @@ title('Trypsin digested human proteome')
 
 smoothhist2D(TDHPMWPI,5,[100, 100])
 smoothhist2D(TDHPMWPI,5,[100, 100],[],'surf')
+ksdensity(TDHPMWPI(:,2)) % checkin the tri/quadri? modal distribution
+
+smoothhist2D([TDHPMWPI(:,2),lengthsPK(:)],5,[100, 100],[],'surf')
+
+DataDensityPlot(TDHPMWPI(:,2),lengthsPK(:),10)
 
 % does not work on this one
 cloudPlot(TDHPMWPI(:,2),TDHPMWPI(:,1))
+ksdensity(lengthsPK(lengthsPK(:)<20))
+
+sum((lengthsPK(:)==1))
 
 % too slow but looks good
 y=[rand(10,10);rand(10,10)]
 DataDensityPlot(y(:,2),y(:,1),10)
+
+
+%% random weighted protein sequence http://www.mathworks.se/help/bioinfo/ref/randseq.html
+
+%rw=randi(20,20,1)'
+%RSPW=randseq(length(x)/1000,'alphabet','amino','weights',rw/sum(rw))
+
+RSPW=randseq(length(x)/10,'alphabet','amino','FromStructure',aacount([TD.('Sequence')]));
+
+
+[RSPWpartsPK, RSPWsitesPK, RSPWlengthsPK] = cleave(RSPW, 'trypsin', ... 
+    'exception', 'KP', ... 
+    'missedsites',0);
+
+RSPWMWPI=zeros(size(RSPWsitesPK,1),1);
+
+
+for i=1:size(RSPWsitesPK,1)
+    RSPWMWPI(i,1)=molweight(RSPWpartsPK{i});
+    RSPWMWPI(i,2)=isoelectric(RSPWpartsPK{i});
+    fprintf('%10d\t%10d %s\n',i, RSPWMWPI(i,2),RSPWpartsPK{i})
+end
+
+smoothhist2D(RSPWMWPI,5,[100, 100])
+smoothhist2D(RSPWMWPI,5,[100, 100],[],'surf')
+ksdensity(RSPWMWPI(:,2)) % checkin the tri/quadri? modal distribution
+
+
+
+
+%% random protein sequence, trypsin digestion and PI values
+
+RSP=randseq(length(x)/10,'alphabet','amino');
+
+
+[RSPpartsPK, RSPsitesPK, RSPlengthsPK] = cleave(RSP, 'trypsin', ... 
+    'exception', 'KP', ... 
+    'missedsites',0);
+
+RSPMWPI=zeros(size(RSPsitesPK,1),1);
+
+
+for i=1:size(RSPsitesPK,1)
+    RSPMWPI(i,1)=molweight(RSPpartsPK{i});
+    RSPMWPI(i,2)=isoelectric(RSPpartsPK{i});
+    fprintf('%10d\t%10d %s\n',i, RSPMWPI(i,2),RSPpartsPK{i})
+end
+
+smoothhist2D(RSPMWPI,5,[100, 100])
+smoothhist2D(RSPMWPI,5,[100, 100],[],'surf')
+ksdensity(RSPMWPI(:,2)) % checkin the tri/quadri? modal distribution
 
 
 %% example for protein seq
