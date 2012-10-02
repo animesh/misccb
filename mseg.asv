@@ -33,10 +33,184 @@ plot(Y_lo_res(:,1),'r.')
 hold off
 clear MZ_lo_res Y_lo_res;
 
-%% read from MS xml
+%% Read MS mzxml from HeLa grown in SILAC Arg10/Lys8 (Heavy) and without (Light) under EGF for 2 hours, combined and lysed with Trypsin and fractioned in 24 parts using isoelectric focussing (PI based fractions, MS with CID in ion trap)
 
 out = mzxmlread('d1.mzxml');
 out2 = mzxmlread('d12.mzxml');
+
+%% heatmaps of MS spectra, log intensity as colors http://www.mathworks.se/help/bioinfo/examples/differential-analysis-of-complex-protein-and-metabolite-mixtures-using-liquid-chromatography-mass-spectrometry-lc-ms.html
+
+[ps,ts] = mzxml2peaks(out,'level',1);
+[pg,tg] = mzxml2peaks(out2,'level',1);
+[MZs,Ys] = msppresample(ps,5000);
+[MZg,Yg] = msppresample(pg,5000);
+
+fh1 = msheatmap(MZs,ts,log(Ys),'resolution',0.15);
+title('HeLa, SILAC+EGF, Fraction 1')
+fh2 = msheatmap(MZg,tg,log(Yg),'resolution',0.15);
+title('HeLa, SILAC+EGF, Fraction 2')
+
+% Picking out specific regions in the MS spectra
+ind_ser = samplealign(ts,[2000;4000]);
+figure(fh1);
+axis([300 600 ind_ser'])
+ind_gly = samplealign(tg,[2000;4000]);
+figure(fh2);
+axis([300 600 ind_gly'])
+
+
+%% lag between above two
+
+whos('Ys','Yg','ts','tg')
+plot(1:numel(ts),ts,1:numel(tg),tg)
+legend('Frc 1','Frc 2','Location','NorthWest')
+title('Time Vectors of the LCMS Data Sets')
+xlabel('Spectrum Index')
+ylabel('Retention Time (seconds)')
+
+
+%% stem3 example http://www.mathworks.se/help/bioinfo/examples/visualizing-and-preprocessing-hyphenated-mass-spectrometry-data-sets-for-metabolite-and-protein-peptide-profiling.html
+
+msdotplot(ps,ts,'quantile',.95) % check high intensity peaks
+title('5 Percent Overall Most Intense Peaks')
+
+numScans = numel(ps)
+basePeakInt = [out.scan.basePeakIntensity]';
+peaks_fil = cell(numScans,1);
+
+for i = 1:numScans
+    h = ps{i}(:,2) > (basePeakInt(i).*0.99);
+    peaks_fil{i} = ps{i}(h,:);
+end
+
+whos('basePeakInt','level_1','ps','peaks_fil')
+msdotplot(peaks_fil,ts)
+title('Peaks Above (0.75 x Base Peak Intensity) for Each Scan')
+
+peaks_3D = cell(numScans,1);
+for i = 1:numScans
+peaks_3D{i}(:,[2 3]) = peaks_fil{i};
+peaks_3D{i}(:,1) = time(i);
+end
+peaks_3D = cell2mat(peaks_3D);
+figure(fh2);
+stem3(peaks_3D(:,1),peaks_3D(:,2),peaks_3D(:,3),'marker','none')
+axis([0 12000 400 1500 0 1e9])
+view(60,60)
+xlabel('Retention Time (seconds)')
+ylabel('Mass/Charge (M/Z)')
+zlabel('Relative Ion Intensity')
+title('Peaks Above (0.75 x Base Peak Intensity) for Each Scan')
+%-- 10/1/2012 3:40 PM --%
+out = mzxmlread('c:\ani\d1.mzxml');
+out2 = mzxmlread('c:\ani\d12.mzxml');
+[ps,ts] = mzxml2peaks(out,'level',1);
+[pg,tg] = mzxml2peaks(out2,'level',1);
+[MZs,Ys] = msppresample(ps,5000);
+[MZg,Yg] = msppresample(pg,5000);
+fh1 = msheatmap(MZs,ts,log(Ys),'resolution',0.15);
+title('HeLa, SILAC+EGF, Fraction 1')
+fh2 = msheatmap(MZg,tg,log(Yg),'resolution',0.15);
+title('HeLa, SILAC+EGF, Fraction 2')
+fh1 = msheatmap(MZs,ts,log(Ys),'resolution',0.15);
+title('HeLa, SILAC+EGF, Fraction 1')
+fh2 = msheatmap(MZg,tg,log(Yg),'resolution',0.15);
+title('HeLa, SILAC+EGF, Fraction 2')
+fh1 = msheatmap(MZs,ts,log(Ys),'resolution',0.15);
+title('HeLa, SILAC+EGF, Fraction 1')
+fh2 = msheatmap(MZg,tg,log(Yg),'resolution',0.15);
+title('HeLa, SILAC+EGF, Fraction 2')
+smoothhist2D([RSPWlengthsPK(:),RSPWMWPI(:,2)],5,[100, 100])
+pwd
+edit c:\users\animeshs\SkyDrive\misccb\mseg.m
+[P T]=mzxml2peaks(out)
+numel(peaks)
+msdotplot(P,T,'quantile',.95);
+numel(P)
+P_3D = cell(numel(P),1);
+for i = 1:numScans
+P_3D{i}(:,[2 3]) = P{i};
+P_3D{i}(:,1) = T(i);
+end
+peaks_3D = cell2mat(peaks_3D);
+P_3D = cell(numel(P),1);
+for i = 1:numel(P)
+P_3D{i}(:,[2 3]) = P{i};
+P_3D{i}(:,1) = T(i);
+end
+peaks_3D = cell2mat(peaks_3D);
+P_3D = cell(numel(P),1);
+for i = 1:numel(P)
+P_3D{i}(:,[2 3]) = P{i};
+P_3D{i}(:,1) = T(i);
+end
+P_3D = cell2mat(P_3D);
+figure
+stem3(P_3D(:,1),P_3D(:,2),P_3D(:,3),'marker','none')
+axis([0 12000 400 1500 0 1e9])
+view(60,60)
+xlabel('Retention Time (seconds)')
+ylabel('Mass/Charge (M/Z)')
+zlabel('Relative Ion Intensity')
+title('Scan Peaks')
+%-- 10/2/2012 2:25 PM --%
+out = mzxmlread('d1.mzxml');
+out2 = mzxmlread('d12.mzxml');
+out = mzxmlread('C:\Users\animeshs\SkyDrive\d1.mzxml');
+out2 = mzxmlread('C:\Users\animeshs\SkyDrive\d12.mzxml');
+numScans=size(Ys,1)
+[ps,ts] = mzxml2peaks(out,'level',1);
+[MZs,Ys] = msppresample(ps,5000);
+[MZs,Ys] = msppresample(ps,50000);
+[MZs,Ys] = msppresample(ps,5000);
+fh1 = msheatmap(MZs,ts,log(Ys),'resolution',0.15);
+title('HeLa, SILAC+EGF, Fraction 1')
+numScans=size(Ys,1)
+numel(MZs)
+numScans=numel(MZs)
+peaks_3D = cell(numScans,1);
+for i = 1:numScans
+peaks_3D{i}(:,[2 3]) = MZs{i};
+peaks_3D{i}(:,1) = Ys(i);
+end
+peaks_3D = cell2mat(peaks_3D);
+peaks_3D = cell(numScans,1)
+for i = 1:numScans
+peaks_3D{i}(:,[2 3]) = MZs{i};
+peaks_3D{i}(:,1) = Ys(i);
+end
+MZs
+numScans=numel(ps)
+peaks_3D = cell(numScans,1);
+for i = 1:numScans
+peaks_3D{i}(:,[2 3]) = ps{i};
+peaks_3D{i}(:,1) = ts(i);
+end
+peaks_3D = cell2mat(peaks_3D);
+scan.basePeakIntensity
+out.scan.basePeakIntensity
+basePeakInt = [out.scan.basePeakIntensity]
+for i = 1:numScans
+h = ps{i}(:,2) > (basePeakInt(i).*0.75);
+peaks_3D{i}(:,[h 3]) = ps{i};
+peaks_3D{i}(:,1) = ts(i);
+end
+peaks_3D = cell2mat(peaks_3D);
+for i = 1:numScans
+h = ps{i}(:,2)
+end
+basePeakInt(i)
+numScans=numel(ps)
+%basePeakInt = [out.scan.basePeakIntensity]
+peaks_3D = cell(numScans,1);
+for i = 1:numScans
+%h = ps{i}(:,2) > (basePeakInt(i).*0.75);
+peaks_3D{i}(:,[2 3]) = ps{i};
+peaks_3D{i}(:,1) = ts(i);
+end
+peaks_3D = cell2mat(peaks_3D);
+
+
 
 %% plot m z from MS xml http://www.mathworks.se/help/bioinfo/ug/features-and-functions.html#bp4mcvy
 
@@ -60,6 +234,9 @@ hold
 [f,xi] = ksdensity(m2);      
 plot(xi,f,'r'); 
 hold off
+
+
+%% 
 
 %% peaks {Retention}(M/Z,Intensity)
 
@@ -173,9 +350,32 @@ y=[rand(10,10);rand(10,10)]
 DataDensityPlot(y(:,2),y(:,1),10)
 
 
-%% random weighted protein sequence
+%% random weighted protein sequence http://www.mathworks.se/help/bioinfo/ref/randseq.html
 
-RSPW=randseq(length(x)/1000,'alphabet','amino','FromStructure',aacount([TD.('Sequence')]))
+%rw=randi(20,20,1)'
+%RSPW=randseq(length(x)/1000,'alphabet','amino','weights',rw/sum(rw))
+
+RSPW=randseq(length(x)/10,'alphabet','amino','FromStructure',aacount([TD.('Sequence')]));
+
+
+[RSPWpartsPK, RSPWsitesPK, RSPWlengthsPK] = cleave(RSPW, 'trypsin', ... 
+    'exception', 'KP', ... 
+    'missedsites',0);
+
+RSPWMWPI=zeros(size(RSPWsitesPK,1),1);
+
+
+for i=1:size(RSPWsitesPK,1)
+    RSPWMWPI(i,1)=molweight(RSPWpartsPK{i});
+    RSPWMWPI(i,2)=isoelectric(RSPWpartsPK{i});
+    fprintf('%10d\t%10d %s\n',i, RSPWMWPI(i,2),RSPWpartsPK{i})
+end
+
+smoothhist2D(RSPWMWPI,5,[100, 100])
+smoothhist2D(RSPWMWPI,5,[100, 100],[],'surf')
+ksdensity(RSPWMWPI(:,2)) % checkin the tri/quadri? modal distribution
+
+
 
 
 %% random protein sequence, trypsin digestion and PI values
@@ -223,4 +423,31 @@ stem(x,y)
 
 memory
 x(2^30) = 2
+
+
+%% plot commands
+
+RSPW=randseq(floor(length(x)/10),'alphabet','amino','FromStructure',aacount([TD.('Sequence')]))
+smoothhist2D(RSPWMWPI,5,[100, 100],[],'surf')
+smoothhist2D(RSPMWPI,5,[100, 100],[],'surf')
+ksdensity(RSPMWPI(:,2))
+smoothhist2D(RSPWMWPI,5,[100, 100],[],'surf')
+smoothhist2D(RSPMWPI,5,[100, 100])
+smoothhist2D(RSPWMWPI,5,[100, 100])
+smoothhist2D([TDHPMWPI(:,2),lengthsPK(:)],5,[100, 100],[],'surf')
+smoothhist2D([TDHPMWPI(:,2),lengthsPK(:)],5,[100, 100])
+smoothhist2D([lengthsPK(:),TDHPMWPI(:,2)],5,[100, 100])
+smoothhist2D([lengthsPK(:),TDHPMWPI(:,1)],5,[100, 100])
+smoothhist2D([lengthsPK(:),TDHPMWPI(:,2)],5,[100, 100])
+smoothhist2D([RSPWlengthsPK(:),RSPWMWPI(:,2)],5,[100, 100])
+smoothhist2D([RSPlengthsPK(:),RSPMWPI(:,2)],5,[100, 100])
+smoothhist2D([RSPWlengthsPK(:),RSPWMWPI(:,2)],5,[100, 100])
+smoothhist2D([lengthsPK(:),TDHPMWPI(:,2)],5,[100, 100])
+aacount([TD.('Sequence')],'chart','bar')
+aacount([RSPW,'chart','bar')
+aacount(RSPW,'chart','bar')
+aacount(RSP,'chart','bar')
+aacount(HP(1).Sequence,'chart','bar')
+cleave('ataahshsgsglshhsshkjsjsrshshajsrhdhd', 'trypsin')
+
 
