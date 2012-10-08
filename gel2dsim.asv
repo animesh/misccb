@@ -255,29 +255,56 @@ ksdensity(lengthsPK(lengthsPK(:)<20))
 %% in silico trypsin digestion of UNG2 and isotopic distribution plot of fragments using http://www.mathworks.se/help/bioinfo/ref/isotopicdist.htm
 
 
+gpSeq = getgenpept('P13051')
+isoelectric(gpSeq)
 ung2 = getgenpept('P13051')
 isoelectric(ung2)
 [pI Charge] = isoelectric(gpSeq, 'Charge', 7.38)
+[RSPpartsPK, RSPsitesPK, RSPlengthsPK] = cleave(ung2, 'trypsin')
+UNG2 = getgenpept('P13051')
+isoelectric(UNG2)
+[pI Charge] = isoelectric(gpSeq, 'Charge', 7.38)
 [UNG2partsPK, UNG2sitesPK, UNG2lengthsPK] = cleave(UNG2, 'trypsin')
-
+for i=1:size(UNG2sitesPK,1)
+UNG2MWPI(i,1)=molweight(UNG2partsPK{i});
+UNG2MWPI(i,2)=isoelectric(UNG2partsPK{i});
+fprintf('%10d\t%10d %s\n',i, UNG2MWPI(i,2),UNG2partsPK{i})
+end
+for i=1:size(RSPsitesPK,1)
+%RSPMWPI(i,1)=molweight(RSPpartsPK{i});
+%RSPMWPI(i,2)=isoelectric(RSPpartsPK{i});
+fprintf('%10d\t%10d\t%10d %s\n',i, RSPMWPI(i,1),RSPMWPI(i,2),RSPpartsPK{i})
+end
+smoothhist2D(UNG2MWPI,5,[100, 100])
+plot(UNG2MWPI,'r.')
+plot(UNG2MWPI(:,1),UNG2MWPI(:,2),'r.')
+axis equal
+plot(UNG2MWPI(:,1),UNG2MWPI(:,2),'r.')
+aacount([UNG2.Sequence,'chart','bar')
+aacount(UNG2.Sequence,'chart','bar')
+cloudPlot(UNG2MWPI(:,1),UNG2MWPI(:,2),'r.')
+cloudPlot(UNG2MWPI(:,1),UNG2MWPI(:,2))
+hist3(UNG2MWPI(:,1),UNG2MWPI(:,2))
+hist3(UNG2MWPI)
+hist3(UNG2MWPI,[35,35])
+hist3(UNG2MWPI,[50,50])
+hist3(UNG2MWPI,[size(UNG2sitesPK,1),size(UNG2sitesPK,1)])
+[MD, Info, DF] = isotopicdist(UNG2.Sequence)
 for i=1:size(UNG2sitesPK,1)
 %UNG2MWPI(i,1)=molweight(UNG2partsPK{i});
 %UNG2MWPI(i,2)=isoelectric(UNG2partsPK{i});
-%fprintf('%10d\t%10d %s\n',i, UNG2MWPI(i,2),UNG2partsPK{i})
 fprintf('%10d\t%10d\t%10d %s\n',i, UNG2MWPI(i,1),UNG2MWPI(i,2),UNG2partsPK{i})
+%fprintf('%10d\t%10d %s\n',i, UNG2MWPI(i,2),UNG2partsPK{i})
 end
-
-smoothhist2D(UNG2MWPI,5,[100, 100])
-plot(UNG2MWPI,'r.')
-axis equal
-plot(UNG2MWPI(:,1),UNG2MWPI(:,2),'r.')
-aacount(UNG2.Sequence,'chart','bar')
-
-hist3(UNG2MWPI,[size(UNG2sitesPK,1),size(UNG2sitesPK,1)])
-
-[MD, Info, DF] = isotopicdist(UNG2.Sequence)
+for i=1:size(UNG2sitesPK,1)
+UNG2ID(i,1)=isotopicdist(UNG2partsPK{i});
+fprintf('%10d\t%10d\t%10d %s\n',i, UNG2ID(i,1),UNG2ID(i,2),UNG2partsPK{i})
+end
+for i=1:size(UNG2sitesPK,1)
+UNG2ID(i)=isotopicdist(UNG2partsPK{i});
+fprintf('%10d\t%10d\t%10d %s\n',i, UNG2ID(i),UNG2partsPK{i})
+end
 for i=1:size(UNG2sitesPK,1)
 isotopicdist(UNG2partsPK{i});
 %fprintf('%10d\t%10d\t%10d %s\n',i, UNG2ID(i),UNG2partsPK{i})
 end
-
