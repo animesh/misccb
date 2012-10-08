@@ -135,149 +135,19 @@ smoothhist2D(RSPMWPI,5,[100, 100],[],'surf')
 ksdensity(RSPMWPI(:,2)) % checkin the tri/quadri? modal distribution
 
 
-%% example for protein seq
-
-gpSeq = getgenpept('AAB39602')
-[pI Charge] = isoelectric(gpSeq, 'Charge', 7.38)
-
-
-gpSeq = getgenpept('NP_002760.1')
-isoelectric(gpSeq)
-
-%% stem?
-
-x=1:100
-y=1:2:200
-stem(x,x)
-stem(y,x)
-stem(x,y)
-
-
-%% mem test
-
-memory
-x(2^30) = 2
-
-
-%% plot commands
-
-RSPW=randseq(floor(length(x)/10),'alphabet','amino','FromStructure',aacount([TD.('Sequence')]))
-smoothhist2D(RSPWMWPI,5,[100, 100],[],'surf')
-smoothhist2D(RSPMWPI,5,[100, 100],[],'surf')
-ksdensity(RSPMWPI(:,2))
-smoothhist2D(RSPWMWPI,5,[100, 100],[],'surf')
-smoothhist2D(RSPMWPI,5,[100, 100])
-smoothhist2D(RSPWMWPI,5,[100, 100])
-smoothhist2D([TDHPMWPI(:,2),lengthsPK(:)],5,[100, 100],[],'surf')
-smoothhist2D([TDHPMWPI(:,2),lengthsPK(:)],5,[100, 100])
-smoothhist2D([lengthsPK(:),TDHPMWPI(:,2)],5,[100, 100])
-smoothhist2D([lengthsPK(:),TDHPMWPI(:,1)],5,[100, 100])
-smoothhist2D([lengthsPK(:),TDHPMWPI(:,2)],5,[100, 100])
-smoothhist2D([RSPWlengthsPK(:),RSPWMWPI(:,2)],5,[100, 100])
-smoothhist2D([RSPlengthsPK(:),RSPMWPI(:,2)],5,[100, 100])
-smoothhist2D([RSPWlengthsPK(:),RSPWMWPI(:,2)],5,[100, 100])
-smoothhist2D([lengthsPK(:),TDHPMWPI(:,2)],5,[100, 100])
-aacount([TD.('Sequence')],'chart','bar')
-aacount([RSPW,'chart','bar')
-aacount(RSPW,'chart','bar')
-aacount(RSP,'chart','bar')
-aacount(HP(1).Sequence,'chart','bar')
-cleave('ataahshsgsglshhsshkjsjsrshshajsrhdhd', 'trypsin')
-smoothhist2D([RSPWlengthsPK(:),RSPWMWPI(:,2)],5,[100, 100])
-
-
 %% plot for presentation
 
 cd M:\TS-desktop\MS
-gel2dsim
-C={HP.('Sequence')};
-molweight(regexprep(cell2mat(C(57:57)),'[UX\*]',''))
-molweight(strrep(cell2mat(C(2:2)),'U',''))
-isoelectric([C])
-isoelectric(C)
-[C]
-isoelectric(x)
-xtd=x;
-xcd=strrep(strrep(strrep([TD.('Sequence')],'U',''),'X',''),'*','');
-y=[rand(10,10);rand(10,10)]
-cloudPlot(y(:,2),y(:,1))
-y=[randn(10,10);randn(10,10)]
-cloudPlot(y(:,2),y(:,1))
-y=[randn(10,10);randn(10,10)]
-cloudPlot(y(:,2),y(:,1))
-y=[rand(10,10);rand(10,10)]
-DataDensityPlot(y(:,2),y(:,1),10)
-y=[rand(10,10);rand(10,10)]
-cloudPlot(y(:,2),y(:,1))
-DataDensityPlot(y(:,2),y(:,1),10)
-nlpca
-for i=1:size(sitesPK,1)
-%fprintf('%5d%5d%5d %s\n',i, sitesPK(i),lengthsPK(i),partsPK{i})
-TDHPMWPI(i,1)=molweight(partsPK{i});
-TDHPMWPI(i,2)=isoelectric(partsPK{i});
-fprintf('%10d\t%10d %s\n',i, TDHPMWPI(i,2),partsPK{i})
-end
-scatterhist(TDHPMWPI(:,2),TDHPMWPI(:,1))
-hist3(TDHPMWPI,[15 15])
-smoothhist2D([TDHPMWPI(:,2),TDHPMWPI(:,1)],200,[100,50])
-smoothhist2D(TDHPMWPI,5,[100, 100],[],'surf')
-ksdensity(TDHPMWPI(:,2))
-aacount([TD.('Sequence')],'chart','bar')
-aacount(HP(1).Sequence,'chart','bar')
-aacount([HP(1).Sequence],'chart','bar')
-aacount([HP.Sequence],'chart','bar')
-aacount([HP.Sequence]/10,'chart','bar')
-aacount([HP.Sequence]./10,'chart','bar')
-aacount([HP.Sequence],'chart','bar')
-aacount([TD.('Sequence')],'chart','bar')
-aacount([HP.Sequence],'chart','bar')
 aacount([TD.('Sequence')],'chart','bar')
 smoothhist2D([RSPWlengthsPK(:),RSPWMWPI(:,2)],5,[100, 100])
 aacount([TD.('Sequence')],'chart','bar')
-smoothhist2D(G2DTD,5,[100, 100])
-smoothhist2D(G2DTD',50,[100, 100])
-smoothhist2D(G2DTD,50,[100, 100])
-smoothhist2D(G2DTD,25,[150, 100])
 smoothhist2D(G2DTD,50,[150, 150])
 smoothhist2D(G2DTD)
 smoothhist2D(G2DTD,5,[100, 100],[],'surf')
-smoothhist2D([TDHPMWPI(:,2),TDHPMWPI(:,1)],200,[100,50])
-smoothhist2D([TDHPMWPI(:,2),lengthsPK(:)],5,[100, 100],[],'surf')
 smoothhist2D(TDHPMWPI,5,[100, 100],[],'surf')
 smoothhist2D([TDHPMWPI(:,2),lengthsPK(:)],5,[100, 100],[],'surf')
-smoothhist2D(RSPWMWPI,5,[100, 100],[],'surf')
-smoothhist2D(RSPMWPI,5,[100, 100],[],'surf')
 smoothhist2D(RSPWMWPI,5,[100, 100],[],'surf')
 ksdensity(TDHPMWPI(:,2))
 ksdensity(lengthsPK(lengthsPK(:)<20))
 
-
-%% in silico trypsin digestion of UNG2 and isotopic distribution plot of fragments using http://www.mathworks.se/help/bioinfo/ref/isotopicdist.htm
-
-
-ung2 = getgenpept('P13051')
-isoelectric(ung2)
-[pI Charge] = isoelectric(gpSeq, 'Charge', 7.38)
-[UNG2partsPK, UNG2sitesPK, UNG2lengthsPK] = cleave(UNG2, 'trypsin')
-
-for i=1:size(UNG2sitesPK,1)
-%UNG2MWPI(i,1)=molweight(UNG2partsPK{i});
-%UNG2MWPI(i,2)=isoelectric(UNG2partsPK{i});
-%fprintf('%10d\t%10d %s\n',i, UNG2MWPI(i,2),UNG2partsPK{i})
-fprintf('%10d\t%10d\t%10d %s\n',i, UNG2MWPI(i,1),UNG2MWPI(i,2),UNG2partsPK{i})
-end
-
-smoothhist2D(UNG2MWPI,5,[100, 100])
-plot(UNG2MWPI,'r.')
-axis equal
-plot(UNG2MWPI(:,1),UNG2MWPI(:,2),'r.')
-aacount(UNG2.Sequence,'chart','bar')
-
-hist3(UNG2MWPI,[size(UNG2sitesPK,1),size(UNG2sitesPK,1)])
-
-[MD, Info, DF] = isotopicdist(UNG2.Sequence)
-for i=1:size(UNG2sitesPK,1)
-isotopicdist(UNG2partsPK{i});
-%fprintf('%10d\t%10d\t%10d %s\n',i, UNG2ID(i),UNG2partsPK{i})
-end
 
