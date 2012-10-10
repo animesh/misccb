@@ -5,6 +5,7 @@ ung2 = getgenpept('P13051')
 isoelectric(ung2)
 [pI Charge] = isoelectric(gpSeq, 'Charge', 7.38)
 [UNG2partsPK, UNG2sitesPK, UNG2lengthsPK] = cleave(UNG2, 'trypsin')
+%isotopicdist(UNG2partsPK{24})
 
 for i=1:size(UNG2sitesPK,1)
     %UNG2MWPI(i,1)=molweight(UNG2partsPK{i});
@@ -14,16 +15,16 @@ for i=1:size(UNG2sitesPK,1)
 end
 
 smoothhist2D(UNG2MWPI,5,[100, 100])
-plot(UNG2MWPI,'r.')
+plot(UNG2MWPI)
 axis equal
 plot(UNG2MWPI(:,1),UNG2MWPI(:,2),'r.')
 aacount(UNG2.Sequence,'chart','bar')
-
 hist3(UNG2MWPI,[size(UNG2sitesPK,1),size(UNG2sitesPK,1)])
 
 %% isotopic distribution plot of fragments using http://www.mathworks.se/help/bioinfo/ref/isotopicdist.htm
 
 [MD, Info, DF] = isotopicdist(UNG2.Sequence);
+
 
 fileID = fopen('UNG2Frags.tab.txt','w');
 for i=1:size(UNG2sitesPK,1)
@@ -37,4 +38,26 @@ for i=1:size(UNG2sitesPK,1)
     end
 end
 fclose(fileID);
+
+%% missed cleavage, if # of sites is l => (l+1)*(l+2)/2 total number of fragements
+
+pep='GRRLKYTRLHP'
+site='[KR](?!P)'
+
+strfind(pep,'R')	%find overlapping patterns
+strfind(pep,'K')	%cannot handle regex?
+
+idx=regexp(pep, site)
+
+[MisspartsPK, MisssitesPK, MisslengthsPK] = cleave(pep , 'trypsin','missedsites',size(idx,2))
+
+%% Acetylation (K N-ter) Pho (S T Y) O-GlcNac (S T) [HR??] GlyGly (K) Oxd-M
+
+for i=1:size(MisssitesPK,1)
+    for j=1:MisslengthsPK(i)
+        [MD, Info, DF] =isotopicdist(MisspartsPK{i}(j:MisslengthsPK(i)), 'nterm','acetyl','showplot', false);
+        fprintf('%s\t%10d\t%s\n',[int2str(i),' ',int2str(j)], Info.MonoisotopicMass, MisspartsPK{i}(j:MisslengthsPK(i)))
+    end
+end
+
 
