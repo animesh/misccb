@@ -1,15 +1,15 @@
 %% in silico trypsin digestion of UNG2
 
 
-ung2 = getgenpept('P13051')
-isoelectric(ung2)
-[pI Charge] = isoelectric(gpSeq, 'Charge', 7.38)
+UNG2 = getgenpept('P13051')
+isoelectric(UNG2)
+[pI Charge] = isoelectric(UNG2, 'Charge', 7.38)
 [UNG2partsPK, UNG2sitesPK, UNG2lengthsPK] = cleave(UNG2, 'trypsin')
 %isotopicdist(UNG2partsPK{24})
 
 for i=1:size(UNG2sitesPK,1)
-    %UNG2MWPI(i,1)=molweight(UNG2partsPK{i});
-    %UNG2MWPI(i,2)=isoelectric(UNG2partsPK{i});
+    UNG2MWPI(i,1)=molweight(UNG2partsPK{i});
+    UNG2MWPI(i,2)=isoelectric(UNG2partsPK{i});
     %fprintf('%10d\t%10d %s\n',i, UNG2MWPI(i,2),UNG2partsPK{i})
     fprintf('%10d\t%10d\t%10d %s\n',i, UNG2MWPI(i,1),UNG2MWPI(i,2),UNG2partsPK{i})
 end
