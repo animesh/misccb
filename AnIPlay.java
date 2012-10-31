@@ -1,26 +1,46 @@
 package LUDOSimulator;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
+import java.util.Hashtable;
+
 
 public class AnIPlay implements LUDOPlayer {
 
 	LUDOBoard board;
 	Random rand;
 	int playCnter;
-	//File f = new File("filename");
-	//boolean success =f.delete();
+	Hashtable moveTable = new Hashtable();
+	Double reward =  0.05;
+	Double penalty = reward/2.0;
+
 	public AnIPlay(LUDOBoard board){
 		this.board = board;
 		rand = new Random();
 		playCnter = 0;
+		moveTable.put(0, 1/6.0);
+		moveTable.put(1, 1/6.0);
+		moveTable.put(2, 1/6.0);
+		moveTable.put(3, 1/6.0);
+		moveTable.put(4, 1/6.0);
+		moveTable.put(5, 1/6.0);
+		
 	}
 	
+	public void reward() {
+		moveTable.put(0, (Double) moveTable.get(0)-penalty );
+		moveTable.put(1, (Double) moveTable.get(1)+reward );
+		moveTable.put(2, (Double) moveTable.get(0)-penalty );
+		moveTable.put(3, (Double) moveTable.get(0)-penalty );
+		moveTable.put(4, (Double) moveTable.get(0)-penalty );
+		moveTable.put(5, (Double) moveTable.get(0)-penalty );
+	}
+	
+
 	
 	public void play() {
-		playCnter++;
+/*		playCnter++;
 		if(playCnter%100==0){		
 			BufferedWriter out;
 				try {
@@ -32,6 +52,8 @@ public class AnIPlay implements LUDOPlayer {
 					e.printStackTrace();
 				} 
 		}
+*/
+	      
 		board.print("AnIPlay");
 		board.rollDice();
 		float nrmx =-1;
@@ -39,12 +61,27 @@ public class AnIPlay implements LUDOPlayer {
 		for(int i=0;i<4;i++)
 		{
 			float value = analyzeBrickSituation(i); 
-			if(value>nrmx&&value>0) {
-				nrbest = i;
-				nrmx = value;
-			}
+		     rand = new Random();
+		     Double sum = 0.0;
+		     Double prob = rand.nextDouble();
+		     
+		     for( int j=0;j<6;j++){
+		    	 sum += (Double) moveTable.get(j);
+		    	 if( prob < sum && value>nrmx && value>0){
+						nrbest = i;
+						nrmx = value;
+		    	 }
+		     }
 		}
-		if(nrbest!=-1) board.moveBrick(nrbest);
+	     switch( (int) nrmx ){
+	     	case 0: board.moveBrick(nrbest); break;
+	     	case 1: board.moveBrick(nrbest); reward(); break;
+	     	case 2: board.moveBrick(nrbest); break;
+	     	case 3: board.moveBrick(nrbest); break;
+	     	case 4: board.moveBrick(nrbest); break;
+	     	case 5: board.moveBrick(nrbest); break;
+	     }
+//		if(nrbest!=-1) board.moveBrick(nrbest);
 	}
 	public float analyzeBrickSituation(int i) {
 		if(board.moveable(i)) {
@@ -106,4 +143,5 @@ public class AnIPlay implements LUDOPlayer {
 		return false;
 	}
 }
+
 
