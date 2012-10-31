@@ -26,11 +26,11 @@ my %t2o = (
       'GLU' => 'E',
     );
 
-my	%o2t	=	(	
-	'A'	=>	'ALA'	,
-	'V'	=>	'VAL'	,
-	'L'	=>	'LEU'	,
-	'I'	=>	'ILE'	,
+my	%o2f	=	(	
+	'A'	=>	'ALANINE'	,
+	'V'	=>	'VALINE'	,
+	'L'	=>	'LEUCINE'	,
+	'I'	=>	'ISOLEUCINE'	,
 	'P'	=>	'PRO'	,
 	'W'	=>	'TRP'	,
 	'F'	=>	'PHE'	,
