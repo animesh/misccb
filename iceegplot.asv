@@ -1,8 +1,0 @@
-%% read data
-d=load('C:\Users\Amithabh\Desktop\ani\iceeg\Sample.mat')
-[r c]=size(d.d)
-plot(d.d(r,:))
-
-%% check
-eig(d.d(r,:))
-%xcorr(d.d(r,:)',d.d(r-1,:)')

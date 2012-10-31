@@ -1,14 +1,17 @@
 package LUDOSimulator;
 
-public class AnIPlay {
+public class AniPlayer implements LUDOPlayer {
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		LUDO ani = new LUDO();
-		ani.play();
+	LUDOBoard board;
+
+	public AniPlayer(LUDOBoard board){
+		this.board = board;
 	}
 	
+	public void play() {
+		board.print("AniPlayer playing");
+		
+		// insert your code here
+	}
 }
 
