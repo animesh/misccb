@@ -63,9 +63,7 @@ end
 
 %% non linear PCA over molecular weights
 
-data = [MisssitesPK;MisslengthsPK];
-plot(data)
+data = [sin(t);cos(t)];       % circle
 [c,net]=nlpca(data, 1,  'type','inverse',  'circular','yes' );
 nlpca_plot(net)  
-
-
+  
