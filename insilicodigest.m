@@ -1,3 +1,10 @@
+%% in silico digestion with trypsin, lys-c and arg-c
+
+digestNphosphorylate('Q9GZX7','trypsin',1,8)
+digestNphosphorylate('Q9GZX7','lysc',1,8)
+digestNphosphorylate('Q9GZX7','arg-c',1,8)
+
+
 %% in silico trypsin digestion of UNG2
 
 

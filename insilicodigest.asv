@@ -1,3 +1,6 @@
+
+
+
 %% in silico trypsin digestion of UNG2
 
 
@@ -63,7 +66,9 @@ end
 
 %% non linear PCA over molecular weights
 
-data = [sin(t);cos(t)];       % circle
+data = [MisssitesPK;MisslengthsPK];
+plot(data)
 [c,net]=nlpca(data, 1,  'type','inverse',  'circular','yes' );
 nlpca_plot(net)  
-  
+
+
