@@ -1,8 +1,23 @@
 %% in silico digestion with trypsin, lys-c and arg-c
 
-digestNphosphorylate('Q9GZX7','trypsin',1,8)
-digestNphosphorylate('Q9GZX7','lysc',1,8)
-digestNphosphorylate('Q9GZX7','arg-c',1,8)
+digestNphosphorylate('Q9GZX7','trypsin',2,8,400,2000)
+digestNphosphorylate('Q9GZX7','lysc',2,8,400,2000)
+digestNphosphorylate('Q9GZX7','arg-c',2,8,400,2000)
+
+digestNphosphorylate('Q9GZX7','trypsin',2,8,400,1000)
+fid = fopen('Q9GZX7.trypsin.2.8.400.1000.txt');
+data = textscan(fid, '%d %d %s %f %f %f %f %f','Delimiter','\t');
+fclose(fid);
+plot(data{7},'r.')
+hist(data{7},[1000])
+sum(data{7}>=1000)
+[idx]=find(data{7}>=1000)
+data{7}(idx)
+whos data
+data{1}
+
+(molweight('VTWFTSWSPCYDCARHVADFLR')+3*1.007276466812+5*MolMass('HPO3'))/3>1000
+
 
 
 %% in silico trypsin digestion of UNG2
