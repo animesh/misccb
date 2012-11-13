@@ -1,3 +1,31 @@
+%% Danio rerio
+
+DRA=fastaread('C:\Users\animeshs\Google Drive\DANRE.fasta\DANRE.fasta');
+
+aacount([DRA.('Sequence')],'chart','bar')
+
+
+DR={DRA.('Sequence')};
+molweight(regexprep(cell2mat(DR(57:57)),'[UX\*]',''))
+
+G2DR=zeros(size(DR,2),2);
+for i=1:size(DR,2)
+    G2DR(i,1)=molweight(regexprep(cell2mat(DR(i)),'[UX\*]',''));
+    G2DR(i,2)=isoelectric(regexprep(cell2mat(DR(i)),'[UX\*]',''));
+end
+
+
+smoothhist2D(G2DR,5,[100, 100],[],'surf')
+ksdensity(G2DR(:,2))
+ksdensity(G2DR(:,1))
+
+[idx]=(G2DR(:,1)<18000&G2DR(:,1)>16000&G2DR(:,2)>2&G2DR(:,2)<4)
+DRA(idx).('Header')
+
+smoothhist2D(G2DR(idx,:),5,[100, 100],[],'surf')
+
+hist3(G2DR(idx,:))
+
 %% read fasta file
 
 HP = fastaread('Homo_sapiens.GRCh37.68.pep.all.fa')

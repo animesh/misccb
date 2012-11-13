@@ -1,10 +1,11 @@
-function funs = digestNphosphorylate(s,e,m,l,dct,tct)
+function fn = digestNphosphorylate(s,e,m,l,dct,tct)
+    fn=[s,'.',e,'.',int2str(m),'.',int2str(l),'.',int2str(dct),'.',int2str(tct),'.txt'];
     fprintf('Sequence %s\t Enzyme %s\t Missed Cleavage %d\t Minimum Length %d 2+Threshold %d\t 3+Threshold %d\n',s,e,m,l,dct,tct);
     em=0.0005485799094;
     pm=1.007276466812;
     ph3m=MolMass('HPO3');
     [parts, sites, lengths] = cleave(getgenpept(s), e,'missedsites',m)
-    fileID = fopen([s,'.',e,'.',int2str(m),'.',int2str(l),'.',int2str(dct),'.',int2str(tct),'.txt'],'w');
+    fileID = fopen(fn,'w');
     for i=1:size(sites,1)
         if(lengths(i)>=l & (((molweight(parts{i})+2*pm)/2) > dct) & ((tct-((molweight(parts{i})+3*pm)/3))>eps(tct)))
             stypos=regexp(upper(parts{i}),'[STY]');

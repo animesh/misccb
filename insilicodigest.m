@@ -1,6 +1,7 @@
 %% in silico digestion with trypsin, lys-c and arg-c
 
-digestNphosphorylate('Q9GZX7','trypsin',2,8,400,2000)
+name=digestNphosphorylate('Q9GZX7','trypsin',2,8,400,2000);
+fprintf('Results written to file %s\n',name);
 digestNphosphorylate('Q9GZX7','lysc',2,8,400,2000)
 digestNphosphorylate('Q9GZX7','arg-c',2,8,400,2000)
 
