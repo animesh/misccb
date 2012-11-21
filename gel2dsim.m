@@ -1,6 +1,10 @@
 %% Danio rerio
 
-DRA=fastaread('C:\Users\animeshs\Google Drive\DANRE.fasta\DANRE.fasta');
+%DRA=fastaread('C:\Users\animeshs\Google Drive\DANRE.fasta\DANRE.fasta');
+
+% brain specific protein list http://www.uniprot.org/uniprot/?query=organism%3A%22danio+rerio%22+AND+tissue%3Abrain&sort=score , download on top right
+
+DRA=fastaread('C:\Users\animeshs\Google Drive\MSA\ZFbrainP.fasta');
 
 aacount([DRA.('Sequence')],'chart','bar')
 
@@ -19,7 +23,8 @@ smoothhist2D(G2DR,5,[100, 100],[],'surf')
 ksdensity(G2DR(:,2))
 ksdensity(G2DR(:,1))
 
-[idx]=(G2DR(:,1)<18000&G2DR(:,1)>16000&G2DR(:,2)>2&G2DR(:,2)<4)
+%[idx]=(G2DR(:,1)<18000&G2DR(:,1)>16000&G2DR(:,2)>2&G2DR(:,2)<4)
+[idx]=(G2DR(:,1)<18000&G2DR(:,1)>1000&G2DR(:,2)>2&G2DR(:,2)<4)
 DRA(idx).('Header')
 
 smoothhist2D(G2DR(idx,:),5,[100, 100],[],'surf')
