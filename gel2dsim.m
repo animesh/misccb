@@ -1,8 +1,16 @@
+%% UNG2
+
+seq=getgenpept('P13051')
+aacount(seq,'chart','bar')
+molweight(seq)
+isoelectric(seq)
+
+
 %% Danio rerio
 
-%DRA=fastaread('C:\Users\animeshs\Google Drive\DANRE.fasta\DANRE.fasta');
+DRA=fastaread('C:\Users\animeshs\Google Drive\DANRE.fasta\DANRE.fasta');
 
-% brain specific protein list http://www.uniprot.org/uniprot/?query=organism%3A%22danio+rerio%22+AND+tissue%3Abrain&sort=score , download on top right
+%% brain specific protein list http://www.uniprot.org/uniprot/?query=organism%3A%22danio+rerio%22+AND+tissue%3Abrain&sort=score , download on top right
 
 DRA=fastaread('C:\Users\animeshs\Google Drive\MSA\ZFbrainP.fasta');
 
