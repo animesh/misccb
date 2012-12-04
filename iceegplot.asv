@@ -18,8 +18,9 @@ pretty(f)
 
 %% RBM's:http://code.google.com/p/matrbm/
 
+data=d.d;
 %train an RBM with binary visible units and 500 binary hidden
-model= rbmBB(d, 500);
+model= rbmBB(data, 500);
 
 %visualize the learned weights
 visualize(model.W);
