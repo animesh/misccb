@@ -1,9 +1,9 @@
 use strict;
 
-my $f1 = shift @ARGV;
-my $i1 = shift @ARGV;
-my $f2 = shift @ARGV;
-my $i2 = shift @ARGV;
+my $path = shift @ARGV;
+my $pat = shift @ARGV;
+my $col = shift @ARGV;
+
 
 my @tmp;
 my @name;
