@@ -1,76 +1,53 @@
 use strict;
+use Text::ParseWords;
 
-my $f1 = shift @ARGV;
-my $f2 = shift @ARGV;
-my @tmp;
-my @name;
-my %pg;
+my $path = shift @ARGV;
+my $pat = shift @ARGV;
+my $i1 = shift @ARGV;
+my @files=<$path/*$pat>;
 my %mrna;
 my %nc;
-my $lcnt;
 
-
-open (F1, $f1) || die "can't open \"$f1\": $!";
-while (my $line = <F1>) {
-    $lcnt++;
-	@tmp=split(/\t/,$line);
-        if ($lcnt>1 && $tmp[19]){
- 		@name=split(/\;/,$tmp[0]);
- 		foreach (@name) { if(!/^(REV|CON)/){$pg{$_}="$tmp[19]"; $nc{$_}++;}} 	
-		#print "$name[1]\t$tmp[19]\n";
+print "FileColumn$i1\t";
+foreach my $f1 (@files){
+    my @tmp;
+    my @name;
+    my %pg;
+    my $lcnt;
+    my $fn=$f1;
+    $fn=~s/$path|$pat|\///g;
+    print "$fn\t";
+    open (F1, $f1) || die "can't open \"$f1\": $!";
+    while (my $line = <F1>) {
+	$lcnt++;
+	if($pat=~/csv/){@tmp=parse_line(',',0,$line);}
+	if($pat=~/txt/){@tmp=parse_line('\t',0,$line);}
+        if ($lcnt>1){
+	    @name=split(/\;/,$tmp[0]);
+	    foreach (@name) {
+		my $key="$_;$tmp[1];$f1";
+		if($tmp[$i1]=~/[0-9]/){my $htl="$tmp[$i1], $tmp[7], $tmp[8], $tmp[11], $tmp[12], $tmp[15]";$mrna{$key}.="$htl; ";}
+#		if($tmp[$i1]=~/[0-9]/){my $htl=$tmp[$i1]/($tmp[$i1]+1);$mrna{$key}.="$tmp[$i1] ";}
+		elsif($tmp[$i1] eq ""){$mrna{$key}.="NA ";}
+		else{$mrna{$key}.="$tmp[$i1] ";} 		
+		$nc{"$_;$tmp[1]"}++;
+	    }
         }
-}
-close F1;
-$lcnt=0;
-
-open (F2, $f2) || die "can't open \"$f2\": $!";
-while (my $line = <F2>) {
-    $lcnt++;
-	$line=~s/\"//g;
-        @tmp=split(/\,/,$line);
-        if ($lcnt>1 && $tmp[0]){
- 		@name=split(/\;/,$tmp[0]);
- 		foreach (@name) { $mrna{$_}="$tmp[9]"; $nc{$_}++;} 	
-		#print "$tmp[0]\t$tmp[9]\n";
-        }
-}
-close F2;
-
-my %cpgn;
-my $cp;
-my $cm;
-
-foreach my $pgn (keys %pg){
-    $cp++;
-    $cm=0;
-    foreach my $mn (keys %mrna){
-	    $cm++;
-		if($pgn eq $mn){
-		    my $ratios;
-		    if($mrna{$mn}){$ratios=$pg{$pgn}/$mrna{$mn};}
-			print "MATCH\t$pgn,$nc{$mn}\t$pg{$pgn}\t$mrna{$mn}\t$ratios\n";
-			$cpgn{$pgn}++;
-			#if($nc{$mn}!=2){print "$nc{$mn}\t$nc{$mn}\n";}
-		}
-
     }
-    if(!$cpgn{$pgn}){print "MQ\t$pgn\t$nc{$pgn}\t$pg{$pgn}\n"}
+    close F1;
 }
+print "\n";
 
-foreach  (keys %mrna){
-    if(!$cpgn{$_}){print "PD\t$_$nc{$_}\t\t$mrna{$_}\n"}
+foreach my $g  (keys %nc){
+    print "$g\t";
+    foreach  my $f (@files){
+	my $key="$g;$f";
+	print "$mrna{$key}\t";
+    }
+    print "\n";
 }
-
-
-print "TOTAL\tMQ\t$cp\tPD\t$cm\n";
 
 
 __END__
 
-perl pdmqcomp.pl /cygdrive/m/RAW/AidaX/volin/txt/proteinGroups.txt /cygdrive/m/RAW/AidaX/VOLIN_121125_AIDA_PD.csv | grep "^MATCH"
-
-sed 's/,/ /g' /cygdrive/m/RAW/AidaX/VOLIN_121125_AIDA_PD.csv | awk '{print $1}' | wc
-
-awk '{print $1}' /cygdrive/m/RAW/AidaX/volin/txt/proteinGroups.txt | sed 's/;/ /g' | wc
-
-
+perl pdmqcomp.pl /cygdrive/m/Result/Sissel Proteins.csv 2
