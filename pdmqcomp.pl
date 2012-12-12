@@ -36,15 +36,17 @@ foreach my $f1 (@files){
     }
     close F1;
 }
-print "\n";
+print "ExperimentsGeneDetectedIn\n";
 
 foreach my $g  (keys %nc){
+    my $ocg;
     print "$g\t";
     foreach  my $f (@files){
 	my $key="$g;$f";
 	print "$mrna{$key}\t";
+	if($mrna{$key}){$ocg++;}
     }
-    print "\n";
+    print "$ocg\n";
 }
 
 
