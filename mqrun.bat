@@ -1,10 +1,19 @@
-DIR /B M:\RAW\KA\P\12*.raw > tempfile.txt
+set MAXQUANTDIR=C:\Users\animeshs\SkyDrive\MaxQuant
+set DATADIR=M:\RAW\KA
+set PREFIXRAW=
+set PARAMFILE=KAPar.xml
+set SEARCHTEXT=TestFile
 
-FOR /F "tokens=1,2 delims=." %%i in (tempfile.txt) do call :Change %%i
+DIR /B %DATADIR%\%PREFIXRAW%*.raw > %DATADIR%\tempfile.txt
 
-:: FOR %%A IN (DEL) DO %%A tempfile.txt
+FOR /F "eol=  tokens=1,2 delims=." %%i in (%DATADIR%\tempfile.txt) do  ( 
+	if [%%i] neq "\n" (
+		call :Change %%i
+		%MAXQUANTDIR%\bin\MaxQuantCmd.exe %DATADIR%\%%i.xml 4
+		copy %DATADIR%\combined\txt\proteinGroups.txt %DATADIR%\%%i.txt
+	)
+)
 
-:: C:\Users\animeshs\SkyDrive\MaxQuant\bin\MaxQuantCmd.exe C:\Users\animeshs\Desktop\check.xml 4
 
 
 
@@ -12,9 +21,8 @@ FOR /F "tokens=1,2 delims=." %%i in (tempfile.txt) do call :Change %%i
 :Change
 setlocal enabledelayedexpansion
 set FileN=%~1
-set INTEXTFILE=M:\RAW\KA\P\KAParCp.xml
-set OUTTEXTFILE=M:\RAW\KA\P\%FileN%.xml
-set SEARCHTEXT=TestFile
+set INTEXTFILE=%DATADIR%\%PARAMFILE%
+set OUTTEXTFILE=%DATADIR%\%FileN%.xml
 set REPLACETEXT=%FileN%
 set OUTPUTLINE=
 
