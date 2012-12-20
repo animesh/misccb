@@ -4,6 +4,7 @@ use Text::ParseWords;
 my $path = shift @ARGV;
 my $pat = shift @ARGV;
 my $i1 = shift @ARGV;
+
 my @files=<$path/*$pat>;
 my %mrna;
 my %nc;
@@ -26,10 +27,9 @@ foreach my $f1 (@files){
 	    @name=split(/\;/,$tmp[0]);
 	    foreach (@name) {
 		my $key=$_.$f1;
-		if($tmp[$i1]=~/[0-9]/){my $htl=$tmp[$i1]/($tmp[$i1]+1);$mrna{$key}.="$htl ";}
-#		if($tmp[$i1]=~/[0-9]/){my $htl=$tmp[$i1]/($tmp[$i1]+1);$mrna{$key}.="$tmp[$i1] ";}
-		elsif($tmp[$i1] eq ""){$mrna{$key}.="NA ";}
-		else{$mrna{$key}.="$tmp[$i1] ";} 		
+		if($tmp[$i1]=~/[0-9]/ and $tmp[$i1-1]!=0){my $htl=$tmp[$i1]/($tmp[$i1]+$tmp[$i1-1]);$mrna{$key}.="$htl ";}
+		elsif($tmp[$i1]==0 && $tmp[$i1-1]==0  ){$mrna{$key}.="Both0";}
+		else{$mrna{$key}.="NA($tmp[$i1]-$tmp[$i1-1])";} 		
 		$nc{$_}++;
 	    }
         }
@@ -39,17 +39,17 @@ foreach my $f1 (@files){
 print "\n";
 
 foreach my $g  (keys %nc){
+    my $ocg;
     print "$g\t";
     foreach  my $f (@files){
 	my $key=$g.$f;
 	print "$mrna{$key}\t";
+	if($mrna{$key}){$ocg++;}
     }
-    print "\n";
+    print "$ocg\n";
 }
 
 
 __END__
 
-perl mqpevol.pl /cygdrive/m/RAW/AidaX MQ.csv 19 
-
-perl mqpevol.pl /cygdrive/m/RAW/AidaX/IH1_121125_AIDA/txt proteinGroups.txt 19
+perl mqpevol.pl /cygdrive/m/Result/Aida [0-9].txt 25 

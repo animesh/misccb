@@ -9,7 +9,7 @@ DIR /B %DATADIR%\%PREFIXRAW%*.raw > %DATADIR%\tempfile.txt
 FOR /F "eol=  tokens=1,2 delims=." %%i in (%DATADIR%\tempfile.txt) do  ( 
 	if not %%i ==   "" (
 		call :Change %%i
-		:: %MAXQUANTDIR%\bin\MaxQuantCmd.exe %DATADIR%\%%i.xml 4
+		%MAXQUANTDIR%\bin\MaxQuantCmd.exe %DATADIR%\%%i.xml 4
 		if exist %DATADIR%\%%i.txt del %DATADIR%\%%i.txt
 		copy %DATADIR%\combined\txt\proteinGroups.txt %DATADIR%\%%i.txt
 	)
