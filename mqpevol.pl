@@ -53,3 +53,5 @@ foreach my $g  (keys %nc){
 __END__
 
 perl mqpevol.pl /cygdrive/m/Result/Aida [0-9].txt 25 
+
+wc /cygdrive/m/Result/Aida/*[0-9].txt   | sed 's/\// /g' | awk '{print $8,$1}'
