@@ -1,5 +1,5 @@
 %% read data
-d=load('C:\Users\Amithabh\Desktop\ani\iceeg\Sample.mat')
+d=load('Sample.mat')
 [r c]=size(d.d)
 plot(d.d(r,:))
 
