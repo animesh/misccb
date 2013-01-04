@@ -27,15 +27,15 @@ foreach my $f1 (@files){
             @name=split(/\;/,$tmp[0]);
             foreach (@name) {
                 my $key="$_;$tmp[1];$f1";
-#               if($tmp[$i1]=~/[0-9]/){my $htl="$tmp[$i1], $tmp[4], $tmp[7], $tmp[8], $tmp[11], $tmp[12], $tmp[15]";$mrna{$key}.="$htl; ";}
-                if($tmp[$i1]=~/[0-9]/ && $tmp[4]>1 && $tmp[1]=~/taurus/){
-					my $htl="$tmp[$i1], $tmp[4], $tmp[7], $tmp[8], $tmp[11], $tmp[12], $tmp[15]";$mrna{$key}.="$htl; ";
-					$nc{"$_;$tmp[1]"}++;
-					}
+               if($tmp[$i1]=~/[0-9]/){my $htl="$tmp[$i1], $tmp[4], $tmp[7], $tmp[8], $tmp[11], $tmp[12], $tmp[15]";$mrna{$key}.="$htl; ";}
+#                if($tmp[$i1]=~/[0-9]/ && $tmp[4]>1 && $tmp[1]=~/taurus/){
+#					my $htl="$tmp[$i1], $tmp[4], $tmp[7], $tmp[8], $tmp[11], $tmp[12], $tmp[15]";$mrna{$key}.="$htl; ";
+#					$nc{"$_;$tmp[1]"}++;
+#					}
 #               if($tmp[$i1]=~/[0-9]/){my $htl=$tmp[$i1]/($tmp[$i1]+1);$mrna{$key}.="$tmp[$i1] ";}
-#                elsif($tmp[$i1] eq ""){$mrna{$key}.="NA ";}
-#                else{$mrna{$key}.="$tmp[$i1] ";}                
-#                $nc{"$_;$tmp[1]"}++;
+                elsif($tmp[$i1] eq ""){$mrna{$key}.="NA ";}
+                else{$mrna{$key}.="$tmp[$i1] ";}                
+                $nc{"$_;$tmp[1]"}++;
             }
         }
     }
