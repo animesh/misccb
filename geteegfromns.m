@@ -9,7 +9,7 @@ fopen(ns)
 scanstr(ns)
 readasync(ns)
 
-t=100
+t=200
 
 for i = 1:t
     check(:,t)=fread(ns);

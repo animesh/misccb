@@ -1,68 +1,59 @@
 use strict;
+use Text::ParseWords;
 
 my $path = shift @ARGV;
 my $pat = shift @ARGV;
-my $col = shift @ARGV;
+my $i1 = shift @ARGV;
 
-
-my @tmp;
-my @name;
-my %pg;
+my @files=<$path/*$pat>;
 my %mrna;
 my %nc;
-my $lcnt;
 
-open (F1, $f1) || die "can't open \"$f1\": $!";
-while (my $line = <F1>) {
-    $lcnt++;
-	@tmp=split(/\t/,$line);
-        if ($lcnt>1&&$tmp[$i1]){
- 		@name=split(/\;/,$tmp[0]);
- 		foreach (@name) { if(!/^(REV|CON)/){$pg{$_}="$tmp[$i1]"; $nc{$_}++;}} 	
+print "FileColumn$i1\t";
+foreach my $f1 (@files){
+    my @tmp;
+    my @name;
+    my %pg;
+    my $lcnt;
+    my $fn=$f1;
+    $fn=~s/$path|$pat|\///g;
+    print "$fn\t";
+    open (F1, $f1) || die "can't open \"$f1\": $!";
+    while (my $line = <F1>) {
+        $lcnt++;
+        if($pat=~/csv/){@tmp=parse_line(',',0,$line);}
+        if($pat=~/txt/){@tmp=parse_line('\t',0,$line);}
+        if ($lcnt>1){
+            @name=split(/\;/,$tmp[0]);
+            foreach (@name) {
+                my $key="$_;$tmp[1];$f1";
+#               if($tmp[$i1]=~/[0-9]/){my $htl="$tmp[$i1], $tmp[4], $tmp[7], $tmp[8], $tmp[11], $tmp[12], $tmp[15]";$mrna{$key}.="$htl; ";}
+                if($tmp[$i1]=~/[0-9]/ && $tmp[4]>1 && $tmp[1]=~/taurus/){
+					my $htl="$tmp[$i1], $tmp[4], $tmp[7], $tmp[8], $tmp[11], $tmp[12], $tmp[15]";$mrna{$key}.="$htl; ";
+					$nc{"$_;$tmp[1]"}++;
+					}
+#               if($tmp[$i1]=~/[0-9]/){my $htl=$tmp[$i1]/($tmp[$i1]+1);$mrna{$key}.="$tmp[$i1] ";}
+#                elsif($tmp[$i1] eq ""){$mrna{$key}.="NA ";}
+#                else{$mrna{$key}.="$tmp[$i1] ";}                
+#                $nc{"$_;$tmp[1]"}++;
+            }
         }
-}
-close F1;
-$lcnt=0;
-
-open (F2, $f2) || die "can't open \"$f2\": $!";
-while (my $line = <F2>) {
-    $lcnt++;
-        @tmp=split(/\t/,$line);
-        if ($lcnt>1&&$tmp[$i2]){
- 		@name=split(/\;/,$tmp[0]);
- 		foreach (@name) { $mrna{$_}="$tmp[$i2]"; $nc{$_}++;} 	
-        }
-}
-close F2;
-
-my %cpgn;
-my $cp;
-my $cm;
-
-foreach my $pgn (keys %pg){
-    $cp++;
-    $cm=0;
-    foreach my $mn (keys %mrna){
-	    $cm++;
-		if($pgn eq $mn){
-		    my $ratio=$pg{$pgn}/$mrna{$mn};
-			print "MATCH\t$pgn\t$nc{$mn}\t$pg{$pgn}\t$mrna{$mn}\t$ratio\n";
-			$cpgn{$pgn}++;
-			#if($nc{$mn}!=2){print "$nc{$mn}\t$nc{$mn}\n";}
-		}
-
     }
-    if(!$cpgn{$pgn}){print "MQ1\t$pgn\t$nc{$pgn}\t$pg{$pgn}\n"}
+    close F1;
 }
+print "ExperimentsGeneDetectedIn\n";
 
-foreach  (keys %mrna){
-    if(!$cpgn{$_}){print "MQ2\t$_\t$nc{$_}\t$mrna{$_}\n"}
+foreach my $g  (keys %nc){
+    my $ocg;
+    print "$g\t";
+    foreach  my $f (@files){
+        my $key="$g;$f";
+        print "$mrna{$key}\t";
+        if($mrna{$key}){$ocg++;}
+    }
+    print "$ocg\n";
 }
-
-
-print "TOTAL\tMQ1\t$cp\tMQ2\t$cm\n";
-
 
 __END__
 
-perl mqcomp.pl /cygdrive/c/Users/animeshs/Sissel/Blank/txt/proteinGroups.txt 19 /cygdrive/c/Users/animeshs/Sissel/BlankHL/txt/proteinGroups.txt 23 | grep "^MAT"
+perl pdpevol.pl /cygdrive/c/Users/animeshs/SkyDrive/Mohammed csv 2 > /cygdrive/c/Users/animeshs/SkyDrive/Mohammed/t.txt
