@@ -9,22 +9,38 @@ fopen(ns)
 scanstr(ns)
 readasync(ns)
 
-t=200
-
+t=100
+initLine = plot(nan);
+ms=zeros(t,size(fread(ns),1))
 for i = 1:t
-    check(:,t)=fread(ns);
+  disp([num2str(i),'th iteration of ',num2str(t)]);
+  m=(fread(ns))
+  ms(i,:)=m(:);
+  %set(initLine,'YData',m); 
+  periodogram(fread(ns),[],'onesided',512)
+drawnow               
 end
+dlmwrite('eegsig.txt', ms, 'delimiter', '\t', 'precision', 4)
+     
 
-%hold on
-%for j = 1:size(check,1)
-    plot(check(:,1),'r-')
-%end
-%hold off
+%% real time play ground
 
+plot(hist(fread(ns)))
+
+[n x]=(hist(fread(ns)))
+
+hist(fread(ns)>0 & fread(ns)<10)
+
+plot(fft(fread(ns)),'r.')
+
+periodogram(fread(ns))
 
 %% close connection
 
 fclose(ns);
 
-%% source http://www.mathworks.se/help/instrument/reading-and-writing-data-over-the-bluetooth-interface.html
+
+%% source 
+http://www.mathworks.se/help/instrument/reading-and-writing-data-over-the-bluetooth-interface.html
+http://stackoverflow.com/questions/3115833/real-time-plot-in-matlab
 
