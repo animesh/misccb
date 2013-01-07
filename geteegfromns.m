@@ -6,9 +6,6 @@ fopen(ns)
 
 %% read and plot
 
-scanstr(ns)
-readasync(ns)
-
 t=100
 initLine = plot(nan);
 ms=zeros(t,size(fread(ns),1))
@@ -25,6 +22,10 @@ dlmwrite('eegsig.txt', ms, 'delimiter', '\t', 'precision', 4)
 
 %% real time play ground
 
+scanstr(ns)
+
+readasync(ns)
+
 plot(hist(fread(ns)))
 
 [n x]=(hist(fread(ns)))
@@ -35,9 +36,24 @@ plot(fft(fread(ns)),'r.')
 
 periodogram(fread(ns))
 
+
 %% close connection
 
 fclose(ns);
+
+
+%% analyse signal file
+
+ms=load('eegsig.txt');
+
+for i = 1:size(ms,1)
+    periodogram(ms(i,:))
+    drawnow
+end
+
+
+
+
 
 
 %% source 

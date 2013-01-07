@@ -1,4 +1,4 @@
-%% motivate by http://grasshoppernetwork.com/showthread.php?tid=629
+%% motivated by http://grasshoppernetwork.com/showthread.php?tid=629
 %% create signal
 a=5;
 c=1;

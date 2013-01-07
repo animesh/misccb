@@ -1,5 +1,5 @@
 %% read data
-d=load('Sample.mat')
+d=load('C:\Users\animeshs\SkyDrive\chum\Sample.mat')
 [r c]=size(d.d)
 plot(d.d(r,:))
 
