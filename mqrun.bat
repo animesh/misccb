@@ -1,6 +1,6 @@
 set MAXQUANTDIR=C:\Users\animeshs\SkyDrive\MaxQuant
-set DATADIR=X:\Qexactive
-set PREFIXRAW=Karpas
+set DATADIR=M:\RAW\SS
+set PREFIXRAW=
 set PARAMFILE=testpar.xml
 set SEARCHTEXT=TestFile
 
@@ -10,9 +10,12 @@ FOR /F "eol=  tokens=1,2 delims=." %%i in (%DATADIR%\tempfile.txt) do  (
 	if not %%i ==   "" (
 		call :Change %%i
 		if exist proc rmdir /S /Q proc
+		if exist %DATADIR%\combined rmdir /S /Q %DATADIR%\combined
+		if exist %DATADIR%\%%i rmdir /S /Q %DATADIR%\%%i
 		%MAXQUANTDIR%\bin\MaxQuantCmd.exe %DATADIR%\%%i.xml 4
-		if exist %DATADIR%\%%iRes rmdir /S /Q %DATADIR%\%%iRes
-		echo D| xcopy  /E /Y /Q %DATADIR%\combined\txt %DATADIR%\%%iRes
+		if exist %DATADIR%\%%iRES rmdir /S /Q %DATADIR%\%%iRES
+		echo D| xcopy  /E /Y /Q %DATADIR%\combined\txt %DATADIR%\%%iRES
+		if exist %DATADIR%\%%i rmdir /S /Q %DATADIR%\%%i
 	)
 )
 
@@ -24,7 +27,7 @@ GOTO :Source
 	setlocal enabledelayedexpansion
 
 	set FileN=%~1
-	set INTEXTFILE=%DATADIR%\%PARAMFILE%
+	set INTEXTFILE=%PARAMFILE%
 	set OUTTEXTFILE=%DATADIR%\%FileN%.xml
 	set REPLACETEXT=%FileN%
 	set OUTPUTLINE=
