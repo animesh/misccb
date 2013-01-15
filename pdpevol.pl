@@ -4,12 +4,13 @@ use Text::ParseWords;
 my $path = shift @ARGV;
 my $pat = shift @ARGV;
 my $i1 = shift @ARGV;
+my $i2 = shift @ARGV;
 
 my @files=<$path/*$pat>;
 my %mrna;
 my %nc;
 
-print "FileColumn$i1\t";
+print "FileColumn$i2\t";
 foreach my $f1 (@files){
     my @tmp;
     my @name;
@@ -24,18 +25,13 @@ foreach my $f1 (@files){
         if($pat=~/csv/){@tmp=parse_line(',',0,$line);}
         if($pat=~/txt/){@tmp=parse_line('\t',0,$line);}
         if ($lcnt>1){
-            @name=split(/\;/,$tmp[0]);
+            @name=split(/\;/,$tmp[$i1]);
             foreach (@name) {
-                my $key="$_;$tmp[1];$f1";
-               if($tmp[$i1]=~/[0-9]/){my $htl="$tmp[$i1], $tmp[4], $tmp[7], $tmp[8], $tmp[11], $tmp[12], $tmp[15]";$mrna{$key}.="$htl; ";}
-#                if($tmp[$i1]=~/[0-9]/ && $tmp[4]>1 && $tmp[1]=~/taurus/){
-#					my $htl="$tmp[$i1], $tmp[4], $tmp[7], $tmp[8], $tmp[11], $tmp[12], $tmp[15]";$mrna{$key}.="$htl; ";
-#					$nc{"$_;$tmp[1]"}++;
-#					}
-#               if($tmp[$i1]=~/[0-9]/){my $htl=$tmp[$i1]/($tmp[$i1]+1);$mrna{$key}.="$tmp[$i1] ";}
-                elsif($tmp[$i1] eq ""){$mrna{$key}.="NA ";}
-                else{$mrna{$key}.="$tmp[$i1] ";}                
-                $nc{"$_;$tmp[1]"}++;
+                my $key="$_;$f1";
+                if($tmp[$i2]=~/[0-9]/){my $htl="$tmp[$i2]";$mrna{$key}.="$htl ";}
+                elsif($tmp[$i2] eq ""){$mrna{$key}.="NA ";}
+                else{$mrna{$key}.="$tmp[$i2] ";}                
+                $nc{"$_"}++;
             }
         }
     }
@@ -56,4 +52,4 @@ foreach my $g  (keys %nc){
 
 __END__
 
-perl pdpevol.pl /cygdrive/c/Users/animeshs/SkyDrive/Mohammed csv 2 > /cygdrive/c/Users/animeshs/SkyDrive/Mohammed/t.txt
+perl pdpevol.pl /cygdrive/X/Qexactive Area_pep.csv 1 8
