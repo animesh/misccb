@@ -1,0 +1,6 @@
+type	Process
+id	11748
+machine	dmed5604
+start	16/01/2013 16:02:27
+title	Joining temporary peptide files  (1/1)
+description	proc Joining_temporary_peptide_files_Process 0 Joining temporary peptide files  (1/1)  Process M:\RAW\SS\combined\search\a-168612992\tmpPeptides1_0 M:\RAW\SS\combined\search\a-168612992\tmpPeptides3_0 M:\RAW\SS\combined\search\a-168612992 0
