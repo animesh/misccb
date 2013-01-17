@@ -1,6 +1,0 @@
-type	Process
-id	11688
-machine	dmed5604
-start	16/01/2013 16:06:28
-title	Digesting proteins  (2/4)
-description	proc Digesting_proteins_Process 1 Digesting proteins  (2/4)  Process 1 M:\RAW\SS\combined\search\a-123443035

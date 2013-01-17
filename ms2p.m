@@ -1,9 +1,7 @@
 %MG132_3 = mzxmlread('M:\RAW\Lars\130107_MG132_3_HCD.mzXML');
 mzxmlread('M:\RAW\Lars\t1.mzXML')
-
 mzxmlread('results.mzxml')
 
-pep=load 'X:\Results\Alexey\peptides.txt' --ascii
 
 %%  monoisotopic mass of fragments
 
@@ -31,4 +29,20 @@ end
 fclose(peph);
 fclose(pepw);
 
+%% pep to fas
+
+fo='X:\Results\Alexey\peptides.txt';
+fw=[fo,'.fasta'];
+
+peph=fopen(fo);
+pep=textscan(peph,'%s');
+pepw = fopen(fw,'w');
+
+for i = 1:size(pep{1},1)
+    aa=pep{size(pep{1},2)}{i};
+    fprintf(pepw,'>PEP %d LEN %d \n%s\n',i, size(aa,2), aa);
+end
+
+fclose(peph);
+fclose(pepw);
 

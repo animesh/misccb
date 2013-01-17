@@ -1,6 +1,0 @@
-type	Process
-id	9872
-machine	dmed5604
-start	16/01/2013 15:45:01
-title	Creating protein files  (2/4)
-description	proc Creating_protein_files_Process 1 Creating protein files  (2/4)  Process M:\RAW\SS\combined\search M:\RAW\SS\Blknk1_121201041332.xml 4 1

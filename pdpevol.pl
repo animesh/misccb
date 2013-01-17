@@ -50,6 +50,6 @@ foreach my $g  (keys %nc){
     print "$ocg\n";
 }
 
-__END__
+__END__	
 
 perl pdpevol.pl /cygdrive/X/Qexactive Area_pep.csv 1 8

@@ -1,6 +1,0 @@
-type	Process
-id	9132
-machine	dmed5604
-start	16/01/2013 15:44:56
-title	Combining apl files for first search  (1/1)
-description	proc Combining_apl_files_for_first_search_Process 0 Combining apl files for first search  (1/1)  Process M:\RAW\SS\Blknk1_121201041332.xml M:\RAW\SS\combined True

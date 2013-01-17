@@ -1,6 +1,0 @@
-type	Process
-id	7272
-machine	dmed5604
-start	16/01/2013 15:59:47
-title	Digesting proteins  (4/4)
-description	proc Digesting_proteins_Process 3 Digesting proteins  (4/4)  Process 3 M:\RAW\SS\combined\search\a-168612992

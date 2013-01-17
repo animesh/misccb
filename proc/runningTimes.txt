@@ -1,6 +1,0 @@
-Job	Running time [min]
-Configuring 	0.0333700033333333
-Testing files 	0.0333366666666667
-Finish Testing files 	0.0333366666666667
-Feature detection 	8.21762168
-Combining apl files for first search 	0.0666733333333333
