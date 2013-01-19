@@ -32,10 +32,9 @@ foreach my $f1 (@files){
         if ($lcnt>1){
 	    	my $key=$tmp[0].$f1;
 		if($tmp[$i1]=~/[0-9]/){
-			my $htl=$tmp[$i1]/($tmp[$i1]+1);
-			$mrna{$key}.="$htl ";
-			$hp{$f1}+=$htl;
-			$ir{$f1}+=1-1/$tmp[$i1];
+			$mrna{$key}.="$tmp[$i1] ";
+			$hp{$f1}+=$tmp[$i1]/(1+$tmp[$i1]);
+			$ir{$f1}+=$tmp[$i1];
 			$pepc{$f1}++;
 		}
 		elsif($tmp[$i1]==0){$mrna{$key}.="0";$pepc0{$f1}++;}
@@ -43,7 +42,7 @@ foreach my $f1 (@files){
 		$nc{$tmp[0]}++;
         }
     }
-    if($pepc{$f1}){print $hp{$f1}/$pepc{$f1},"-", $ir{$f1}/$pepc{$f1},"-";}
+    if($pepc{$f1}&&$ir{$f1}){print 1-$pepc{$f1}/$ir{$f1},"-", $ir{$f1}/$pepc{$f1}/($ir{$f1}/$pepc{$f1}+1),"-",($hp{$f1}/$pepc{$f1}),"-";}
     print "$pepc{$f1}-$pepcna{$f1}-$pepc0{$f1}\t";
     close F1;
 }
@@ -64,3 +63,5 @@ foreach my $g  (keys %nc){
 __END__ 
 
 perl mqpepcomp.pl /cygdrive/m/RAW/SS RES peptides.txt 36
+
+perl mqpepcomp.pl /cygdrive/m/RAW/SS RES evidence.txt 49
