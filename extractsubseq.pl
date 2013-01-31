@@ -11,8 +11,7 @@ open(FO,">$fo")||die "can't open";
 
 my $seq;
 my $seqn;
-my $line;
-while ($line = <F>) {
+while (my  $line = <F>) {
  	chomp $line;
         if($line =~ /^>/){
                 $seqn.=$line;

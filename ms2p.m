@@ -1,8 +1,3 @@
-%MG132_3 = mzxmlread('M:\RAW\Lars\130107_MG132_3_HCD.mzXML');
-mzxmlread('M:\RAW\Lars\t1.mzXML')
-mzxmlread('results.mzxml')
-
-
 %%  monoisotopic mass of fragments
 
 fo='X:\Results\Alexey\peptides.txt';
