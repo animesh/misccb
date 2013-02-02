@@ -4,41 +4,81 @@
       <filePaths>
          <string>X:\Elite\LARS\2013\JANUAR\130130_XRCC1_H202.raw</string>
          <string>X:\Elite\LARS\2013\JANUAR\130130_xrcc1_KONTROLL.raw</string>
+         <string>X:\Elite\LARS\2013\JANUAR\130130_XRCC1_H2O2_SB_130201041234.raw</string>
+         <string>X:\Elite\LARS\2013\JANUAR\130130_XRCC1_SB_130201015501.raw</string>
+         <string>X:\Elite\LARS\2013\JANUAR\130130_XRCC1_H202_130131233722.raw</string>
+         <string>X:\Elite\LARS\2013\JANUAR\130130_xrcc1_KONTROLL_130131211941.raw</string>
+         <string>X:\Elite\LARS\2013\JANUAR\130130_XRCC1_H2O2_SB.raw</string>
+         <string>X:\Elite\LARS\2013\JANUAR\130130_XRCC1_SB_130131134702.raw</string>
+         <string>X:\Elite\LARS\2013\JANUAR\130130_XRCC1_SB.raw</string>
       </filePaths>
       <fileNames>
          <string>130130_XRCC1_H202</string>
          <string>130130_xrcc1_KONTROLL</string>
+         <string>130130_XRCC1_H2O2_SB_130201041234</string>
+         <string>130130_XRCC1_SB_130201015501</string>
+         <string>130130_XRCC1_H202_130131233722</string>
+         <string>130130_xrcc1_KONTROLL_130131211941</string>
+         <string>130130_XRCC1_H2O2_SB</string>
+         <string>130130_XRCC1_SB_130131134702</string>
+         <string>130130_XRCC1_SB</string>
       </fileNames>
       <paramGroups>
          <int>1</int>
          <int>1</int>
+         <int>1</int>
+         <int>1</int>
+         <int>1</int>
+         <int>1</int>
+         <int>1</int>
+         <int>1</int>
+         <int>1</int>
       </paramGroups>
-      <Fractions>
-         <fraction>
-            <Key xsi:type="xsd:string">130130_XRCC1_H202</Key>
-            <Value xsi:type="xsd:short">1</Value>
-         </fraction>
-         <fraction>
-            <Key xsi:type="xsd:string">130130_xrcc1_KONTROLL</Key>
-            <Value xsi:type="xsd:short">1</Value>
-         </fraction>
-      </Fractions>
+      <Fractions />
       <Values>
          <column Name="Experiment">
             <Items>
                <Item>
                   <Key xsi:type="xsd:string">130130_XRCC1_H202</Key>
-                  <Value xsi:type="xsd:string">B</Value>
+                  <Value xsi:type="xsd:string">H1</Value>
                </Item>
                <Item>
                   <Key xsi:type="xsd:string">130130_xrcc1_KONTROLL</Key>
-                  <Value xsi:type="xsd:string">A</Value>
+                  <Value xsi:type="xsd:string">C1</Value>
+               </Item>
+               <Item>
+                  <Key xsi:type="xsd:string">130130_XRCC1_H2O2_SB_130201041234</Key>
+                  <Value xsi:type="xsd:string">HS1</Value>
+               </Item>
+               <Item>
+                  <Key xsi:type="xsd:string">130130_XRCC1_SB_130201015501</Key>
+                  <Value xsi:type="xsd:string">S1</Value>
+               </Item>
+               <Item>
+                  <Key xsi:type="xsd:string">130130_XRCC1_H202_130131233722</Key>
+                  <Value xsi:type="xsd:string">H2</Value>
+               </Item>
+               <Item>
+                  <Key xsi:type="xsd:string">130130_xrcc1_KONTROLL_130131211941</Key>
+                  <Value xsi:type="xsd:string">C2</Value>
+               </Item>
+               <Item>
+                  <Key xsi:type="xsd:string">130130_XRCC1_H2O2_SB</Key>
+                  <Value xsi:type="xsd:string">HS2</Value>
+               </Item>
+               <Item>
+                  <Key xsi:type="xsd:string">130130_XRCC1_SB_130131134702</Key>
+                  <Value xsi:type="xsd:string">S2</Value>
+               </Item>
+               <Item>
+                  <Key xsi:type="xsd:string">130130_XRCC1_SB</Key>
+                  <Value xsi:type="xsd:string">S3</Value>
                </Item>
             </Items>
          </column>
       </Values>
    </rawFileInfo>
-   <experimentalDesignFilename>X:\Elite\LARS\2013\JANUAR\experimentalDesign.txt</experimentalDesignFilename>
+   <experimentalDesignFilename>C:\Users\animeshs\misccb\experimentalDesign.txt</experimentalDesignFilename>
    <slicePeaks>true</slicePeaks>
    <tempFolder />
    <ncores>1</ncores>
@@ -49,9 +89,7 @@
    <maxTime>NaN</maxTime>
    <calcPeakProperties>false</calcPeakProperties>
    <useOriginalPrecursorMz>false</useOriginalPrecursorMz>
-   <fixedModifications>
-      <string>Carbamidomethyl (C)</string>
-   </fixedModifications>
+   <fixedModifications />
    <multiModificationSearch>false</multiModificationSearch>
    <fastaFiles>
       <string>C:\Users\animeshs\SkyDrive\MaxQuant\fasta\HUMAN.fasta</string>
@@ -102,13 +140,12 @@
    <minPeptides>1</minPeptides>
    <minRazorPeptides>1</minRazorPeptides>
    <minUniquePeptides>0</minUniquePeptides>
-   <useCounterparts>false</useCounterparts>
-   <minRatioCount>2</minRatioCount>
+   <useCounterparts>true</useCounterparts>
+   <minRatioCount>1</minRatioCount>
    <lfqMinRatioCount>2</lfqMinRatioCount>
    <restrictProteinQuantification>true</restrictProteinQuantification>
    <restrictMods>
-      <string>Oxidation (M)</string>
-      <string>Acetyl (Protein N-term)</string>
+      <string>Phospho (STY)</string>
    </restrictMods>
    <matchingTimeWindow>2</matchingTimeWindow>
    <numberOfCandidatesMultiplexedMsms>50</numberOfCandidatesMultiplexedMsms>
@@ -131,8 +168,7 @@
          <useProteaseFirstSearch>false</useProteaseFirstSearch>
          <useVariableModificationsFirstSearch>false</useVariableModificationsFirstSearch>
          <variableModifications>
-            <string>Oxidation (M)</string>
-            <string>Acetyl (Protein N-term)</string>
+            <string>Phospho (STY)</string>
          </variableModifications>
          <isobaricLabels>
             <string>iTRAQ4plex-Nter114</string>
@@ -144,10 +180,7 @@
             <string>iTRAQ4plex-Lys116</string>
             <string>iTRAQ4plex-Lys117</string>
          </isobaricLabels>
-         <variableModificationsFirstSearch>
-            <string>Oxidation (M)</string>
-            <string>Acetyl (Protein N-term)</string>
-         </variableModificationsFirstSearch>
+         <variableModificationsFirstSearch />
          <hasAdditionalVariableModifications>false</hasAdditionalVariableModifications>
          <additionalVariableModifications>
             <ArrayOfString />
@@ -164,6 +197,13 @@
       </ParameterGroups>
    </groups>
    <qcSettings>
+      <qcSetting xsi:nil="true" />
+      <qcSetting xsi:nil="true" />
+      <qcSetting xsi:nil="true" />
+      <qcSetting xsi:nil="true" />
+      <qcSetting xsi:nil="true" />
+      <qcSetting xsi:nil="true" />
+      <qcSetting xsi:nil="true" />
       <qcSetting xsi:nil="true" />
       <qcSetting xsi:nil="true" />
    </qcSettings>
@@ -195,7 +235,7 @@
    </msmsParams>
    <keepLowScoresMode>0</keepLowScoresMode>
    <msmsCentroidMode>1</msmsCentroidMode>
-   <quantMode>1</quantMode>
+   <quantMode>0</quantMode>
    <siteQuantMode>0</siteQuantMode>
    <groupParams>
       <groupParam>
@@ -212,8 +252,7 @@
          <useProteaseFirstSearch>false</useProteaseFirstSearch>
          <useVariableModificationsFirstSearch>false</useVariableModificationsFirstSearch>
          <variableModifications>
-            <string>Oxidation (M)</string>
-            <string>Acetyl (Protein N-term)</string>
+            <string>Phospho (STY)</string>
          </variableModifications>
          <isobaricLabels>
             <string>iTRAQ4plex-Nter114</string>
@@ -225,10 +264,7 @@
             <string>iTRAQ4plex-Lys116</string>
             <string>iTRAQ4plex-Lys117</string>
          </isobaricLabels>
-         <variableModificationsFirstSearch>
-            <string>Oxidation (M)</string>
-            <string>Acetyl (Protein N-term)</string>
-         </variableModificationsFirstSearch>
+         <variableModificationsFirstSearch />
          <hasAdditionalVariableModifications>false</hasAdditionalVariableModifications>
          <additionalVariableModifications>
             <ArrayOfString />
@@ -257,8 +293,7 @@
          <useProteaseFirstSearch>false</useProteaseFirstSearch>
          <useVariableModificationsFirstSearch>false</useVariableModificationsFirstSearch>
          <variableModifications>
-            <string>Oxidation (M)</string>
-            <string>Acetyl (Protein N-term)</string>
+            <string>Phospho (STY)</string>
          </variableModifications>
          <isobaricLabels>
             <string>iTRAQ4plex-Nter114</string>
@@ -270,10 +305,294 @@
             <string>iTRAQ4plex-Lys116</string>
             <string>iTRAQ4plex-Lys117</string>
          </isobaricLabels>
-         <variableModificationsFirstSearch>
-            <string>Oxidation (M)</string>
-            <string>Acetyl (Protein N-term)</string>
-         </variableModificationsFirstSearch>
+         <variableModificationsFirstSearch />
+         <hasAdditionalVariableModifications>false</hasAdditionalVariableModifications>
+         <additionalVariableModifications>
+            <ArrayOfString />
+         </additionalVariableModifications>
+         <additionalVariableModificationProteins>
+            <ArrayOfString />
+         </additionalVariableModificationProteins>
+         <doMassFiltering>true</doMassFiltering>
+         <firstSearchTol>20</firstSearchTol>
+         <mainSearchTol>6</mainSearchTol>
+         <labels>
+            <string />
+         </labels>
+      </groupParam>
+      <groupParam>
+         <maxCharge>7</maxCharge>
+         <lcmsRunType>0</lcmsRunType>
+         <msInstrument>0</msInstrument>
+         <groupIndex>1</groupIndex>
+         <maxLabeledAa>3</maxLabeledAa>
+         <maxNmods>5</maxNmods>
+         <maxMissedCleavages>2</maxMissedCleavages>
+         <multiplicity>1</multiplicity>
+         <protease>Trypsin/P</protease>
+         <proteaseFirstSearch>Trypsin/P</proteaseFirstSearch>
+         <useProteaseFirstSearch>false</useProteaseFirstSearch>
+         <useVariableModificationsFirstSearch>false</useVariableModificationsFirstSearch>
+         <variableModifications>
+            <string>Phospho (STY)</string>
+         </variableModifications>
+         <isobaricLabels>
+            <string>iTRAQ4plex-Nter114</string>
+            <string>iTRAQ4plex-Nter115</string>
+            <string>iTRAQ4plex-Nter116</string>
+            <string>iTRAQ4plex-Nter117</string>
+            <string>iTRAQ4plex-Lys114</string>
+            <string>iTRAQ4plex-Lys115</string>
+            <string>iTRAQ4plex-Lys116</string>
+            <string>iTRAQ4plex-Lys117</string>
+         </isobaricLabels>
+         <variableModificationsFirstSearch />
+         <hasAdditionalVariableModifications>false</hasAdditionalVariableModifications>
+         <additionalVariableModifications>
+            <ArrayOfString />
+         </additionalVariableModifications>
+         <additionalVariableModificationProteins>
+            <ArrayOfString />
+         </additionalVariableModificationProteins>
+         <doMassFiltering>true</doMassFiltering>
+         <firstSearchTol>20</firstSearchTol>
+         <mainSearchTol>6</mainSearchTol>
+         <labels>
+            <string />
+         </labels>
+      </groupParam>
+      <groupParam>
+         <maxCharge>7</maxCharge>
+         <lcmsRunType>0</lcmsRunType>
+         <msInstrument>0</msInstrument>
+         <groupIndex>1</groupIndex>
+         <maxLabeledAa>3</maxLabeledAa>
+         <maxNmods>5</maxNmods>
+         <maxMissedCleavages>2</maxMissedCleavages>
+         <multiplicity>1</multiplicity>
+         <protease>Trypsin/P</protease>
+         <proteaseFirstSearch>Trypsin/P</proteaseFirstSearch>
+         <useProteaseFirstSearch>false</useProteaseFirstSearch>
+         <useVariableModificationsFirstSearch>false</useVariableModificationsFirstSearch>
+         <variableModifications>
+            <string>Phospho (STY)</string>
+         </variableModifications>
+         <isobaricLabels>
+            <string>iTRAQ4plex-Nter114</string>
+            <string>iTRAQ4plex-Nter115</string>
+            <string>iTRAQ4plex-Nter116</string>
+            <string>iTRAQ4plex-Nter117</string>
+            <string>iTRAQ4plex-Lys114</string>
+            <string>iTRAQ4plex-Lys115</string>
+            <string>iTRAQ4plex-Lys116</string>
+            <string>iTRAQ4plex-Lys117</string>
+         </isobaricLabels>
+         <variableModificationsFirstSearch />
+         <hasAdditionalVariableModifications>false</hasAdditionalVariableModifications>
+         <additionalVariableModifications>
+            <ArrayOfString />
+         </additionalVariableModifications>
+         <additionalVariableModificationProteins>
+            <ArrayOfString />
+         </additionalVariableModificationProteins>
+         <doMassFiltering>true</doMassFiltering>
+         <firstSearchTol>20</firstSearchTol>
+         <mainSearchTol>6</mainSearchTol>
+         <labels>
+            <string />
+         </labels>
+      </groupParam>
+      <groupParam>
+         <maxCharge>7</maxCharge>
+         <lcmsRunType>0</lcmsRunType>
+         <msInstrument>0</msInstrument>
+         <groupIndex>1</groupIndex>
+         <maxLabeledAa>3</maxLabeledAa>
+         <maxNmods>5</maxNmods>
+         <maxMissedCleavages>2</maxMissedCleavages>
+         <multiplicity>1</multiplicity>
+         <protease>Trypsin/P</protease>
+         <proteaseFirstSearch>Trypsin/P</proteaseFirstSearch>
+         <useProteaseFirstSearch>false</useProteaseFirstSearch>
+         <useVariableModificationsFirstSearch>false</useVariableModificationsFirstSearch>
+         <variableModifications>
+            <string>Phospho (STY)</string>
+         </variableModifications>
+         <isobaricLabels>
+            <string>iTRAQ4plex-Nter114</string>
+            <string>iTRAQ4plex-Nter115</string>
+            <string>iTRAQ4plex-Nter116</string>
+            <string>iTRAQ4plex-Nter117</string>
+            <string>iTRAQ4plex-Lys114</string>
+            <string>iTRAQ4plex-Lys115</string>
+            <string>iTRAQ4plex-Lys116</string>
+            <string>iTRAQ4plex-Lys117</string>
+         </isobaricLabels>
+         <variableModificationsFirstSearch />
+         <hasAdditionalVariableModifications>false</hasAdditionalVariableModifications>
+         <additionalVariableModifications>
+            <ArrayOfString />
+         </additionalVariableModifications>
+         <additionalVariableModificationProteins>
+            <ArrayOfString />
+         </additionalVariableModificationProteins>
+         <doMassFiltering>true</doMassFiltering>
+         <firstSearchTol>20</firstSearchTol>
+         <mainSearchTol>6</mainSearchTol>
+         <labels>
+            <string />
+         </labels>
+      </groupParam>
+      <groupParam>
+         <maxCharge>7</maxCharge>
+         <lcmsRunType>0</lcmsRunType>
+         <msInstrument>0</msInstrument>
+         <groupIndex>1</groupIndex>
+         <maxLabeledAa>3</maxLabeledAa>
+         <maxNmods>5</maxNmods>
+         <maxMissedCleavages>2</maxMissedCleavages>
+         <multiplicity>1</multiplicity>
+         <protease>Trypsin/P</protease>
+         <proteaseFirstSearch>Trypsin/P</proteaseFirstSearch>
+         <useProteaseFirstSearch>false</useProteaseFirstSearch>
+         <useVariableModificationsFirstSearch>false</useVariableModificationsFirstSearch>
+         <variableModifications>
+            <string>Phospho (STY)</string>
+         </variableModifications>
+         <isobaricLabels>
+            <string>iTRAQ4plex-Nter114</string>
+            <string>iTRAQ4plex-Nter115</string>
+            <string>iTRAQ4plex-Nter116</string>
+            <string>iTRAQ4plex-Nter117</string>
+            <string>iTRAQ4plex-Lys114</string>
+            <string>iTRAQ4plex-Lys115</string>
+            <string>iTRAQ4plex-Lys116</string>
+            <string>iTRAQ4plex-Lys117</string>
+         </isobaricLabels>
+         <variableModificationsFirstSearch />
+         <hasAdditionalVariableModifications>false</hasAdditionalVariableModifications>
+         <additionalVariableModifications>
+            <ArrayOfString />
+         </additionalVariableModifications>
+         <additionalVariableModificationProteins>
+            <ArrayOfString />
+         </additionalVariableModificationProteins>
+         <doMassFiltering>true</doMassFiltering>
+         <firstSearchTol>20</firstSearchTol>
+         <mainSearchTol>6</mainSearchTol>
+         <labels>
+            <string />
+         </labels>
+      </groupParam>
+      <groupParam>
+         <maxCharge>7</maxCharge>
+         <lcmsRunType>0</lcmsRunType>
+         <msInstrument>0</msInstrument>
+         <groupIndex>1</groupIndex>
+         <maxLabeledAa>3</maxLabeledAa>
+         <maxNmods>5</maxNmods>
+         <maxMissedCleavages>2</maxMissedCleavages>
+         <multiplicity>1</multiplicity>
+         <protease>Trypsin/P</protease>
+         <proteaseFirstSearch>Trypsin/P</proteaseFirstSearch>
+         <useProteaseFirstSearch>false</useProteaseFirstSearch>
+         <useVariableModificationsFirstSearch>false</useVariableModificationsFirstSearch>
+         <variableModifications>
+            <string>Phospho (STY)</string>
+         </variableModifications>
+         <isobaricLabels>
+            <string>iTRAQ4plex-Nter114</string>
+            <string>iTRAQ4plex-Nter115</string>
+            <string>iTRAQ4plex-Nter116</string>
+            <string>iTRAQ4plex-Nter117</string>
+            <string>iTRAQ4plex-Lys114</string>
+            <string>iTRAQ4plex-Lys115</string>
+            <string>iTRAQ4plex-Lys116</string>
+            <string>iTRAQ4plex-Lys117</string>
+         </isobaricLabels>
+         <variableModificationsFirstSearch />
+         <hasAdditionalVariableModifications>false</hasAdditionalVariableModifications>
+         <additionalVariableModifications>
+            <ArrayOfString />
+         </additionalVariableModifications>
+         <additionalVariableModificationProteins>
+            <ArrayOfString />
+         </additionalVariableModificationProteins>
+         <doMassFiltering>true</doMassFiltering>
+         <firstSearchTol>20</firstSearchTol>
+         <mainSearchTol>6</mainSearchTol>
+         <labels>
+            <string />
+         </labels>
+      </groupParam>
+      <groupParam>
+         <maxCharge>7</maxCharge>
+         <lcmsRunType>0</lcmsRunType>
+         <msInstrument>0</msInstrument>
+         <groupIndex>1</groupIndex>
+         <maxLabeledAa>3</maxLabeledAa>
+         <maxNmods>5</maxNmods>
+         <maxMissedCleavages>2</maxMissedCleavages>
+         <multiplicity>1</multiplicity>
+         <protease>Trypsin/P</protease>
+         <proteaseFirstSearch>Trypsin/P</proteaseFirstSearch>
+         <useProteaseFirstSearch>false</useProteaseFirstSearch>
+         <useVariableModificationsFirstSearch>false</useVariableModificationsFirstSearch>
+         <variableModifications>
+            <string>Phospho (STY)</string>
+         </variableModifications>
+         <isobaricLabels>
+            <string>iTRAQ4plex-Nter114</string>
+            <string>iTRAQ4plex-Nter115</string>
+            <string>iTRAQ4plex-Nter116</string>
+            <string>iTRAQ4plex-Nter117</string>
+            <string>iTRAQ4plex-Lys114</string>
+            <string>iTRAQ4plex-Lys115</string>
+            <string>iTRAQ4plex-Lys116</string>
+            <string>iTRAQ4plex-Lys117</string>
+         </isobaricLabels>
+         <variableModificationsFirstSearch />
+         <hasAdditionalVariableModifications>false</hasAdditionalVariableModifications>
+         <additionalVariableModifications>
+            <ArrayOfString />
+         </additionalVariableModifications>
+         <additionalVariableModificationProteins>
+            <ArrayOfString />
+         </additionalVariableModificationProteins>
+         <doMassFiltering>true</doMassFiltering>
+         <firstSearchTol>20</firstSearchTol>
+         <mainSearchTol>6</mainSearchTol>
+         <labels>
+            <string />
+         </labels>
+      </groupParam>
+      <groupParam>
+         <maxCharge>7</maxCharge>
+         <lcmsRunType>0</lcmsRunType>
+         <msInstrument>0</msInstrument>
+         <groupIndex>1</groupIndex>
+         <maxLabeledAa>3</maxLabeledAa>
+         <maxNmods>5</maxNmods>
+         <maxMissedCleavages>2</maxMissedCleavages>
+         <multiplicity>1</multiplicity>
+         <protease>Trypsin/P</protease>
+         <proteaseFirstSearch>Trypsin/P</proteaseFirstSearch>
+         <useProteaseFirstSearch>false</useProteaseFirstSearch>
+         <useVariableModificationsFirstSearch>false</useVariableModificationsFirstSearch>
+         <variableModifications>
+            <string>Phospho (STY)</string>
+         </variableModifications>
+         <isobaricLabels>
+            <string>iTRAQ4plex-Nter114</string>
+            <string>iTRAQ4plex-Nter115</string>
+            <string>iTRAQ4plex-Nter116</string>
+            <string>iTRAQ4plex-Nter117</string>
+            <string>iTRAQ4plex-Lys114</string>
+            <string>iTRAQ4plex-Lys115</string>
+            <string>iTRAQ4plex-Lys116</string>
+            <string>iTRAQ4plex-Lys117</string>
+         </isobaricLabels>
+         <variableModificationsFirstSearch />
          <hasAdditionalVariableModifications>false</hasAdditionalVariableModifications>
          <additionalVariableModifications>
             <ArrayOfString />
