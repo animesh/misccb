@@ -12,7 +12,7 @@ DIR /B %DATADIR%\%PREFIXRAW%*.raw > %DATADIR%\tempfile.txt
 
 FOR /F "eol=  tokens=1,2 delims=." %%i in (%DATADIR%\tempfile.txt) do  ( 
 	if not %%i ==   "" (
-		%PW%\msconvert.exe -o %DATADIR% %DATADIR%\%%i.raw --mgf
+		if not exist %DATADIR%\%%i.mgf %PW%\msconvert.exe -o %DATADIR% %DATADIR%\%%i.raw --mgf
 		if not exist %DATADIR%\%%i-sguiout mkdir %DATADIR%\%%i-sguiout
 		java -cp %SGDIR%\SearchGUI-1.11.0.jar eu.isas.searchgui.cmd.SearchCLI  -spectrum_files %DATADIR%\%%i.mgf  -output_folder %DATADIR%\%%i-sguiout -prec_tol %PT% -frag_tol %FT% -enzyme %enzyme% -db %DB% "" -mc %MC%
 	)
