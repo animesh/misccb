@@ -1,3 +1,109 @@
+%% random 2 class m/z cps
+
+mzv=1000;
+sample_size=100;
+sn=sample_size;
+st=sample_size/2;
+
+MZn=randi([400 2000],mzv ,1);
+CPSn=randi([0 100],sn,mzv);
+stem(MZn,CPSn(sn,:),'b')
+class0=zeros(sn,1)
+
+hold
+MZt=randi([400 2000],mzv,1);
+CPSt=randi([0 100],st,mzv);
+stem(MZt,CPSt(st,:),'r')
+class1=zeros(st,1)+1
+hold
+
+[feat,stat] = rankfeatures([CPSn;CPSt]',[class0; class1],'CRITERION','ttest','NUMBER',10);
+
+feat
+
+%% align reduce warp effect
+
+samplealign(sort(CPSn),sort(CPSt))
+
+
+
+%% LDA
+
+Y=[CPSn;CPSt]';
+grp=[class0; class1];
+per_eval = 0.10;  
+rand('twister',0);
+cv  = cvpartition(grp,'holdout',per_eval)
+
+cp_lda1 = classperf(grp); 
+for k=1:10 
+    cv = repartition(cv);
+    feat = rankfeatures(Y(:,training(cv)),grp(training(cv)),'NUMBER',100);
+    c = classify(Y(feat,test(cv))',Y(feat,training(cv))',grp(training(cv)));
+    classperf(cp_lda1,c,test(cv)); 
+end
+
+cp_lda1
+
+%% LDA 2
+
+cp_lda2 = classperf(grp); 
+for k=1:10 
+    cv = repartition(cv);
+    feat = rankfeatures(Y(:,training(cv)),grp(training(cv)),'NUMBER',100,'NWEIGHT',5);
+    c = classify(Y(feat,test(cv))',Y(feat,training(cv))',grp(training(cv)));
+    classperf(cp_lda2,c,test(cv));
+end
+cp_lda2.CorrectRate
+
+%% PCA
+
+cp_pcalda = classperf(grp); 
+for k=1:10 
+    cv = repartition(cv);
+    feat = rankfeatures(Y(:,training(cv)),grp(training(cv)),'NUMBER',1000);
+    P = princomp(Y(feat,training(cv))');
+    x = Y(feat,:)' * P(:,1:100);
+    c = classify(x(test(cv),:),x(training(cv),:),grp(training(cv)));
+    classperf(cp_pcalda,c,test(cv));
+end
+cp_pcalda.CorrectRate
+
+
+%% random search for optimal feature sub set
+
+cv = repartition(cv);
+[feat,fCount] = randfeatures(Y(:,training(cv)),grp(training(cv)),'CLASSIFIER','da','PerformanceThreshold',0.50);
+hist(fCount,max(fCount)+1);
+
+nSig = sum(fCount>10);
+for i = 1:nSig
+    for j = 1:10
+        cv = repartition(cv);
+        P = princomp(Y(feat(1:i),training(cv))');
+        x = Y(feat(1:i),:)' * P;
+        c = classify(x(test(cv),:),x(training(cv),:),grp(training(cv)));
+        cp = classperf(grp,c,test(cv));
+        cp_rndfeat(j,i) = cp.CorrectRate;
+    end
+end
+figure
+plot(1:nSig, [max(cp_rndfeat);mean(cp_rndfeat)]);
+legend({'Best CorrectRate','Mean CorrectRate'},4)
+
+%% best feature plot
+
+[bestAverageCR, bestNumFeatures] = max(mean(cp_rndfeat));
+figure; hold on;
+sigFeats = fCount;
+sigFeats(sigFeats<=10) = 0;
+ax_handle = plot(MZ,[mean_N mean_C]);
+stem(MZ(feat(1:bestNumFeatures)),sigFeats(feat(1:bestNumFeatures)),'r');
+axis([7650,8850,-1,80])
+legend({'Control Group Avg.','Ovarian Cancer Group Avg.','Significant Features'})
+xlabel(xAxisLabel); ylabel(yAxisLabel);
+
+
 %% Oribitrap RAW to MZXML conversion
 uf-mzxml Obb01926.RAW > Obb01926.MZXML
 uf-mzxml Obb01937.RAW > Obb01937.MZXML
@@ -27,4 +133,9 @@ pvc=corr(pepval);
 plot(pvc)
 %plot(pepval)
 boxplot(pepval)
+
+%% source
+
+http://www.mathworks.se/help/bioinfo/examples/identifying-significant-features-and-classifying-protein-profiles.html
+http://www.mathworks.se/help/bioinfo/examples/differential-analysis-of-complex-protein-and-metabolite-mixtures-using-liquid-chromatography-mass-spectrometry-lc-ms.html
 
