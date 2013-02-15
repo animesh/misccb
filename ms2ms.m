@@ -1,25 +1,32 @@
 %% random 2 class m/z cps
 
-mzv=1000;
+mzv=100;
 sample_size=100;
 sn=sample_size;
 st=sample_size/2;
 
 MZn=randi([400 2000],mzv ,1);
 CPSn=randi([0 100],sn,mzv);
-stem(MZn,CPSn(sn,:),'b')
+stem(MZn,CPSn(sn,:),'g')
 class0=zeros(sn,1)
 
 hold
 MZt=randi([400 2000],mzv,1);
 CPSt=randi([0 100],st,mzv);
-stem(MZt,CPSt(st,:),'r')
+stem(MZt,CPSt(st,:),'y')
 class1=zeros(st,1)+1
 hold
 
-[feat,stat] = rankfeatures([CPSn;CPSt]',[class0; class1],'CRITERION','ttest','NUMBER',10);
-
+[feat,stat] = rankfeatures([CPSn;CPSt]',[class0; class1],'CRITERION','entropy','NUMBER',5);
 feat
+
+%% polynomial fitting
+
+[p,p_struct,mu] = polyfit((ts(i)+tg(j))/2,ts(i)-tg(j),20);
+sf = @(z) polyval(p,(z-mu(1))./mu(2));
+figure(fh6)
+plot(tg,sf(tg),'r')
+
 
 %% align reduce warp effect
 
