@@ -132,14 +132,6 @@ plot(Ys,'r.')
 proteinpropplot('EKMRHF')
 proteinplot('EKMRHF')
 
-%% peptide area against concentration
-
-pepval=csvread('X:\Results\Sissel\HeK50\pep12.csv');
-plot(pepval(1,:),pepval(2:44382,:),'r.')
-pvc=corr(pepval);
-plot(pvc)
-%plot(pepval)
-boxplot(pepval)
 
 %% source
 

@@ -32,7 +32,7 @@ foreach my $f1 (@files){
             foreach (@name) {
                 my $key="$_;$f1";
                 my $area=$tmp[$i2]+0;
-                if($tmp[$i2]=~/[0-9]/){my $htl="$area [$tmp[$i4]-$tmp[$i8]]";$mrna{$key}.="$htl ";}
+                if($tmp[$i2]=~/[0-9]/){my $htl="$area";$mrna{$key}.="$htl ";}
                 elsif($tmp[$i2] eq ""){$mrna{$key}.="NA ";}
                 else{$mrna{$key}.="$tmp[$i2] ";}                
                 $nc{"$_"}++;
