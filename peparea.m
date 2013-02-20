@@ -14,6 +14,7 @@ plot(pepval)
 %% pep raw
 
 boxplot(pep)
+stem(pep(2:end,:))
 plot(pep(1,:),pep(:,:),'r.');
 corrcoef(sum(pep),pep(1,:)),
 plot(sum(pep(2:end,:)),pep(1,:),'b.')
