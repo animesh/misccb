@@ -1,7 +1,8 @@
 %% read csv
 
-pep=csvread('X:\Results\Sissel\HeK50\peparea.csv');
-%pepval=csvread('X:\Results\Sissel\HeK50\pep12.csv');
+pep=csvread('X:\Results\Sissel\HeK50\sequest\peparea.csv');
+pep=csvread('X:\Results\Sissel\HeK50\mascot\peparea.csv');
+%pepval=csvread('X:\Results\Sissel\HeK50\sequest\pep12.csv');
 
 %% peptide area against concentration
 
@@ -18,14 +19,12 @@ corrcoef(sum(pep),pep(1,:)),
 plot(sum(pep(2:end,:)),pep(1,:),'b.')
 
 %% regression
-d=100
-m=2
-c=10
-x=randi(d*d,d,1)
-y=m*x+c
-reg=[x ones(size(x))]\y
-
-
+reg=[pep(1,:)' ones(size(pep(1,:)'))]\sum(pep(2:end,:))'
+aest=reg(1).*pep(1,:)'+reg(2)
+plot(pep(1,:), sum(pep(2:end,:)),'b.')
+hold
+plot(pep(1,:), aest(:),'r')
+hold
 
 %% source
 http://stackoverflow.com/questions/9315666/matlab-linear-regression

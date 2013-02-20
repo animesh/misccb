@@ -1,6 +1,6 @@
 %% in silico digestion with trypsin, lys-c and arg-c
 
-name=digestNphosphorylate('Q9GZX7','trypsin',2,8,400,2000);
+name=digestNphosphorylate('P05387','trypsin',2,8,400,2000);
 fprintf('Results written to file %s\n',name);
 digestNphosphorylate('Q9GZX7','lysc',2,8,400,2000)
 digestNphosphorylate('Q9GZX7','arg-c',2,8,400,2000)
@@ -19,11 +19,18 @@ data{1}
 
 (molweight('VTWFTSWSPCYDCARHVADFLR')+3*1.007276466812+5*MolMass('HPO3'))/3>1000
 
-
+stypos=regexp(upper(parts{i}),'[STY]');
+            for j=1:size((stypos'),1)
+                if((((Info.MonoisotopicMass+j*ph3m+2*pm)/2) > dct) & ((tct-((Info.MonoisotopicMass+j*ph3m+3*pm)/3))>eps(tct)))
+                fprintf(fileID,'%d\t%d\t%s\t%6.6f\t%6.6f\t%6.6f\t%6.6f\t%6.6f\n',i,lengths(i), ...
+                    parts{i}(1:stypos(j)), Info.MonoisotopicMass+j*ph3m, ...
+                    Info.MonoisotopicMass+j*ph3m+pm, (Info.MonoisotopicMass+j*ph3m+2*pm)/2, (Info.MonoisotopicMass+j*ph3m+3*pm)/3, (Info.MonoisotopicMass+j*ph3m+4*pm)/4);
+                end
+            end
 
 %% in silico trypsin digestion of UNG2
 
-
+RLA2=getgenpept('P05387')
 UNG2 = getgenpept('P13051')
 isoelectric(UNG2)
 [pI Charge] = isoelectric(UNG2, 'Charge', 7.38)
