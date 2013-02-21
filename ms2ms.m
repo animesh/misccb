@@ -137,4 +137,3 @@ proteinplot('EKMRHF')
 
 http://www.mathworks.se/help/bioinfo/examples/identifying-significant-features-and-classifying-protein-profiles.html
 http://www.mathworks.se/help/bioinfo/examples/differential-analysis-of-complex-protein-and-metabolite-mixtures-using-liquid-chromatography-mass-spectrometry-lc-ms.html
-

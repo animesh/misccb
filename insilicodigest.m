@@ -1,7 +1,11 @@
 %% in silico digestion with trypsin, lys-c and arg-c
 
-name=digestNphosphorylate('P05387','trypsin',2,8,400,2000);
+%name=digestNphosphorylate('P05387','trypsin',2,8,400,2000);
+name=digest('P13051','trypsin',2,8,400,2000,1,4,'HPO3','[STY]')
+
+
 fprintf('Results written to file %s\n',name);
+
 digestNphosphorylate('Q9GZX7','lysc',2,8,400,2000)
 digestNphosphorylate('Q9GZX7','arg-c',2,8,400,2000)
 
@@ -31,6 +35,7 @@ stypos=regexp(upper(parts{i}),'[STY]');
 %% in silico trypsin digestion of UNG2
 
 RLA2=getgenpept('P05387')
+
 UNG2 = getgenpept('P13051')
 isoelectric(UNG2)
 [pI Charge] = isoelectric(UNG2, 'Charge', 7.38)

@@ -19,6 +19,15 @@ plot(pep(1,:),pep(:,:),'r.');
 corrcoef(sum(pep),pep(1,:)),
 plot(sum(pep(2:end,:)),pep(1,:),'b.')
 
+%% error bar plot
+
+plot(pep(1,:), sum(pep(2:end,:))/length(pep),'ro')
+hold
+errorbar(pep(1,:),mean(pep(2:end,:)),std(pep(2:end,:)),'<k--');
+hold
+
+
+
 %% regression
 reg=[pep(1,:)' ones(size(pep(1,:)'))]\sum(pep(2:end,:))'
 aest=reg(1).*pep(1,:)'+reg(2)
@@ -26,6 +35,8 @@ plot(pep(1,:), sum(pep(2:end,:)),'b.')
 hold
 plot(pep(1,:), aest(:),'r')
 hold
+
+
 
 %% source
 http://stackoverflow.com/questions/9315666/matlab-linear-regression
