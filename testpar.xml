@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MaxQuantParams xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" runOnCluster="false" processFolder="proc">
+<MaxQuantParams xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" runOnCluster="false" processFolder="X:\Qexactive\combined\proc">
    <rawFileInfo>
       <filePaths>
-         <string>M:\RAW\SS\TestFile.raw</string>
+         <string>X:\Qexactive\Aida\TestFile.raw</string>
       </filePaths>
       <fileNames>
          <string>TestFile</string>

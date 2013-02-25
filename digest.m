@@ -18,7 +18,7 @@ function fn = digest(s,e,m,l,dct,tct,cl,ch,ntlc,mod,msite)
                 fprintf(fileIDfas,'>%s\t%d-%d\t%d-%d\n%s\n',seq.LocusName,i,nt,sites(i),lengths(i),parts{i}(nt:lengths(i)));
                 for cz=cl:ch
                     if(length(parts{i}(nt:lengths(i)))>=l & ((Info.MonoisotopicMass+cz*pm)/cz > dct) & ((Info.MonoisotopicMass+cz*pm)/cz < tct) & ((tct-((Info.MonoisotopicMass+ch*pm)/ch))>eps(tct)))
-                        fprintf(fileID,'%6.6f,Positive,,,,%d,%s\n',(Info.MonoisotopicMass+cz*pm)/cz,cz, parts{i}(nt:lengths(i)));
+                        fprintf(fileID,'%6.6f,Positive,,,,%d,%s%d-%dP%d-%d%s\n',(Info.MonoisotopicMass+cz*pm)/cz,cz, seq.LocusName,i,nt,sites(i),lengths(i),parts{i}(nt:lengths(i)));
                     end
                     if(~isempty(mod) & ~isempty(msite))
                         modw=MolMass(mod);
@@ -37,14 +37,14 @@ function fn = digest(s,e,m,l,dct,tct,cl,ch,ntlc,mod,msite)
             fprintf(fileIDfas,'>%s\t%d\t%d-%d\n%s\n',seq.LocusName,i,sites(i),lengths(i),parts{i});
             for cz=cl:ch
                 if(lengths(i)>=l & ((Info.MonoisotopicMass+cz*pm)/cz > dct) & ((Info.MonoisotopicMass+cz*pm)/cz < tct) & ((tct-((Info.MonoisotopicMass+ch*pm)/ch))>eps(tct)))
-                    fprintf(fileID,'%6.6f,Positive,,,,%d,%s\n',(Info.MonoisotopicMass+cz*pm)/cz,cz, parts{i});
+                    fprintf(fileID,'%6.6f,Positive,,,,%d,%s-%d-%d-%d%s\n',(Info.MonoisotopicMass+cz*pm)/cz,cz, seq.LocusName,i,sites(i),lengths(i),parts{i});
                 end
                 if(~isempty(mod) & ~isempty(msite))
                     modw=MolMass(mod);
                     stypos=regexp(upper(parts{i}),msite);
                     for j=1:size((stypos'),1)
                         if(lengths(i)>=l & ((Info.MonoisotopicMass+j*modw+cz*pm)/cz > dct) & ((Info.MonoisotopicMass+j*modw+cz*pm)/cz < tct) & ((tct-((Info.MonoisotopicMass+ch*pm)/ch))>eps(tct)))
-                            fprintf(fileID,'%6.6f,Positive,,,,%d,%s\n',(Info.MonoisotopicMass+j*modw+cz*pm)/cz,cz, parts{i}(1:stypos(j)));
+                            fprintf(fileID,'%6.6f,Positive,,,,%d,%s%d-%d-%d%s-%d%s\n',(Info.MonoisotopicMass+j*modw+cz*pm)/cz,cz,seq.LocusName,i,sites(i),lengths(i),mod,stypos(j), parts{i}(1:stypos(j)));
                         end
                     end
                 end

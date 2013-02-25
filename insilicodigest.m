@@ -1,10 +1,28 @@
-%% in silico digestion with trypsin, lys-c and arg-c
+%% in silico digestion UNG2 with trypsin, lys-c and arg-c
 
-%name=digestNphosphorylate('P05387','trypsin',2,8,400,2000);
+name=digest('P13051','trypsin',2,8,400,2000,2,3,20,'HPO3','[STY]')
+
+name=digestNphosphorylate('P05387','trypsin',2,8,400,2000);
 name=digest('P13051','trypsin',2,8,400,2000,1,4,'HPO3','[STY]')
 
-
 fprintf('Results written to file %s\n',name);
+
+%% xrcc1
+
+pep='DSTHLICAFANTPK';
+name=digest('P18887','trypsin',2,8,400,1600,2,3,0,'HPO3','[STY]')
+
+%% BSA
+
+name=digest('P02769','trypsin',2,8,400,2000,1,4,10,'HPO3','[STY]')
+name=digest('P02769','trypsin',2,8,400,2000,2,3,10,'HPO3','[STY]')
+name=digest('P02769','trypsin',2,8,400,1600,2,3,0,'HPO3','[STY]')
+
+%% RLA2
+
+name=digest('P05387','trypsin',2,8,400,2000,2,3,20,'HPO3','[STY]')
+
+%% AID
 
 digestNphosphorylate('Q9GZX7','lysc',2,8,400,2000)
 digestNphosphorylate('Q9GZX7','arg-c',2,8,400,2000)
