@@ -9,12 +9,28 @@ DRL=getpubmed('drug+effect','NUMBEROFRECORDS',200)
 word = regexp(lower([DRL(:).Abstract]),' ','split')';
 [val,idxW, idxV] = unique(word);
 num = accumarray(idxV,1);
-[num idxW] 
+
+%% exploratory 
+
+
+mean(num) 
+median(num)
+skewness(num)
+kurtosis(num)
+
+find(abs(zscore(num))>3);
+
+%% plot
 
 [counts bins]=hist(num.*idxW)
 plot(bins, counts)
 
-ksdensity(num.*idxW)
+ksdensity(num)
+
+hist(log(num),[40])
+
+histfit(num)
+probplot('normal',num)
 
 
 %% source
@@ -22,7 +38,7 @@ ksdensity(num.*idxW)
 http://www.mathworks.com/matlabcentral/answers/39759
 http://www.mathworks.se/help/bioinfo/ug/creating-get-functions.html
 http://stackoverflow.com/questions/2597743/matlab-frequency-distribution
-
+http://www.mathworks.se/help/stats/example.html
 
 %% tika tools
 
