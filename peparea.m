@@ -36,7 +36,15 @@ hold
 plot(pep(1,:), aest(:),'r')
 hold
 
-
+%% xrcc hpo3/total
+val=csvread('X:\Qexactive\LARS\2013\mars\xrcc1\values.csv',1,1)
+a1=[val(1:3,1)./val(1:3,2)]
+a2=[val(4:6,1)./val(4:6,2)]
+a3=[val(7:9,1)./val(7:9,2)]
+a4=[val(12:14,1)./val(12:14,2)]
+boxplot([a1 a2 a3 a4])
+ttest([a3 a4])
+anova1([a1 a2 a3 a4])
 
 %% source
 http://stackoverflow.com/questions/9315666/matlab-linear-regression
