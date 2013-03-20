@@ -1,10 +1,26 @@
 %% read csv
 
-pep=csvread('X:\Elite\LARS\2013\mars\tobias\reverse.csv');
-pepval=csvread('M:\Results\Sissel\HeK50\mascot\peparea.csv');
+%pep=csvread('X:\Elite\LARS\2013\mars\tobias\reverse.csv');
+%pepval=csvread('M:\Results\Sissel\HeK50\mascot\peparea.csv');
 %pepval=csvread('X:\Results\Sissel\HeK50\sequest\pep12.csv');
 %rt=csvread('X:\Qexactive\WTH6\WTHRT9RepMHpep.csv',1,6);
-rt=xlsread('X:\Qexactive\WTH6\Multiconsensus from 9 ReportsMHpep.xlsx');
+%rt=xlsread('X:\Qexactive\WTH6\Multiconsensus from 9 ReportsMHpep.xlsx');
+%rt=xlsread('X:\Qexactive\WTH6\Multiconsensus from 9 Reports.xlsx');
+rt=csvread('X:\Results\Alexey\rtrep.csv')
+
+%% retention time analysis
+
+rt(:,1)';rt(:,1)';
+corrcoef(rt)
+boxplot(rt)
+scatter3(rt(:,1),rt(:,2),rt(:,3))
+plot(mean([rt(:,2)';rt(:,3)']),std([rt(:,2)';rt(:,3)']),'r.')
+plot(std([rt(:,2)';rt(:,3)']),rt(:,7),'r.')
+corrcoef(std([rt(:,1)';rt(:,2)';rt(:,3)']),rt(:,4))
+plot(std([rt(:,1)';rt(:,2)';rt(:,3)']),rt(:,4),'r.')
+ksdensity((rt(:,1)))
+hist((rt(:,1)))
+
 
 %% peptide area against concentration
 
@@ -26,7 +42,7 @@ plot(rtv,[ sum(rt(:,48)>=0), sum(rt(:,66)>=0), sum(rt(:,84)>=0), sum(rt(:,49)>=0
 plot(rt(:,48),rt(:,50),'g.')
 scatter3(rt(:,48),rt(:,49),rt(:,50))
 scatter3(rt(:,7),rt(:,8),rt(:,9))
-hist(rt(:,49))
+hist(rt(:,49),[100])
 corrcoef(rt(:,7:15))
 sum(rt(:,7:15))
 boxplot(pep)
@@ -73,3 +89,4 @@ anova1([a1 a2 a3 a4])
 
 %% source
 http://stackoverflow.com/questions/9315666/matlab-linear-regression
+http://hs2.proteome.ca/SSRCalc/Slope/
