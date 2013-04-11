@@ -120,6 +120,7 @@ uf-mzxml Obb01937.RAW > Obb01937.MZXML
 %MG132_3 = mzxmlread('M:\RAW\Lars\130107_MG132_3_HCD.mzXML');
 Obb01926=mzxmlread('M:\RAW\melfalan0hr\Obb01926.MZXML')
 Obb01937=mzxmlread('M:\RAW\melfalan0hr\Obb01937.MZXML')
+Obb01937=mzxmlread('X:\Elite\Alexey\HCD\SIM66_Elite_HCD.mzXML')
 
 %% 
 
@@ -132,6 +133,14 @@ plot(Ys,'r.')
 proteinpropplot('EKMRHF')
 proteinplot('EKMRHF')
 
+hist(randn(100,1))
+hold
+hist(randn(100,1))
+h = findobj(gca,'Type','patch')
+display(h)
+set(h(1),'FaceColor','y','EdgeColor','k','facealpha',0.75);
+set(h(2),'FaceColor','b','EdgeColor','k','facealpha',0.5);
+hold
 
 %% source
 
