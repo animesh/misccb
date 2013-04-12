@@ -133,6 +133,8 @@ plot(Ys,'r.')
 proteinpropplot('EKMRHF')
 proteinplot('EKMRHF')
 
+%% hist color
+
 hist(randn(100,1))
 hold
 hist(randn(100,1))
