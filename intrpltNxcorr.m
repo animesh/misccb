@@ -28,29 +28,33 @@ i3=d(d(:,3)>=tmin & d(:,3)<= tmax & ~isnan(d(:,2)) & ~isnan(d(:,3)),3)
 d2=d(d(:,6)>=tmin & d(:,6)<= tmax & ~isnan(d(:,7)),7)
 i2=d(d(:,6)>=tmin & d(:,6)<= tmax & ~isnan(d(:,7)),6)
 
-
-[uAt3, ~, ui] = unique(i3)
+[uAt2, ~, ui] = unique(i2)
 n = hist( ui, 1:max(ui) );
 sel = n == 1
 hist(n)
-uAt3 = uAt3(sel, :);
-uAd3 = d3(sel, :);
+uAt2 = uAt2(sel, :);
+uAd2 = d2(sel, :);
+
+d2i = interp1(uAt2,uAd2,i1,'spline')
+plot(d2i,d1,'r.')
+
+plot(i1,d2i)
+hold
+plot(i1,d1,'r-')
+hold off
 
 
-
-d3i = interp1(uAt3,uAd3,i2,'linear')
-plot(d3i,d2,'r.')
-
-[cc lags]=xcorr(d3i,d2,'coeff')
-[v i]=max(cc)
-i2(lag(i))
-
-savevar=[uAt3,uAd3];
-save('interpolatedd3.txt', 'savevar', '-ASCII')
-
+[cc lags]=xcorr(d2i,d1,'coeff')
 %h=figure;
 plot(lags,cc,'r.');
 %saveas(h,'test','jpg');
+
+[v i]=max(~isnan(cc))
+i1((lag(i)))
+
+savevar=[uAt2,uAd2];
+save('interpolatedd2.txt', 'savevar', '-ASCII')
+
 
 
 %% compare
