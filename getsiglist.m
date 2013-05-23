@@ -1,6 +1,10 @@
 %% read
-d=xlsread('X:\Elite\LARS\2013\April\T Slordahl\Multiconsensus from 3 ReportsMHSC.xlsx')
-p=xlsread('X:\Elite\LARS\2013\mars\tobias\Multiconsensus from 3 Reports 0t MHSC.xlsx')
+d=xlsread('X:\Elite\LARS\2013\April\T Slordahl\Multiconsensus from 3 ReportsMH.xlsx')
+p0=xlsread('X:\Elite\LARS\2013\mars\tobias\Multiconsensus from 3 Reports 0t MH.xlsx')
+p5=xlsread('X:\Elite\LARS\2013\April\T Slordahl\Multiconsensus from 3 Reports 5t MH.xlsx')
+p12=xlsread('X:\Elite\LARS\2013\April\T Slordahl\Multiconsensus from 3 Reports 12t MH.xlsx')
+
+
 
 %% overlay
 plot(d(:,12),d(:,14),'r.')
