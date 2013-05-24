@@ -1,5 +1,61 @@
 %% read
 d=xlsread('C:\Users\animeshs\SkyDrive\Gotland 125m Landsort Deep 400m.xls')
+d=xlsread('C:\Users\animeshs\SkyDrive\Density and year basin 1 and basin 2.xls')
+
+%% extract time and values
+
+d1=d(~isnan(d(:,2)),2)
+i1=d(~isnan(d(:,2)),1)
+
+[uAt, ~, ui] = unique(i1)
+n = hist( ui, 1:max(ui) );
+sel = n == 1
+hist(n)
+uAt1 = uAt(sel, :);
+uAd1 = d1(sel, :);
+
+d2=d(~isnan(d(:,5)),5)
+i2=d(~isnan(d(:,5)),4)
+
+[uAt, ~, ui] = unique(i2)
+n = hist( ui, 1:max(ui) );
+sel = n == 1
+hist(n)
+uAt2 = uAt(sel, :);
+uAd2 = d2(sel, :);
+
+
+plot(i1,d1)
+hold
+plot(i2,d2,'r-')
+plot(uAt1,uAd1,'g-')
+plot(uAt2,uAd2,'k-')
+hold off
+
+uAd1i = interp1(uAt1,uAd1,uAt2)
+uAd2i = interp1(uAt2,uAd2,uAt1)
+
+plot(i1,d1,'b-')
+hold
+plot(i2,d2,'r-')
+plot(uAt2,uAd1i,'g-')
+plot(uAt1,uAd2i,'y-')
+hold off
+
+savevar=[uAt2,uAd1i];
+save('interpolatedd1.txt', 'savevar', '-ASCII')
+
+savevar=[uAt1,uAd2i];
+save('interpolatedd2.txt', 'savevar', '-ASCII')
+
+[cc lags]=xcorr(uAd1i(~isnan(uAd1i)),uAd2(~isnan(uAd1i)))
+[cc lags]=xcorr(uAd2i(~isnan(uAd2i)),uAd1(~isnan(uAd2i)),'coeff')
+plot(lags,cc,'r.');
+
+[v i]=max(~isnan(cc))
+i1((lags(i)))
+
+
 
 %% overlay
 plot(d(:,6),d(:,7))

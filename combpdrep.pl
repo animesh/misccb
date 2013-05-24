@@ -21,7 +21,7 @@ foreach my $f1 (@files){
     my $lcnt;
     my $fn=$f1;
     $fn=~s/$path|$pat|\///g;
-    print "$fn\t";
+    print "$fn, ";
     open (F1, $f1) || die "can't open \"$f1\": $!";
     while (my $line = <F1>) {
         $lcnt++;
@@ -48,7 +48,7 @@ foreach my $g  (keys %nc){
     print "$g\t";
     foreach  my $f (@files){
         my $key="$g;$f";
-        print "$mrna{$key}\t";
+        print "$mrna{$key},";
         if($mrna{$key}){$ocg++;}
     }
     print "$ocg\n";

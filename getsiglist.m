@@ -4,6 +4,15 @@ p0=xlsread('X:\Elite\LARS\2013\mars\tobias\Multiconsensus from 3 Reports 0t MH.x
 p5=xlsread('X:\Elite\LARS\2013\April\T Slordahl\Multiconsensus from 3 Reports 5t MH.xlsx')
 p12=xlsread('X:\Elite\LARS\2013\April\T Slordahl\Multiconsensus from 3 Reports 12t MH.xlsx')
 
+%% combo
+d=csvread('X:\Results\TS\combo.csv',1,1)
+hist(d(:,5))
+corr(d)
+
+
+plot(d(:,1),1./d(:,4),'r.')
+
+corr(d(d(:,4)!=0,1),1./d(:,4))
 
 
 %% overlay
