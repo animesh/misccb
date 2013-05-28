@@ -5,14 +5,25 @@ p5=xlsread('X:\Elite\LARS\2013\April\T Slordahl\Multiconsensus from 3 Reports 5t
 p12=xlsread('X:\Elite\LARS\2013\April\T Slordahl\Multiconsensus from 3 Reports 12t MH.xlsx')
 
 %% combo
-d=csvread('X:\Results\TS\combo.csv',1,1)
+d=csvread('X:\Results\TS\comboall.csv',1,1)
 hist(d(:,5))
-corr(d)
+
+for i=1:12
+    d=csvread('X:\Results\TS\comboall.csv',1,1);
+    d(d(:,i)~=0,i)=1./d(d(:,i)~=0,i);
+    corr(d(d(:,i)~=0,:))
+end
 
 
 plot(d(:,1),1./d(:,4),'r.')
 
 corr(d(d(:,4)!=0,1),1./d(:,4))
+
+x=[1:1000]
+y=[2001:3000];
+plot(((x-mean(x)./std(x)))',1./y')
+plot(x',1./y')
+plot(1./((x-mean(x)./std(x)))',1./((y-mean(y)./std(y)))')
 
 
 %% overlay
@@ -20,6 +31,13 @@ plot(d(:,12),d(:,14),'r.')
 hold
 plot(d(:,1),d(:,2),'r-')
 hold off
+x=[   1.9941260e+03   8.1647116e+00
+   1.9941480e+03   8.1452801e+00
+   1.9942100e+03   8.0332465e+00
+   1.9942230e+03   8.0937453e+00
+   1.9942420e+03   8.1511486e+00
+   1.9942880e+03   8.2760447e+00
+]
 
 %% distribution
 hist(log(d(:,12))/log(10),[100])
