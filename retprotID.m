@@ -1,9 +1,16 @@
 %% read list
 
-fo='X:\Results\Alexey\protID.txt';
+fo='X:\Elite\Alexey\HCD\protlist.txt';
 pl=fopen(fo);
 pla=textscan(pl,'%s');
 fclose(pl);
+
+%hprot=fastaread('X:\FastaDB\uniprot-human-may-13.fasta')
+
+%% compare lists
+
+%hprot.Header==pla{size(pla{1},2)}{1}
+%pla{size(pla{1},2)}{1}
 
 %% write retrieved protein sequences
 
@@ -17,3 +24,4 @@ for i = 1:size(pla{1},1)
 end
 
 fclose(protsw);
+
