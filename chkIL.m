@@ -6,25 +6,29 @@ EL1=xlsread('X:\Qexactive\130529_Incremental\run1\EL1.xls')
 EL2=xlsread('X:\Qexactive\130529_Incremental\run1\EL2.xls')
 EL3=xlsread('X:\Qexactive\130529_Incremental\run1\EL3.xls')
 
+
 %% SIM stuff
 
 a=xlsread('X:\Elite\Alexey\Test_Incl_Excl\Multiconsensus from 3 ReportsSImod.xlsx');
+a=xlsread('X:\Elite\Alexey\HCD\130617_1SegGenMSSI.xlsx')
 EL=xlsread('X:\Elite\Alexey\Test_Incl_Excl\List.xlsx');
 ELMI=xlsread('X:\Elite\Alexey\Test_Incl_Excl\peptides.txt.pepmonoisomass.xlsx');
 
 
 %% extract vals and compare
 
-mzt=a(a(:,14)==0,9);
+mzt=-1;
 mze=EL(:,1);
 cntax=0;
 ppm=10;
 detect=zeros(size(mze,1),size(a,1));
 for i=1:size(mze,1)
     for j=1:size(a,1)
-        if(a(j,9)<=(mze(i)+mze(i)*(ppm/10e6)) && a(j,9)>=(mze(i)-mze(i)*(ppm/10e6)) && a(j,14)==-1)
+        if(a(j,4)<=(mze(i)+mze(i)*(ppm/10e6)) && a(j,4)>=(mze(i)-mze(i)*(ppm/10e6)))
+        %if(a(j,9)<=(mze(i)+mze(i)*(ppm/10e6)) && a(j,9)>=(mze(i)-mze(i)*(ppm/10e6)) && a(j,14)==mzt)
+        %if(a(j,9)>(mze(i)+mze(i)*(ppm/10e6)) || a(j,9)<(mze(i)-mze(i)*(ppm/10e6)) && a(j,14)==mzt)
            cntax=cntax+1;
-           detect(i,j)=mze(i)-a(j,9);
+           detect(i,j)=mze(i)-a(j,4);
         end
     end
 end
