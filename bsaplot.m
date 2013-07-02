@@ -18,18 +18,121 @@ hist(log(prot(prot(:,1)>0&prot(:,22)>0,22))) % trad 16
 
 hist([log(prot(prot(:,1)>0&prot(:,22)>0,22));log(prot(prot(:,1)>0&prot(:,6)>0,6))],100) % trad 16
 
+%% scores
 
 figure; 
 cc=hsv(8);
 hold on;
-sp=9;
+sp=7;
 for i=1:8
     (i-1)*4+sp
-    [val freq]=ksdensity(log(prot(prot(:,1)>0&prot(:,(i-1)*4+sp)>0,(i-1)*4+sp))); % trad 16
+    [val freq]=hist(log(prot(prot(:,1)>0&prot(:,(i-1)*4+sp)>0,(i-1)*4+sp))); % trad 16
     plot(freq,val,'color',cc(i,:));
-    cc(i,:)
+    %rgbn(cc(i,:))
 end
+xlabel('Log Sequest Score')
+ylabel('# of proteins with the score')
+title('Histogram of score, Traditional and Direct Methods')
+legend('Direct 16h','Direct 1h','Direct 4h','Direct 8h','Traditional 16h','Traditional 1h','Traditional 4h','Traditional 8h')
 hold off;
+
+
+%% confidence
+
+for sp=6:9
+    sp
+    [hyp,pvalue]=ttest(prot(:,sp),prot(:,sp+16))
+end
+
+ 
+%% boxplot
+
+for sp=6
+    boxplot(log(prot(prot(:,1)>0&prot(:,6)>0,6)) log(prot(prot(:,1)>0&prot(:,22)>0,22))
+end
+
+%% val
+
+for sp=6:4:18
+    sp
+    [val idx]=find(prot(:,sp)>=0);
+    A1=sum(idx)
+    [val idx]=find(prot(:,sp+16)>=0);
+    A2=sum(idx)
+    [val idx]=find(prot(:,sp+16)>=0&prot(:,sp>=0));
+    Com=sum(idx);
+    Area=[A1 A2];
+end
+
+%% vennX
+ vennX([100 5 20],0.05)
+
+%% vennX prot
+
+
+hr=[16 1 4 8];
+idx=[6 10 14 18];
+for i=1:4
+    sp=idx(i)
+    tm=hr(i)
+    %vennX([sum(prot(:,sp+16)>=0)-sum(prot(:,sp+16)>=0 & prot(:,sp)>=0), sum(prot(:,sp+16)>=0 & prot(:,sp)>=0), sum(prot(:,sp)>=0)-sum(prot(:,sp+16)>=0 & prot(:,sp)>=0)],0.01)
+    vennX([sum(prot(:,sp+16)>=0), sum(prot(:,sp+16)>=0 & prot(:,sp)>=0), sum(prot(:,sp)>=0)],0.05)
+    axis equal, axis off
+    figtit=['Venn diagram: Traditional and Direct Methods for detected Proteins (',int2str(tm),'h)']
+    title(figtit)
+    fname=['X:\BSA Direct vs. Trad\VennProt',int2str(tm)]    
+    print('-djpeg',fname);
+end
+
+%% vennX pep
+
+
+hro=[116 4 11 8 14 18 16 1];
+idxo=[11 12 15 16 18 20 22 24];
+idx=[1 2 3 4]
+hr=[16 1 4 8];
+pepn=[pep(:,22) pep(:,11) pep(:,24) pep(:,15) pep(:,12) pep(:,18) pep(:,16) pep(:,20)]
+%plot(hr,idx,'r.')
+for i=1:4
+    sp=idx(i)
+    tm=hr(i)
+    vennX([sum(pepn(:,sp+4)>=0), sum(pepn(:,sp+4)>=0 & pepn(:,sp)>=0), sum(pepn(:,sp)>=0)],0.05)
+    axis equal, axis off
+    figtit=['Venn diagram: Traditional and Direct Methods for detected Peptides (',int2str(tm),'h)']
+    title(figtit)
+    fname=['X:\BSA Direct vs. Trad\VennPep',int2str(tm)]    
+    print('-djpeg',fname);
+end
+
+%% vennX SI
+sum(si(:,14)==16)
+
+hro=[16 1 4 8 116 11 14 18];
+idx=[1 2 3 4]
+hr=[16 1 4 8];
+for i=1:4
+    sp=idx(i)
+    tm=hr(i)
+    vennX([sum(si(:,14)==hro(i)), sum(si(:,14)==hro(i) & si(:,14)==hro(i+4)), sum(si(:,14)==hro(i+4))],0.05)
+    axis equal, axis off
+    figtit=['Venn diagram: Traditional and Direct Methods for detected spectras (',int2str(tm),'h)']
+    title(figtit)
+    fname=['X:\BSA Direct vs. Trad\VennSI',int2str(tm)]    
+    print('-djpeg',fname);
+end
+
+%% plot 
+h=figure
+plot(sin(1:100))
+fname=['VennProt',int2str(sp),'.jpg']    
+saveas(h,'ytest','jpg');
+    
+
+%% venn
+A=[prot(:,6)>=0]
+
+
+%% sandbox
 
 ksdensity(log(prot(prot(:,1)>0&prot(:,6)>0,6))) % direct 16
 hold
