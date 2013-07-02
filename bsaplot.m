@@ -65,7 +65,10 @@ for sp=6:4:18
 end
 
 %% vennX
- vennX([100 5 20],0.05)
+
+vennX([100 50 0],0.05)
+vennX([10 5 20],0.05)
+ 
 
 %% vennX prot
 
