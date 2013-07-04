@@ -4,36 +4,80 @@ prot=xlsread('X:\BSA Direct vs. Trad\MC8RProtein.xlsx')
 pep=xlsread('X:\BSA Direct vs. Trad\MC8RPeptides.xlsx')
 si=xlsread('X:\BSA Direct vs. Trad\MC8RSI.xlsx')
 
-%% Time series T v D 1,4,8,16 (pep,prot,PSM)
+[bsapep1 bsapep2 bsapep3] =xlsread('X:\BSA Direct vs. Trad\Blood_Plasma_prot_ca2ug_Trypsin_1,4,8,16hours_Combined_Mascot_SequestHT_Phospho_Varia_Mod_PhosPhoRS_Medium_Peptides_List.xlsx')
+
+%% Pie chart (Ident and Phospho)
+
+totpep=sum(~cellfun(@isempty,bsapep2(:,1)))-1
+phoval=sum(~cellfun(@isempty,bsapep2(:,8)))-1
+explode = [0 1];
+pie([totpep phoval],explode)
+colormap summer
+
+
+%% Time series T v D 1,4,8,16 (prot)
 
 hr=[16 1 4 8];
 idx=[6 10 14 18];
-plot((hr),sum(prot(:,(idx)+16)>=0),'r*')
+pro=[(hr);sum(prot(:,(idx)+16)>=0)]'
+pro=sortrows(pro)
+plot(pro(:,1),pro(:,2),'b*-')
 hold on
-plot((hr),sum(prot(:,(idx))>=0),'b.')
-title('Time Series plot for detected Proteins Traditional (Blue) and Direct (Red) Methods ')
+pro=[(hr);sum(prot(:,(idx))>=0)]'
+pro=sortrows(pro)
+plot(pro(:,1),pro(:,2),'r.-')
+title('Time Series plot for detected Proteins: Traditional(Red) and Direct(Blue)')
 hold off
+
 fname=['X:\BSA Direct vs. Trad\TSProt']    
 print('-djpeg',fname);
 
 
-%% PSM correlations
+%% Time series T v D 1,4,8,16 (pep)
+
 
 idx=[1 2 3 4];
 hr=[16 1 4 8];
 pepn=[pep(:,22) pep(:,11) pep(:,24) pep(:,15) pep(:,12) pep(:,18) pep(:,16) pep(:,20)];
-plot((hr),sum(prot(:,(idx)+16)>=0),'r*')
+pro=[(hr);sum(pepn(:,(idx)+4)>=0)]'
+pro=sortrows(pro)
+plot(pro(:,1),pro(:,2),'b*-')
 hold on
-plot((hr),sum(prot(:,(idx))>=0),'b.')
-title('Time Series plot for detected Proteins Traditional (Blue) and Direct (Red) Methods ')
+pro=[(hr);sum(pepn(:,(idx))>=0)]'
+pro=sortrows(pro)
+plot(pro(:,1),pro(:,2),'r.-')
+title('Time Series plot for detected Peptides: Traditional(Red) and Direct(Blue)')
 hold off
 fname=['X:\BSA Direct vs. Trad\TSPep']    
 print('-djpeg',fname);
+
+%% Time series T v D 1,4,8,16 (pep,prot,PSM)
+
+hro1=[16 1 4 8];
+hro2=[116 11 14 18];
+hr=[16 1 4 8];
+sid=[1 sum(si(:,14)==11);4 sum(si(:,14)==14);8 sum(si(:,14)==18);16 sum(si(:,14)==116)]
+plot(sid(:,1),sid(:,2),'b.-')
+hold on
+sit=[1 sum(si(:,14)==1);4 sum(si(:,14)==4);8 sum(si(:,14)==8);16 sum(si(:,14)==16)]
+plot(sit(:,1),sit(:,2),'r.-')
+title('Time Series plot for detected Ions: Traditional(Red) and Direct(Blue)')
+hold off
+fname=['X:\BSA Direct vs. Trad\TSIons']    
+print('-djpeg',fname);
+
+%% PSM correlations
+
 
 
 %% Pie chart (Ident and Phospho)
 
 
+idx=[1 2 3 4];
+x = sum(pepn(:,(idx))>=0);
+explode = [0 1 0 0];
+pie(x,explode)
+colormap summer
 
 %% BSA detection
 
