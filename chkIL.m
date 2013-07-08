@@ -1,11 +1,18 @@
 %% read files
 
-d=xlsread('X:\Qexactive\130529_Incremental\run1\MC6SI.xlsx')
+d=xlsread('X:\Qexactive\Ingvild\130629\MC6RSIMOD.xlsx')
 
-EL1=xlsread('X:\Qexactive\130529_Incremental\run1\EL1.xls')
-EL2=xlsread('X:\Qexactive\130529_Incremental\run1\EL2.xls')
-EL3=xlsread('X:\Qexactive\130529_Incremental\run1\EL3.xls')
+E24IBS=xlsread('X:\Qexactive\Ingvild\130624\Excl_130624_Ingvild_BX_SV.xlsx')
+E24IM=xlsread('X:\Qexactive\Ingvild\130624\Excl_130624_Ingvild_med.xlsx')
+E24IS=xlsread('X:\Qexactive\Ingvild\130624\Excl_130624_Ingvild_SV.xlsx')
+I24QPS=xlsread('X:\Qexactive\Ingvild\130624\Incl_130624_Q13501_PO4_S403_Searchlist for Qex.xlsx')
 
+
+%% Ingvild stuff
+
+hist(d(:,9))
+hist(d(:,4))
+hist(I24QPS(:,1))
 
 %% SIM stuff
 
@@ -18,7 +25,7 @@ a=xlsread('X:\Qexactive\Alexey\Multiconsensus from 4 ReportsQexSImod.xlsx');
 
 %% extract vals and compare
 
-mzt=-1;
+mzt=1;
 mze=EL(:,1);
 cntax=0;
 ppm=10;
@@ -26,7 +33,7 @@ detect=zeros(size(mze,1),size(a,1));
 for i=1:size(mze,1)
     for j=1:size(a,1)
         %if(a(j,4)<=(mze(i)+mze(i)*(ppm/10e6)) && a(j,4)>=(mze(i)-mze(i)*(ppm/10e6)))
-        if(((abs(a(j,9)-(mze(i)))<=mze(i)*(ppm/10e6))&&(abs(a(j,9)-(mze(i)))<=a(j,9)*(ppm/10e6))) && a(j,14)==mzt)
+        if(((abs(a(j,9)-mze(i))<=mze(i)*(ppm/10e6))||(abs(a(j,9)-mze(i))<=a(j,9)*(ppm/10e6))) && a(j,14)==mzt)
         %if((a(j,9)>(mze(i)+mze(i)*(ppm/10e6)) || a(j,9)<(mze(i)-mze(i)*(ppm/10e6))) && a(j,14)==mzt)
            cntax=cntax+1;
            detect(i,j)=mze(i)-a(j,9);
@@ -37,13 +44,12 @@ end
 cntax
 spy(detect)
 [rd,cd]=find(detect>0);
-unique(rd);
-size(ans,1)
 chix=1
 rd(chix)
 cd(chix)
 detect(rd(chix),cd(chix))
-
+unique(rd);
+size(ans,1)
 
 %% compare R1 with R1EX1
 
