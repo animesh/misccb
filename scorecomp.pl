@@ -61,10 +61,10 @@ while(my $l=<F1>){
 	}
 }
 
-print "UniprotID,TotalArea,Peptides,Score,Count,TotalCount\n";
+print "UniprotID,TotalArea,Peptides,Score,FDR,Count,TotalCount\n";
 foreach (keys %tm){
 	if(!$tmn{$_} and !$tmk{$_} and $tmt{$_}){
-		print "$_,$valt{$_},$pept{$_},",-10*$pet{$_},",$tmt{$_},$tm{$_},$tmn{$_},$tmk{$_}\n";
+		print "$_,$valt{$_},$pept{$_},",-10*($pet{$_}),",",100*exp($pet{$_}),",$tmt{$_},$tm{$_},$tmn{$_},$tmk{$_}\n";
 	}
 }
 
