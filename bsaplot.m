@@ -68,16 +68,25 @@ print('-djpeg',fname);
 
 %% PSM correlations
 
+hr=[16 1 4 8];
+idx=[6 10 14 18];
+for i=1:4
+    sp=idx(i)+3
+    tm=hr(i)
+    [rho pval]=corr(prot(:,sp+16),prot(:,sp),'rows','complete')
+end
 
+%% confidence
 
-%% Pie chart (Ident and Phospho)
-
-
-idx=[1 2 3 4];
-x = sum(pepn(:,(idx))>=0);
-explode = [0 1 0 0];
-pie(x,explode)
-colormap summer
+hr=[16 1 4 8];
+idx=[6 10 14 18];
+for prop=1:3
+    sp=idx(i)+prop-1
+    for i=1:4
+        tm=hr(i)
+        [hyp,pvalue]=ttest(prot(:,sp),prot(:,sp+16))
+    end
+end
 
 %% BSA detection
 
@@ -111,12 +120,6 @@ legend('Direct 16h','Direct 1h','Direct 4h','Direct 8h','Traditional 16h','Tradi
 hold off;
 
 
-%% confidence
-
-for sp=6:9
-    sp
-    [hyp,pvalue]=ttest(prot(:,sp),prot(:,sp+16))
-end
 
  
 %% boxplot
