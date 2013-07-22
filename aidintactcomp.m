@@ -1,15 +1,19 @@
 %% read files
-prot=xlsread('X:\Qexactive\Berit_Sissel\B002_T1\Multiconsensus from 4 Comp Reports.xlsx')
-peparea=xlsread('X:\Qexactive\Berit_Sissel\B002_T1\MCR2RpepWGparseNamed.xlsx')
+prot=xlsread('X:\Qexactive\Berit_Sissel\StimUnMC6RBR123protrep.xlsx')
 
 %% correlations
 
 corr(prot,'rows','complete')
-corr(peparea,'rows','complete')
+%corr(peparea,'rows','complete')
 
-corr(prot(:,6:9),'rows','complete')
-corr([prot(:,10),prot(:,18),prot(:,26),prot(:,32)],'rows','complete')
-corr([prot(:,14),prot(:,22),prot(:,30),prot(:,38)],'rows','complete')
+corr(prot(:,6:11),'rows','complete')
+
+corr([prot(:,12),prot(:,20),prot(:,28),prot(:,36),prot(:,44),prot(:,52)],'rows','complete')
+corr([prot(:,16),prot(:,24),prot(:,32),prot(:,40),prot(:,48),prot(:,56)],'rows','complete')
+
+%% hist
+
+hist(prot(:,6:11))
 
 
 %% plot

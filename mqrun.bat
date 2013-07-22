@@ -1,8 +1,8 @@
-set MAXQUANTDIR=C:\Users\animeshs\SkyDrive\MaxQuant
+set MAXQUANTDIR=X:\MaxQuant_1.4.0.8
 set THREADS=4
-set DATADIR=M:\RAW\SS
+set DATADIR=X:\Elite\Aida\SS_1
 set PREFIXRAW=
-set PARAMFILE=testpar.xml
+set PARAMFILE=TestFileCIDpar.xml
 set SEARCHTEXT=TestFile
 
 DIR /B %DATADIR%\%PREFIXRAW%*.raw > %DATADIR%\tempfile.txt
@@ -13,7 +13,7 @@ FOR /F "eol=  tokens=1,2 delims=." %%i in (%DATADIR%\tempfile.txt) do  (
 		if exist proc rmdir /S /Q proc
 		if exist %DATADIR%\combined rmdir /S /Q %DATADIR%\combined
 		if exist %DATADIR%\%%i rmdir /S /Q %DATADIR%\%%i
-		%MAXQUANTDIR%\bin\MaxQuantCmd.exe %DATADIR%\%%i.xml %THREADS%
+		%MAXQUANTDIR%\bin\MaxQuantCmd.exe -mqpar=%DATADIR%\%%i.xml %THREADS%
 		if exist %DATADIR%\%%iRES rmdir /S /Q %DATADIR%\%%iRES
 		echo D| xcopy  /E /Y /Q %DATADIR%\combined\txt %DATADIR%\%%iRES
 		if exist %DATADIR%\%%iRES copy %DATADIR%\combined\*.apl %DATADIR%\%%iRES
