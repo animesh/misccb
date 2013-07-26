@@ -1,57 +1,63 @@
 use strict;
+use warnings;
 use Text::ParseWords;
 
 my $path = shift @ARGV;
-my $pat = shift @ARGV;
-my $i1 = shift @ARGV;
+my $pat = "RES";
+my $fpat = "proteinGroups.txt";
+my $i1 = 18;
 
-my @files=<$path/*$pat>;
+my @files=<$path/*$pat/$fpat>;
 my %mrna;
 my %nc;
 
-print "FileColumn$i1\t";
+print "Uniprot ID\tID Name\t";
 foreach my $f1 (@files){
     my @tmp;
     my @name;
     my %pg;
     my $lcnt;
     my $fn=$f1;
-    $fn=~s/$path|$pat|\///g;
+    $fn=~s/$path|$pat|$fpat|\///g;
     print "$fn\t";
     open (F1, $f1) || die "can't open \"$f1\": $!";
     while (my $line = <F1>) {
-	$lcnt++;
-	if($pat=~/csv/){@tmp=parse_line(',',0,$line);}
-	if($pat=~/txt/){@tmp=parse_line('\t',0,$line);}
+        chomp $line;
+        $line =~ s/\r//g;
+        $lcnt++;
+    	@tmp=parse_line('\t',0,$line);
         if ($lcnt>1){
-	    @name=split(/\;/,$tmp[0]);
-	    foreach (@name) {
-		my $key=$_.$f1;
-		if($tmp[$i1]=~/[0-9]/ and $tmp[$i1-1]!=0){my $htl=$tmp[$i1]/($tmp[$i1]+$tmp[$i1-1]);$mrna{$key}.="$htl ";}
-		elsif($tmp[$i1]==0 && $tmp[$i1-1]==0  ){$mrna{$key}.="Both0";}
-		else{$mrna{$key}.="NA($tmp[$i1]-$tmp[$i1-1])";} 		
-		$nc{$_}++;
-	    }
+            @name=split(/\;/,$tmp[0]);
+    	    foreach (@name) {
+                my @upid=split(/\|/,$_);
+        		my $key=$upid[1].$fn;
+                if($tmp[$i1]){$mrna{$key}.="$tmp[$i1] ";}
+        		elsif($tmp[$i1+4]==0 && $tmp[$i1+5]==0  ){$mrna{$key}.="Both0 ";}
+        		else{$mrna{$key}.="NA($tmp[$i1]-$tmp[$i1-1]) ";} 		
+        		$nc{$upid[1]}=$upid[2];
+    	    }
         }
+        #if ($lcnt==1){print "$f1\t$fn\n";}
     }
     close F1;
 }
-print "\n";
+print "TotalDetect\n";
 
 foreach my $g  (keys %nc){
-    my $ocg;
-    print "$g\t";
-    foreach  my $f (@files){
-	my $key=$g.$f;
-	print "$mrna{$key}\t";
-	if($mrna{$key}){$ocg++;}
+    if($g ne ""){
+        my $ocg;
+        print "$g\t$nc{$g}\t";
+        foreach  my $f (@files){
+            $f=~s/$path|$pat|$fpat|\///g;
+        	my $key=$g.$f;
+        	print "$mrna{$key}\t";
+        	if($mrna{$key}=~/[0-9]/){$ocg++;}
+        }
+        print "$ocg\n";
     }
-    print "$ocg\n";
 }
 
 
 __END__
 
-perl mqpevol.pl /cygdrive/m/Result/Aida [0-9].txt 25 
-
-wc /cygdrive/m/Result/Aida/*[0-9].txt   | sed 's/\// /g' | awk '{print $8,$1}'
+perl mqpevol.pl /cygdrive/m/Results/SS_1R 2>0 > SS1RPG.txt

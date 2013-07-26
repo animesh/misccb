@@ -26,6 +26,8 @@ foreach my $f1 (@files){
     print "$fn-";
     open (F1, "$f1/$fpat") || die "can't open \"$f1/$fpat\": $!";
     while (my $line = <F1>) {
+    chomp $line;
+    $line =~ s/\r//g;
 	$lcnt++;
 	if($fpat=~/csv/){@tmp=parse_line(',',0,$line);}
 	if($fpat=~/txt/){@tmp=parse_line('\t',0,$line);}
@@ -61,7 +63,7 @@ foreach my $g  (keys %nc){
 
 
 __END__ 
-
+/
 perl mqpepcomp.pl /cygdrive/m/RAW/SS RES peptides.txt 36
 
 perl mqpepcomp.pl /cygdrive/m/RAW/SS RES evidence.txt 49
