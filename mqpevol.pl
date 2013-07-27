@@ -23,7 +23,7 @@ foreach my $f1 (@files){
     open (F1, $f1) || die "can't open \"$f1\": $!";
     while (my $line = <F1>) {
         chomp $line;
-        $line =~ s/\r//g;
+        $line =~ s/\r|\`|\"|\'/ /g;
         $lcnt++;
     	@tmp=parse_line('\t',0,$line);
         if ($lcnt>1){
