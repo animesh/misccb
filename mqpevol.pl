@@ -60,4 +60,4 @@ foreach my $g  (keys %nc){
 
 __END__
 
-perl mqpevol.pl /cygdrive/m/Results/SS_1R 2>0 > SS1RPG.txt
+perl mqpevol.pl /cygdrive/X/Elite/Aida/SS_1R  > /cygdrive/c/Users/animeshs/Desktop/SS1RPG.txt

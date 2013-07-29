@@ -2,6 +2,13 @@
 
 prot=xlsread('C:\Users\animeshs\Desktop\SS1RPGsort.xlsx')
 
+%% correlation plot
+
+corrprot=corrcoef(prot,'rows','complete')
+HeatMap(corrprot,'Colormap', redgreencmap(256))
+
+clustergram(corrprot)
+
 %% save at tab txt and transpose
 
 awk '
@@ -41,3 +48,8 @@ Class =
 	0.1517 * C9K057 
 	+ 0.3385
 
+    
+    
+%% weka
+
+java -Xmx2g -cp . -jar weka.jar
