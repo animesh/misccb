@@ -3,11 +3,13 @@
 prot=xlsread('C:\Users\animeshs\Desktop\SS1RPGsort.xlsx')
 
 %% correlation plot
-
-corrprot=corrcoef(prot,'rows','complete')
+corrprot=corr(prot,'rows','pairwise')
 HeatMap(corrprot,'Colormap', redgreencmap(256))
 
-clustergram(corrprot)
+%% cluster analysis
+corrprot=corrcoef(prot,'rows','pairwise')
+clustergram(corrprot,'Colormap',redbluecmap)
+
 
 %% save at tab txt and transpose
 
