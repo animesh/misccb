@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <MaxQuantParams xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aifSilWeight="4" aifIsoWeight="2" aifTopx="20" aifCorrelation="0.47" aifCorrelationFirstPass="0.8" aifMinMass="0" aifMsmsTol="10" aifSecondPass="true" aifIterative="true" aifThresholdFdr="0.01">
    <slicePeaks>true</slicePeaks>
    <tempFolder />
@@ -13,7 +13,7 @@
    <useOriginalPrecursorMz>false</useOriginalPrecursorMz>
    <minPeakLen>2</minPeakLen>
    <filePaths>
-      <string>X:\Elite\Aida\SS_1\1\130716_SS+31778MGUS_run3.raw</string>
+      <string>C:\Users\animeshs\misccb\130716_SS+31778MGUS_run3.raw</string>
    </filePaths>
    <experiments>
       <string />
@@ -59,8 +59,8 @@
          <firstSearchTol>20</firstSearchTol>
          <mainSearchTol>4.5</mainSearchTol>
          <labels>
-            <string />
             <string>Arg10; Lys8</string>
+            <string />
          </labels>
          <lcmsRunType>0</lcmsRunType>
          <lfqMode>0</lfqMode>
@@ -68,7 +68,9 @@
          <enzymeModeFirstSearch>0</enzymeModeFirstSearch>
       </parameterGroup>
    </parameterGroups>
-   <fixedModifications />
+   <fixedModifications>
+      <string>Carbamidomethyl (C)</string>
+   </fixedModifications>
    <multiModificationSearch>false</multiModificationSearch>
    <compositionPrediction>false</compositionPrediction>
    <fastaFiles>
@@ -147,7 +149,7 @@
             <Unit>Ppm</Unit>
          </Tolerance>
          <DeNovoTolerance>
-            <Value>20</Value>
+            <Value>10</Value>
             <Unit>Ppm</Unit>
          </DeNovoTolerance>
       </msmsParams>
@@ -157,7 +159,7 @@
             <Unit>Dalton</Unit>
          </Tolerance>
          <DeNovoTolerance>
-            <Value>0.5</Value>
+            <Value>0.25</Value>
             <Unit>Dalton</Unit>
          </DeNovoTolerance>
       </msmsParams>
@@ -167,7 +169,7 @@
             <Unit>Dalton</Unit>
          </Tolerance>
          <DeNovoTolerance>
-            <Value>0.1</Value>
+            <Value>0.05</Value>
             <Unit>Dalton</Unit>
          </DeNovoTolerance>
       </msmsParams>
@@ -177,7 +179,7 @@
             <Unit>Dalton</Unit>
          </Tolerance>
          <DeNovoTolerance>
-            <Value>0.5</Value>
+            <Value>0.25</Value>
             <Unit>Dalton</Unit>
          </DeNovoTolerance>
       </msmsParams>
