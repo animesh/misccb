@@ -24,11 +24,11 @@ while(my $l1=<F1>){
 
 for(my $c5=0;$c5<$c2;$c5++){
 	for($c6=0;$c6<$c1-1;$c6++){
-		if($mat[$c5][$c6]=~/NaN/ and $thr>0){print "NaN,";}
+		if($thr eq ""){print "$mat[$c5][$c6],";}
+		elsif($mat[$c5][$c6]=~/NaN/ and $thr>0){print "NaN,";}
 		elsif($mat[$c5][$c6]=~/[A-Z]/i){print "$mat[$c5][$c6],";}
 		elsif($mat[$c5][$c6]>=$thr||$mat[$c5][$c6]<=(1/$thr)){print $mat[$c5][$c6]+0,",";}
 		else{print ",";}
-		#print "$mat[$c5][$c6],";
 	}
 	print "$mat[$c5][$c6]\n";
 }
