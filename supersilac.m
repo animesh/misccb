@@ -1,11 +1,23 @@
 %% read
 
-prot=xlsread('C:\Users\animeshs\Desktop\SS1RPGsort.xlsx')
-protrev=xlsread('X:\Elite\Aida\SS_1\1\130716_SS+31778MGUS_run1Multiconsensus from 2 Reports.xlsx')
+prot=xlsread('C:\Users\animeshs\SkyDrive\proteinGroups_F.xls')
+protrev=xlsread('C:\Users\animeshs\SkyDrive\proteinGroups_R.xls')
+
+protcomb=xlsread('C:\Users\animeshs\misccb\compFR.xlsx')
 
 %% comprare forward and reverse ratios
-plot(protrev(:,8),1./protrev(:,11),'r.')
-hist(protrev(:,8)-1./protrev(:,11),[100])
+
+plot(protrev(:,14),protrev(:,19),'r.')
+hold
+plot(prot(:,14),1./prot(:,19),'b.')
+hold
+
+%% correlation
+
+hist(protcomb(:,1),[100])
+hist(protcomb(:,2),[100])
+plot(protcomb(:,1),1./protcomb(:,2),'k.')
+[rho val]=corrcoef(protcomb(:,1),1./protcomb(:,2),'rows','pairwise')
 
 %% outliers
 

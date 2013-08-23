@@ -13,7 +13,7 @@
    <useOriginalPrecursorMz>false</useOriginalPrecursorMz>
    <minPeakLen>2</minPeakLen>
    <filePaths>
-      <string>X:\Elite\Aida\SS_1\130716_SS+35788MM_run3.raw</string>
+      <string>X:\Elite\Aida\SS_1\4\130716_SS+35788MM_run3.raw</string>
    </filePaths>
    <experiments>
       <string />
@@ -32,8 +32,8 @@
          <maxCharge>7</maxCharge>
          <msInstrument>0</msInstrument>
          <labelMods>
-            <string />
             <string>Arg10;Lys8</string>
+            <string />
          </labelMods>
          <lfqMinEdgesPerNode>3</lfqMinEdgesPerNode>
          <lfqAvEdgesPerNode>6</lfqAvEdgesPerNode>
@@ -149,7 +149,7 @@
             <Unit>Ppm</Unit>
          </Tolerance>
          <DeNovoTolerance>
-            <Value>10</Value>
+            <Value>20</Value>
             <Unit>Ppm</Unit>
          </DeNovoTolerance>
       </msmsParams>
@@ -159,7 +159,7 @@
             <Unit>Dalton</Unit>
          </Tolerance>
          <DeNovoTolerance>
-            <Value>0.25</Value>
+            <Value>0.5</Value>
             <Unit>Dalton</Unit>
          </DeNovoTolerance>
       </msmsParams>
@@ -169,7 +169,7 @@
             <Unit>Dalton</Unit>
          </Tolerance>
          <DeNovoTolerance>
-            <Value>0.05</Value>
+            <Value>0.1</Value>
             <Unit>Dalton</Unit>
          </DeNovoTolerance>
       </msmsParams>
@@ -179,7 +179,7 @@
             <Unit>Dalton</Unit>
          </Tolerance>
          <DeNovoTolerance>
-            <Value>0.25</Value>
+            <Value>0.5</Value>
             <Unit>Dalton</Unit>
          </DeNovoTolerance>
       </msmsParams>

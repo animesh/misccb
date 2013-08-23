@@ -5,7 +5,8 @@ use Text::ParseWords;
 my $path = shift @ARGV;
 my $pat = "RES";
 my $fpat = "proteinGroups.txt";
-my $i1 = 18;
+my $i1 = 20;
+my $idi = 7;
 
 my @files=<$path/*$pat/$fpat>;
 my %mrna;
@@ -27,14 +28,14 @@ foreach my $f1 (@files){
         $lcnt++;
     	@tmp=parse_line('\t',0,$line);
         if ($lcnt>1){
-            @name=split(/\;/,$tmp[0]);
+            @name=split(/\;/,$tmp[$idi]);
     	    foreach (@name) {
                 my @upid=split(/\|/,$_);
-        		my $key=$upid[1].$fn;
+        	my $key=$upid[1].$fn;
                 if($tmp[$i1]){$mrna{$key}.="$tmp[$i1] ";}
-        		elsif($tmp[$i1+4]==0 && $tmp[$i1+5]==0  ){$mrna{$key}.="Both0 ";}
-        		else{$mrna{$key}.="NA($tmp[$i1]-$tmp[$i1-1]) ";} 		
-        		$nc{$upid[1]}=$upid[2];
+        	elsif($tmp[$i1+4]==0 && $tmp[$i1+5]==0  ){$mrna{$key}.="Both0 ";}
+        	else{$mrna{$key}.="NA($tmp[$i1]-$tmp[$i1-1]) ";} 		
+        	$nc{$upid[1]}=$upid[2];
     	    }
         }
         #if ($lcnt==1){print "$f1\t$fn\n";}
@@ -60,4 +61,4 @@ foreach my $g  (keys %nc){
 
 __END__
 
-perl mqpevol.pl /cygdrive/X/Elite/Aida/SS_1R  > /cygdrive/c/Users/animeshs/Desktop/SS1RPG.txt
+perl mqpevol.pl /cygdrive/c/Users/animeshs/SkyDrive 2>0 > /cygdrive/c/Users/animeshs/SkyDrive/compFR.txt
