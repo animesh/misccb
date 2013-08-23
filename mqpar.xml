@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<MaxQuantParams xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aifSilWeight="4" aifIsoWeight="2" aifTopx="20" aifCorrelation="0.47" aifCorrelationFirstPass="0.8" aifMinMass="0" aifMsmsTol="10" aifSecondPass="true" aifIterative="true" aifThresholdFdr="0.01">
+<MaxQuantParams xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" aifSilWeight="4" aifIsoWeight="2" aifTopx="20" aifCorrelation="0.47" aifCorrelationFirstPass="0.8" aifMinMass="0" aifMsmsTol="10" aifSecondPass="true" aifIterative="true" aifThresholdFdr="0.01">
    <slicePeaks>true</slicePeaks>
    <tempFolder />
    <fixedCombinedFolder />
@@ -13,7 +13,7 @@
    <useOriginalPrecursorMz>false</useOriginalPrecursorMz>
    <minPeakLen>2</minPeakLen>
    <filePaths>
-      <string>C:\Users\animeshs\misccb\130716_SS+31778MGUS_run3.raw</string>
+      <string>X:\Elite\Aida\SS_1\130716_SS+35788MM_run3.raw</string>
    </filePaths>
    <experiments>
       <string />
@@ -31,6 +31,10 @@
       <parameterGroup>
          <maxCharge>7</maxCharge>
          <msInstrument>0</msInstrument>
+         <labelMods>
+            <string />
+            <string>Arg10;Lys8</string>
+         </labelMods>
          <lfqMinEdgesPerNode>3</lfqMinEdgesPerNode>
          <lfqAvEdgesPerNode>6</lfqAvEdgesPerNode>
          <fastLfq>true</fastLfq>
@@ -58,10 +62,6 @@
          <doMassFiltering>true</doMassFiltering>
          <firstSearchTol>20</firstSearchTol>
          <mainSearchTol>4.5</mainSearchTol>
-         <labels>
-            <string>Arg10; Lys8</string>
-            <string />
-         </labels>
          <lcmsRunType>0</lcmsRunType>
          <lfqMode>0</lfqMode>
          <enzymeMode>0</enzymeMode>
@@ -143,7 +143,7 @@
    <labileCrossLinker>DSSO</labileCrossLinker>
    <RescoreMsx>false</RescoreMsx>
    <msmsParamsArray>
-      <msmsParams Name="FTMS" InPpm="true" Deisotope="true" Topx="10" HigherCharges="true" IncludeWater="true" IncludeAmmonia="true" DependentLosses="true">
+      <msmsParams Name="FTMS" InPpm="true" Deisotope="true" Topx="12" HigherCharges="true" IncludeWater="true" IncludeAmmonia="true" DependentLosses="true">
          <Tolerance>
             <Value>20</Value>
             <Unit>Ppm</Unit>
@@ -163,7 +163,7 @@
             <Unit>Dalton</Unit>
          </DeNovoTolerance>
       </msmsParams>
-      <msmsParams Name="TOF" InPpm="false" Deisotope="true" Topx="10" HigherCharges="true" IncludeWater="true" IncludeAmmonia="true" DependentLosses="true">
+      <msmsParams Name="TOF" InPpm="false" Deisotope="false" Topx="10" HigherCharges="true" IncludeWater="true" IncludeAmmonia="true" DependentLosses="true">
          <Tolerance>
             <Value>0.1</Value>
             <Unit>Dalton</Unit>

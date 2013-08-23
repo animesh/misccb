@@ -7,6 +7,21 @@ protrev=xlsread('X:\Elite\Aida\SS_1\1\130716_SS+31778MGUS_run1Multiconsensus fro
 plot(protrev(:,8),1./protrev(:,11),'r.')
 hist(protrev(:,8)-1./protrev(:,11),[100])
 
+%% outliers
+
+X = 1:1000; % Pseudo Time
+Y = 5000 + randn(1000, 1); % Pseudo Data
+Outliers = randi(1000, 10, 1); % Index of Outliers
+Y(Outliers) = Y(Outliers) + randi(1000, 10, 1); % Pseudo Outliers
+[YY,I,Y0,LB,UB] = hampel(X,Y);
+
+plot(X, Y, 'b.'); hold on; % Original Data
+plot(X, YY, 'r'); % Hampel Filtered Data
+plot(X, Y0, 'b--'); % Nominal Data
+plot(X, LB, 'r--'); % Lower Bounds on Hampel Filter
+plot(X, UB, 'r--'); % Upper Bounds on Hampel Filter
+plot(X(I), Y(I), 'ks'); % Identified Outlie
+
 %% correlation plot
 corrprot=corr(prot,'rows','pairwise')
 HeatMap(corrprot,'Colormap', redgreencmap(256))
@@ -71,3 +86,5 @@ Class =
 %% weka
 
 java -Xmx2g -cp . -jar weka.jar
+
+
