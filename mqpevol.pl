@@ -8,7 +8,7 @@ my $fpat = "proteinGroups.txt";
 my $i1 = 20;
 my $idi = 7;
 
-my @files=<$path/*$pat/$fpat>;
+my @files=<$path/*$pat/txt/$fpat>;
 my %mrna;
 my %nc;
 
@@ -61,4 +61,4 @@ foreach my $g  (keys %nc){
 
 __END__
 
-perl mqpevol.pl /cygdrive/c/Users/animeshs/SkyDrive 2>0 > /cygdrive/c/Users/animeshs/SkyDrive/compFR.txt
+perl mqpevol.pl /cygdrive/x/Elite/Aida/SS_1/4 2>0 > /cygdrive/x/Elite/Aida/SS_1/4/compFR.txt

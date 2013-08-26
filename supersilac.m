@@ -1,23 +1,24 @@
 %% read
 
-prot=xlsread('C:\Users\animeshs\SkyDrive\proteinGroups_F.xls')
-protrev=xlsread('C:\Users\animeshs\SkyDrive\proteinGroups_R.xls')
+prot=tblread('X:\Elite\Aida\SS_1\4\FRES\txt\proteinGroups.txt','\t')
+protrev=tblread('X:\Elite\Aida\SS_1\4\RRES\txt\proteinGroups.txt','\t')
+% perl mqpevol.pl /cygdrive/x/Elite/Aida/SS_1/4 2>0 > /cygdrive/x/Elite/Aida/SS_1/4/compFR.txt 
+protcomb=tblread('X:\Elite\Aida\SS_1\4\compRF.txt','\t')
 
-protcomb=xlsread('C:\Users\animeshs\misccb\compFR.xlsx')
+%% compare forward and reverse ratios against molecular weights
 
-%% comprare forward and reverse ratios
-
-plot(protrev(:,14),protrev(:,19),'r.')
+plot(protrev(:,15),protrev(:,20),'r.')
 hold
-plot(prot(:,14),1./prot(:,19),'b.')
+plot(prot(:,15),1./prot(:,20),'b.')
 hold
 
 %% correlation
 
-hist(protcomb(:,1),[100])
 hist(protcomb(:,2),[100])
-plot(protcomb(:,1),1./protcomb(:,2),'k.')
-[rho val]=corrcoef(protcomb(:,1),1./protcomb(:,2),'rows','pairwise')
+hist(protcomb(:,3),[100])
+plot(protcomb(:,2),1./protcomb(:,3),'k.')
+[rho val]=corrcoef(protcomb(:,2),1./protcomb(:,3),'rows','pairwise')
+
 
 %% outliers
 
@@ -53,50 +54,3 @@ mqpd=[0.825	0.772	0.774	0.306	0.252	0.302	1.672	1.729	1.779	0.977	0.999	1.023	0.
 
 plot(mqpd(1,:),mqpd(2,:),'b.')
 comm -12 <(sort pd.txt) <(sort mq.txt) | wc
-
-%% save at tab txt and transpose
-
-awk '
-{
-    for (i=1; i<=NF; i++)  {
-        a[NR,i] = $i
-    }
-}
-NF>p { p = NF }
-END {
-    for(j=1; j<=p; j++) {
-        str=a[1,j]
-        for(i=2; i<=NR; i++){
-            str=str" "a[i,j];
-        }
-        print str
-    }
-}' /cygdrive/c/Users/animeshs/Desktop/SS1RPGsort.txt > /cygdrive/c/Users/animeshs/Desktop/SS1RPGsorttrp.txt
-
-sed 's/ /,/g' /cygdrive/c/Users/animeshs/Desktop/SS1RPGsorttrp.txt > /cygdrive/c/Users/animeshs/Desktop/SS1RPGsorttrp.csv
-
-source: http://stackoverflow.com/questions/1729824/transpose-a-file-in-bash
-
-
-%% DT
-
-C9K057 <= 1.455 : LM1 (15/0%)
-C9K057 >  1.455 : LM2 (9/0%)
-
-LM num: 1
-Class = 
-	0.1213 * C9K057 
-	- 0.0292
-
-LM num: 2
-Class = 
-	0.1517 * C9K057 
-	+ 0.3385
-
-    
-    
-%% weka
-
-java -Xmx2g -cp . -jar weka.jar
-
-

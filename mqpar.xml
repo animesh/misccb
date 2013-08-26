@@ -32,8 +32,8 @@
          <maxCharge>7</maxCharge>
          <msInstrument>0</msInstrument>
          <labelMods>
-            <string>Arg10;Lys8</string>
             <string />
+            <string>Arg10;Lys8</string>
          </labelMods>
          <lfqMinEdgesPerNode>3</lfqMinEdgesPerNode>
          <lfqAvEdgesPerNode>6</lfqAvEdgesPerNode>
@@ -149,7 +149,7 @@
             <Unit>Ppm</Unit>
          </Tolerance>
          <DeNovoTolerance>
-            <Value>20</Value>
+            <Value>10</Value>
             <Unit>Ppm</Unit>
          </DeNovoTolerance>
       </msmsParams>
@@ -159,7 +159,7 @@
             <Unit>Dalton</Unit>
          </Tolerance>
          <DeNovoTolerance>
-            <Value>0.5</Value>
+            <Value>0.25</Value>
             <Unit>Dalton</Unit>
          </DeNovoTolerance>
       </msmsParams>
@@ -169,7 +169,7 @@
             <Unit>Dalton</Unit>
          </Tolerance>
          <DeNovoTolerance>
-            <Value>0.1</Value>
+            <Value>0.05</Value>
             <Unit>Dalton</Unit>
          </DeNovoTolerance>
       </msmsParams>
@@ -179,7 +179,7 @@
             <Unit>Dalton</Unit>
          </Tolerance>
          <DeNovoTolerance>
-            <Value>0.5</Value>
+            <Value>0.25</Value>
             <Unit>Dalton</Unit>
          </DeNovoTolerance>
       </msmsParams>
