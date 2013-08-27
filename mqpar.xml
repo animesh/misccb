@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <MaxQuantParams xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" aifSilWeight="4" aifIsoWeight="2" aifTopx="20" aifCorrelation="0.47" aifCorrelationFirstPass="0.8" aifMinMass="0" aifMsmsTol="10" aifSecondPass="true" aifIterative="true" aifThresholdFdr="0.01">
    <slicePeaks>true</slicePeaks>
    <tempFolder />
@@ -149,7 +149,7 @@
             <Unit>Ppm</Unit>
          </Tolerance>
          <DeNovoTolerance>
-            <Value>10</Value>
+            <Value>20</Value>
             <Unit>Ppm</Unit>
          </DeNovoTolerance>
       </msmsParams>
@@ -159,7 +159,7 @@
             <Unit>Dalton</Unit>
          </Tolerance>
          <DeNovoTolerance>
-            <Value>0.25</Value>
+            <Value>0.5</Value>
             <Unit>Dalton</Unit>
          </DeNovoTolerance>
       </msmsParams>
@@ -169,7 +169,7 @@
             <Unit>Dalton</Unit>
          </Tolerance>
          <DeNovoTolerance>
-            <Value>0.05</Value>
+            <Value>0.1</Value>
             <Unit>Dalton</Unit>
          </DeNovoTolerance>
       </msmsParams>
@@ -179,7 +179,7 @@
             <Unit>Dalton</Unit>
          </Tolerance>
          <DeNovoTolerance>
-            <Value>0.25</Value>
+            <Value>0.5</Value>
             <Unit>Dalton</Unit>
          </DeNovoTolerance>
       </msmsParams>

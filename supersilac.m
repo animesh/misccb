@@ -15,9 +15,10 @@ hold
 %% correlation
 
 hist(protcomb(:,2),[100])
-hist(protcomb(:,3),[100])
+hist(1./protcomb(:,3),[100])
 plot(protcomb(:,2),1./protcomb(:,3),'k.')
 [rho val]=corrcoef(protcomb(:,2),1./protcomb(:,3),'rows','pairwise')
+hist(protcomb(:,2)-1./protcomb(:,3),[100])
 
 
 %% outliers
