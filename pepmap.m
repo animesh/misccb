@@ -1,8 +1,8 @@
 %% create and read file 
-%awk '{print ">Pep"NR;print $0}' P02768pep.txt
-%http://www.uniprot.org/uniprot/P02768
-prot=fastaread('X:\Elite\Mohmd\P02768.fasta')
-peps=fastaread('X:\Elite\Mohmd\P02768pep.fasta')
+%awk '{print ">Pep"NR;print $0}' peppho.txt
+%http://www.uniprot.org/uniprot/P05198
+prot=fastaread('X:\FastaDB\IFA2P05198.fasta')
+peps=fastaread('X:\Elite\Aida\SS_1\peppho.fasta')
 
 %% map
 plot([1 length(prot.Sequence)],[1 1],'k-')

@@ -1,12 +1,11 @@
 %% read files
 
-d=xlsread('X:\Qexactive\Ingvild\130629\MC6RSIMOD.xlsx')
+[FMS3EX3a FMS3EX3b FMS3EX3c] =xlsread('X:\Qexactive\Sissel\HEK_PO4\Multiconsensus from 6 Reports SI.xlsx');
 
-E24IBS=xlsread('X:\Qexactive\Ingvild\130624\Excl_130624_Ingvild_BX_SV.xlsx')
-E24IM=xlsread('X:\Qexactive\Ingvild\130624\Excl_130624_Ingvild_med.xlsx')
-E24IS=xlsread('X:\Qexactive\Ingvild\130624\Excl_130624_Ingvild_SV.xlsx')
-I24QPS=xlsread('X:\Qexactive\Ingvild\130624\Incl_130624_Q13501_PO4_S403_Searchlist for Qex.xlsx')
+%% Extract rows
 
+FMS3EX3b{:,2}
+idx=strfind(FMS3EX3b,'A')
 
 %% Ingvild stuff
 
