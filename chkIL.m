@@ -1,11 +1,47 @@
 %% read files
 
-[FMS3EX3a FMS3EX3b FMS3EX3c] =xlsread('X:\Qexactive\Sissel\HEK_PO4\Multiconsensus from 6 Reports SI.xlsx');
+[ ~ , ~ , FMS3EX3] =xlsread('X:\Qexactive\Sissel\HEK_PO4\Multiconsensus from 6 Reports SI.xlsx');
 
 %% Extract rows
 
-FMS3EX3b{:,2}
-idx=strfind(FMS3EX3b,'A')
+FMS=[FMS3EX3(find(ismember(FMS3EX3(:,2),'A')),9);FMS3EX3(find(ismember(FMS3EX3(:,2),'B')),9);FMS3EX3(find(ismember(FMS3EX3(:,2),'C')),9)];
+EX=[FMS3EX3(find(ismember(FMS3EX3(:,2),'D')),9);FMS3EX3(find(ismember(FMS3EX3(:,2),'E')),9);FMS3EX3(find(ismember(FMS3EX3(:,2),'F')),9)];
+plot([EX{:}],'r.')
+
+%% extract vals and compare
+
+% EX=FMS % test
+a=(sort([FMS{:}]))';
+mze=(sort([EX{:}]))';
+plot(mze)
+ppm=10;
+stj=1;
+for i=1:size(mze,1)
+    for j=stj:size(a,1)
+        if(((abs(a(j)-mze(i))<=mze(i)*(ppm/10e6))||(abs(a(j)-mze(i))<=a(j)*(ppm/10e6))))
+            cntax(i)=a(j)-mze(i);
+            stj=j+1;
+            break;
+        else
+            cntax(i)=0;
+        end
+    end
+end
+
+plot(cntax,'b.')
+hist(cntax,[1000])
+sum((cntax==0))
+sum((cntax>0&cntax<1))
+
+hist(find(cntax<1),[1000])
+
+
+%% with repmat (needs humongous memory!)
+
+ar=repmat(a,1,size(mze,1));
+mzer=ar-repmat(mze',size(a,1),1);
+[av,mzev]=find(mzer<=ppm/10e6);
+
 
 %% Ingvild stuff
 
@@ -21,34 +57,6 @@ EL=xlsread('X:\Elite\Alexey\Test_Incl_Excl\List.xlsx');
 ELMI=xlsread('X:\Elite\Alexey\Test_Incl_Excl\peptides.txt.pepmonoisomass.xlsx');
 
 a=xlsread('X:\Qexactive\Alexey\Multiconsensus from 4 ReportsQexSImod.xlsx');
-
-%% extract vals and compare
-
-mzt=1;
-mze=EL(:,1);
-cntax=0;
-ppm=10;
-detect=zeros(size(mze,1),size(a,1));
-for i=1:size(mze,1)
-    for j=1:size(a,1)
-        %if(a(j,4)<=(mze(i)+mze(i)*(ppm/10e6)) && a(j,4)>=(mze(i)-mze(i)*(ppm/10e6)))
-        if(((abs(a(j,9)-mze(i))<=mze(i)*(ppm/10e6))||(abs(a(j,9)-mze(i))<=a(j,9)*(ppm/10e6))) && a(j,14)==mzt)
-        %if((a(j,9)>(mze(i)+mze(i)*(ppm/10e6)) || a(j,9)<(mze(i)-mze(i)*(ppm/10e6))) && a(j,14)==mzt)
-           cntax=cntax+1;
-           detect(i,j)=mze(i)-a(j,9);
-        end
-    end
-end
-
-cntax
-spy(detect)
-[rd,cd]=find(detect>0);
-chix=1
-rd(chix)
-cd(chix)
-detect(rd(chix),cd(chix))
-unique(rd);
-size(ans,1)
 
 %% compare R1 with R1EX1
 
