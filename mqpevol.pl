@@ -5,10 +5,10 @@ use Text::ParseWords;
 my $path = shift @ARGV;
 my $pat = "RES";
 my $fpat = "proteinGroups.txt";
-my $i1 = 20;
-my $idi = 7;
+my $i1 = 18;
+my $idi = 5;
 
-my @files=<$path/*$pat/txt/$fpat>;
+my @files=<$path/*$pat/$fpat>;
 my %mrna;
 my %nc;
 
@@ -61,4 +61,4 @@ foreach my $g  (keys %nc){
 
 __END__
 
-perl mqpevol.pl /cygdrive/x/Elite/Aida/SS_1/4 2>0 > /cygdrive/x/Elite/Aida/SS_1/4/compFR.txt
+perl mqpevol.pl /cygdrive/x/Elite/Aida/SS_2/ 2>/cygdrive/x/Elite/Aida/SS_2/2err > /cygdrive/x/Elite/Aida/SS_2/combo.txt

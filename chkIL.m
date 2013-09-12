@@ -1,6 +1,47 @@
+%% file
+
+TMS2=xlsread('X:\Qexactive\Alexey\20130827_tMS2_JPT_01.xlsx');
+[~,~,IL]=tblread('X:\Qexactive\Alexey\incl.CSV',',');
+FMS2EX=xlsread('X:\Qexactive\Alexey\20130827_FullMS-MS2_JPT_Ecxl_01.xlsx');
+
+%% compare inclusion list with search input
+hist(mze)
+a=unique(sort(str2num(IL)));
+%mze=a+(rand(size(a,1),1)/10e6)
+%mze=unique(sort(TMS2(TMS2(:,6)==2,4))); % inclusion
+mze=unique(sort(FMS2EX(FMS2EX(:,6)==2,4))); % exclusion
+ppm=10;
+clear cntax;
+for i=1:size(mze,1)
+    for j=1:size(a,1)
+        if(((abs(a(j)-mze(i))<=mze(i)*(ppm/10e6))||(abs(a(j)-mze(i))<=a(j)*(ppm/10e6))))
+            cntax(i)=a(j)-mze(i);
+        else
+            cntax(i)=0;
+        end
+    end
+end
+
+sum(abs(cntax)>0)
+sum(cntax==0)
+plot(mze,a)
+plot3(cntax,a,mze,'r.')
+
+
 %% read files
 
 [ ~ , ~ , FMS3EX3] =xlsread('X:\Qexactive\Sissel\HEK_PO4\Multiconsensus from 6 Reports SI.xlsx');
+
+ScoreC =xlsread('X:\Qexactive\Sissel\HEK_PO4\Multiconsensus from 6 ReportsMedScore.xlsx');
+
+%% compare scores with/out exclusion list
+
+plot((ScoreC(:,57)),(ScoreC(:,58)),'b.')
+plot(log(ScoreC(:,57)),log(ScoreC(:,58)),'b.')
+corr(ScoreC(:,57),ScoreC(:,58),'rows','pairwise')
+hold
+plot3(log(ScoreC(:,6)),log(ScoreC(:,14)),log(ScoreC(:,22)),'r.')
+plot3(log(ScoreC(:,30)),log(ScoreC(:,38)),log(ScoreC(:,46)),'b.')
 
 %% Extract rows
 
@@ -16,6 +57,7 @@ mze=(sort([EX{:}]))';
 plot(mze)
 ppm=10;
 stj=1;
+clear cntax;
 for i=1:size(mze,1)
     for j=stj:size(a,1)
         if(((abs(a(j)-mze(i))<=mze(i)*(ppm/10e6))||(abs(a(j)-mze(i))<=a(j)*(ppm/10e6))))
@@ -29,12 +71,13 @@ for i=1:size(mze,1)
 end
 
 plot(cntax,'b.')
-hist(cntax,[1000])
+hist(cntax)
 sum((cntax==0))
-sum((cntax>0&cntax<1))
+sum(abs(cntax)>0)
 
 hist(find(cntax<1),[1000])
 
+plot(cntax,mze,'b.')
 
 %% with repmat (needs humongous memory!)
 

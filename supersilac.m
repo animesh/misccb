@@ -5,6 +5,17 @@ protrev=tblread('X:\Elite\Aida\SS_1\4\RRES\txt\proteinGroups.txt','\t')
 % perl mqpevol.pl /cygdrive/x/Elite/Aida/SS_1/4 2>0 > /cygdrive/x/Elite/Aida/SS_1/4/compFR.txt 
 protcomb=tblread('X:\Elite\Aida\SS_1\4\compRF.txt','\t')
 
+prot=xlsread('X:\Elite\Aida\SS_2\comborem.xlsx');
+
+%% correlation plot
+corrprot=corr(prot,'rows','pairwise')
+HeatMap(corrprot,'Colormap', redgreencmap(256))
+
+
+%% cluster analysis
+corrprot=corrcoef(prot,'rows','pairwise')
+clustergram(corrprot,'Colormap',redbluecmap)
+
 %% compare forward and reverse ratios against molecular weights
 
 plot(protrev(:,15),protrev(:,20),'r.')
@@ -36,13 +47,6 @@ plot(X, LB, 'r--'); % Lower Bounds on Hampel Filter
 plot(X, UB, 'r--'); % Upper Bounds on Hampel Filter
 plot(X(I), Y(I), 'ks'); % Identified Outlie
 
-%% correlation plot
-corrprot=corr(prot,'rows','pairwise')
-HeatMap(corrprot,'Colormap', redgreencmap(256))
-
-%% cluster analysis
-corrprot=corrcoef(prot,'rows','pairwise')
-clustergram(corrprot,'Colormap',redbluecmap)
 
 
 %% compare maxquant with proteome discoverer

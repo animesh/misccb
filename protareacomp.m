@@ -1,3 +1,29 @@
+%% files
+
+beckprot=xlsread('V:\felles\PROTEOMICS and XRAY\Abundance\Beck-2011-supplementary table 1-protein copies per cell.xls')
+commprot=xlsread('V:\felles\PROTEOMICS and XRAY\Abundance\Common proteins in IF studies-Supplementary from review modified GS.xls')
+
+%% compare lists
+
+mcomm=log10(commprot(:,3))
+beck=log10(beckprot(:,1)) %./size(beckprot,1)
+hist(comm,[4])
+hist(beck,[4])
+ax(log(beckprot(:,1)))
+
+ksdensity(comm)
+hold
+ksdensity(comm+rand())
+hold off
+
+bins = linspace(1,10,10)
+%bins = unique([comm;beck]); 
+y1 = hist(repmat(comm,30,1), bins);   
+y2 = hist(beck, bins);
+bar(bins, [y1;y2]');
+
+% perl matchlist.pl /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Abundance/comm.csv /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Abundance/beck.csv > /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Abundance/match.csv
+
 %% read file
 prot=xlsread('X:\Elite\Mohmd\Area.xlsx')
 hr=prot(1,:)
