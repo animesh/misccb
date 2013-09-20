@@ -13,8 +13,9 @@ open F1,$f1||die"\nUSAGE:\'perl program_name filename_2B_scanned\'\n\n";
 
 my $c1=0;
 my $c2;
-my $c6;
 my @mat;
+my %cnt;
+my %mcnt;
 
 while(my $l1=<F1>){
 	chomp $l1;
@@ -22,19 +23,32 @@ while(my $l1=<F1>){
 	my @t1=parse_line(',',0,$l1);
 	push(@mat,$l1);
 	for($c2=0;$c2<$c1;$c2++){
-		#$mat[$c2][$c1]=$t1[$c2];
-		my @t2=parse_line(',',0,$mat[$c1]);
-		my $lgt=length($t1[$p1]);
-		my $poscol;
-		my $posi;
-		while($t2[$p1] =~ /$t1[$p1]/g){
-			$posi=pos($t2[$p1]);
-			$posi=($posi-($lgt+1));
-			$poscol.=$posi;
+		my @t2=parse_line(',',0,$mat[$c2]);
+		if($t1[$p1] ne $t2[$p1] and !$cnt{$t2[$p1]}){
+			#$mat[$c2][$c1]=$t1[$c2];
+			my $poscol;
+			my $lgt=length($t2[$p1]);
+			while($t1[$p1] =~ /$t2[$p1]/g){
+				$poscol.=(pos( $t1[$p1] )-$lgt+1)."-";
+				pos( $t1[$p1] ) = $-[0] + 1;
+			}
+			if($poscol){
+				#print "$c1\t$c2\t$t1[$p1]\t$t1[$p3]\t$t2[$p1]\t$t2[$p3]\t$lgt\t$poscol\n";
+				#$cnt{$t1[$p1]}++;
+				$cnt{$t2[$p1]}++;
+				$mcnt{$t1[$p1]}.="$t1[$p3],$t2[$p1]-($poscol)-$t2[$p3],";
+			}
 		}
-		print "$c1\t$c2\t$t1[$p1]\t$t1[$p2]\t$t1[$p3]\t$t2[$p1]\t$t2[$p2]\t$t2[$p3]\t$lgt\t$posi\t$poscol\n";
+		elsif($t1[$p1] eq $t2[$p1] ){$mcnt{$t1[$p1]}.="$t1[$p3],EQ-$t2[$p3],";}
+		else{$mcnt{$t1[$p1]}.="$t1[$p3],"}
 	}
 	$c1++;
+	#print "$t1[$p1]\t$cnt{$t1[$p1]}\n";
+}
+
+
+foreach (keys %mcnt){
+	print "$_,$mcnt{$_}\n";
 }
 
 
