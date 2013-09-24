@@ -21,6 +21,7 @@ while(my $l1=<F1>){
 	chomp $l1;
 	$l1 =~ s/\r//g;
 	my @t1=parse_line(',',0,$l1);
+	if($t1[$p2]){
 	push(@mat,$l1);
 	for($c2=0;$c2<$c1;$c2++){
 		my @t2=parse_line(',',0,$mat[$c2]);
@@ -41,6 +42,7 @@ while(my $l1=<F1>){
 		}
 		elsif($t1[$p1] eq $t2[$p1] ){$mcnt{$t1[$p1]}.="$t1[$p3],EQ-$t2[$p3],";}
 		else{$mcnt{$t1[$p1]}.="$t1[$p3],"}
+	}
 	}
 	$c1++;
 	#print "$t1[$p1]\t$cnt{$t1[$p1]}\n";
