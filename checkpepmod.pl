@@ -22,27 +22,27 @@ while(my $l1=<F1>){
 	$l1 =~ s/\r//g;
 	my @t1=parse_line(',',0,$l1);
 	if($t1[$p2]){
-	push(@mat,$l1);
-	for($c2=0;$c2<$c1;$c2++){
-		my @t2=parse_line(',',0,$mat[$c2]);
-		if($t1[$p1] ne $t2[$p1] and !$cnt{$t2[$p1]}){
-			#$mat[$c2][$c1]=$t1[$c2];
-			my $poscol;
-			my $lgt=length($t2[$p1]);
-			while($t1[$p1] =~ /$t2[$p1]/g){
-				$poscol.=(pos( $t1[$p1] )-$lgt+1)."-";
-				pos( $t1[$p1] ) = $-[0] + 1;
-			}
-			if($poscol){
-				#print "$c1\t$c2\t$t1[$p1]\t$t1[$p3]\t$t2[$p1]\t$t2[$p3]\t$lgt\t$poscol\n";
-				#$cnt{$t1[$p1]}++;
+		push(@mat,$l1);
+		for($c2=0;$c2<=$c1;$c2++){
+			my @t2=parse_line(',',0,$mat[$c2]);
+			if($t1[$p1] eq $t2[$p1]){
+				$mcnt{$t1[$p1]}.="$t2[$p3],";
+				#delete $mat[$c2];
 				$cnt{$t2[$p1]}++;
-				$mcnt{$t1[$p1]}.="$t1[$p3],$t2[$p1]-($poscol)-$t2[$p3],";
 			}
+			elsif(index($t1[$p1] , $t2[$p1] )!=-1){
+				$mcnt{$t1[$p1]}.="$t2[$p3],";
+				#delete $mat[$c2];
+				#print "$c1\t$c2\t$t1[$p1]\t$t2[$p1]\n";
+				$cnt{$t2[$p1]}++;
+			}
+			elsif(index($t2[$p1], $t1[$p1])!=-1){
+				$mcnt{$t2[$p1]}.="$t1[$p3],";
+				$cnt{$t1[$p1]}++;
+				#delete $mat[$c1];
+			}
+			else{next;}
 		}
-		elsif($t1[$p1] eq $t2[$p1] ){$mcnt{$t1[$p1]}.="$t1[$p3],EQ-$t2[$p3],";}
-		else{$mcnt{$t1[$p1]}.="$t1[$p3],"}
-	}
 	}
 	$c1++;
 	#print "$t1[$p1]\t$cnt{$t1[$p1]}\n";
@@ -50,7 +50,7 @@ while(my $l1=<F1>){
 
 
 foreach (keys %mcnt){
-	print "$_,$mcnt{$_}\n";
+	print "$_,$cnt{$_},$mcnt{$_},\n";
 }
 
 

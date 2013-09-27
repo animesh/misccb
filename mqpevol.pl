@@ -3,7 +3,7 @@ use warnings;
 use Text::ParseWords;
 
 my $path = shift @ARGV;
-my $pat = "RES";
+my $pat = "REP";
 my $fpat = "proteinGroups.txt";
 my $i1 = 18;
 my $idi = 5;
@@ -61,4 +61,4 @@ foreach my $g  (keys %nc){
 
 __END__
 
-perl mqpevol.pl /cygdrive/x/Elite/Aida/SS_2/ 2>/cygdrive/x/Elite/Aida/SS_2/2err > /cygdrive/x/Elite/Aida/SS_2/combo.txt
+perl mqpevol.pl /cygdrive/x/Elite/Aida/SSwCLREP/ 2>/cygdrive/x/Elite/Aida/SSwCLREP/2err > /cygdrive/x/Elite/Aida/SSwCLREP/combo.txt

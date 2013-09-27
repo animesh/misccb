@@ -7,14 +7,40 @@ protcomb=tblread('X:\Elite\Aida\SS_1\4\compRF.txt','\t')
 
 prot=xlsread('X:\Elite\Aida\SS_2\comborem.xlsx');
 
-%% correlation plot
-corrprot=corr(prot,'rows','pairwise')
-HeatMap(corrprot,'Colormap', redgreencmap(256))
+prot=xlsread('X:\Elite\Aida\SS3\SS3MQ.xlsx')
+
+prot=xlsread('X:\Elite\Aida\SSwCLREP\MQv1412combo.xlsx')
+prot=prot(:,[1:43,45]); % remove U266 replicate which did not work
+
+prot=prot(:,[1:3,37:44]); % for cell lines
+prot=prot(:,[47:48]); % MM and MGUS
+
+%% plot MM with MGUS
+
+corr(log10(prot(:,1)),log10(prot(:,2)),'rows','pairwise')
+plot(log10(prot(:,1)),log10(prot(:,2)),'b.')
+
+%% find significant diffs
+
+
+mavolcanoplot(prot(:,1), prot(:,2), mattest(prot(:,1), prot(:,2)))
+
+
+%% check rand vals
+
+prot=randn(1000,1).*(2*pi)
+prot=[prot  2*prot -1*prot sin(prot) cos(prot) sin(prot).*cos(prot)]
 
 
 %% cluster analysis
 corrprot=corrcoef(prot,'rows','pairwise')
-clustergram(corrprot,'Colormap',redbluecmap)
+% corrprot=corrcoef(prot','rows','pairwise')
+clustergram(corrprot, 'Colormap', redgreencmap(256))
+
+%% correlation plot
+corrprot=corr(prot,'rows','pairwise')
+HeatMap(corrprot,'Colormap', redgreencmap(256))
+
 
 %% compare forward and reverse ratios against molecular weights
 
