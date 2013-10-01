@@ -1,14 +1,31 @@
 from NeuroPy import NeuroPy
-object1=NeuroPy("COM26","57600") #If port not given 57600 is automatically assume #object1=NeuroPy("/dev/rfcomm0") for linux
+from pyeeg import *
+import pyglet
+npo=NeuroPy('/dev/ttyS25')
+eegcoll = []
 
-def attention_callback(attention_value):
-	print "Value of attention is",attention_value
+def npacb(attention_value):
+	print attention_value
 	return None
 
-object1.setCallBack("attention",attention_callback)
+npo.setCallBack("attention",npacb)
 
-object1.start()
+npo.start()
 
-while True:
-	if(object1.meditation>70): #another way of accessing data provided by headset (1st being call backs)
-		object1.stop()         #if meditation level reaches above 70, stop fetching data from the headset
+i=1
+while i<100:
+	eegcoll.append(npo.rawValue)
+	if(npo.meditation>50): 
+		print npo.meditation, npo.rawValue,  npo.blinkStrength, npo.poorSignal, npo.midGamma, npo.lowGamma, npo.highBeta, npo.lowBeta, npo.highAlpha, npo.lowAlpha, npo.theta, npo.delta
+		i+=1
+		#song = pyglet.media.load('../SkyDrive/musicmix/18 - unknown 18 - Track 18 (1).ogg')
+		#song.play()
+		#pyglet.app.run()
+
+print hurst(eegcoll[:])
+
+
+##source libs
+#git clone https://code.google.com/p/pyeeg/
+#easy_install pyglet
+#git clone git://github.com/lihas/NeuroPy
