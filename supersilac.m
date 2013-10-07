@@ -9,7 +9,10 @@ prot=xlsread('X:\Elite\Aida\SS_2\comborem.xlsx');
 
 prot=xlsread('X:\Elite\Aida\SS3\SS3MQ.xlsx')
 
+prot=xlsread('X:\Elite\gaute\modomics_list_MATCH.xlsx')
+
 prot=xlsread('X:\Elite\Aida\SSwCLREP\MQv1412combo.xlsx')
+prot=prot(:,[1:33]); % remove cell lines
 prot=prot(:,[1:43,45]); % remove U266 replicate which did not work
 
 prot=prot(:,[1:3,37:44]); % for cell lines
@@ -22,14 +25,15 @@ plot(log10(prot(:,1)),log10(prot(:,2)),'b.')
 
 %% find significant diffs
 
+mavolcanoplot(prot(:,1), prot(:,2), mattest(prot(:,1), prot(:,2)),'LogTrans','True')
+mavolcanoplot(proto(:,1), proto(:,2), mattest(proto(:,1), proto(:,2)),'LogTrans','True')
 
-mavolcanoplot(prot(:,1), prot(:,2), mattest(prot(:,1), prot(:,2)))
 
 
 %% check rand vals
 
-prot=randn(1000,1).*(2*pi)
-prot=[prot  2*prot -1*prot sin(prot) cos(prot) sin(prot).*cos(prot)]
+proto=randn(1000,1).*(2*pi)
+proto=[proto  2*proto -1*proto sin(proto) cos(proto) sin(proto).*cos(proto)]
 
 
 %% cluster analysis
