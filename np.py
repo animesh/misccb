@@ -25,7 +25,16 @@ while i<100:
 print hurst(eegcoll[:])
 
 
-##source libs
+#http://www.coderedux.com/music-theory/circle-of-fifths-part-one
+#source libs
+#sudo apt-get install python-csoundac
+#git clone git://github.com/shimpe/canon-generator
+#wget http://web.mit.edu/music21/blank.xml
+#sudo apt-get install python-pyaudio
+#sudo apt-get install lilypond
+#sudo apt-get install musescore
+#sudo apt-get install python-matplotlib
+#sudo apt-get install python-pygame
 #git clone https://code.google.com/p/pyeeg/
 #easy_install pyglet
 #git clone git://github.com/lihas/NeuroPy
