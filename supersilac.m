@@ -37,9 +37,11 @@ proto=[proto  2*proto -1*proto sin(proto) cos(proto) sin(proto).*cos(proto)]
 
 
 %% cluster analysis
+
 corrprot=corrcoef(prot,'rows','pairwise')
-% corrprot=corrcoef(prot','rows','pairwise')
-clustergram(corrprot, 'Colormap', redgreencmap(256))
+corrprot=corrcoef(prot','rows','pairwise')
+ccprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun',@('distance', 'mahalanobis')knnimpute)%,'Distance', 'mahalanobis')
+get(ccprop)
 
 %% correlation plot
 corrprot=corr(prot,'rows','pairwise')

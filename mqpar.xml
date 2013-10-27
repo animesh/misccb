@@ -13,7 +13,7 @@
    <useOriginalPrecursorMz>false</useOriginalPrecursorMz>
    <minPeakLen>2</minPeakLen>
    <filePaths>
-      <string>X:\Elite\Aida\SS_1\4\130716_SS+35788MM_run3.raw</string>
+      <string>F:\Lars\TestFile.raw</string>
    </filePaths>
    <experiments>
       <string />
@@ -33,7 +33,7 @@
          <msInstrument>0</msInstrument>
          <labelMods>
             <string />
-            <string>Arg10;Lys8</string>
+            <string>Lys6</string>
          </labelMods>
          <lfqMinEdgesPerNode>3</lfqMinEdgesPerNode>
          <lfqAvEdgesPerNode>6</lfqAvEdgesPerNode>
@@ -51,8 +51,8 @@
          <useEnzymeFirstSearch>false</useEnzymeFirstSearch>
          <useVariableModificationsFirstSearch>false</useVariableModificationsFirstSearch>
          <variableModifications>
-            <string>Acetyl (Protein N-term)</string>
             <string>Oxidation (M)</string>
+            <string>Acetyl (Protein N-term)</string>
          </variableModifications>
          <isobaricLabels />
          <variableModificationsFirstSearch />
@@ -68,13 +68,11 @@
          <enzymeModeFirstSearch>0</enzymeModeFirstSearch>
       </parameterGroup>
    </parameterGroups>
-   <fixedModifications>
-      <string>Carbamidomethyl (C)</string>
-   </fixedModifications>
+   <fixedModifications />
    <multiModificationSearch>false</multiModificationSearch>
    <compositionPrediction>false</compositionPrediction>
    <fastaFiles>
-      <string>X:\FastaDB\uniprot-human-may-13.fasta</string>
+      <string>F:\FastaDB\uniprot-human-may-13.fasta</string>
    </fastaFiles>
    <fastaFilesFirstSearch />
    <fixedSearchFolder />

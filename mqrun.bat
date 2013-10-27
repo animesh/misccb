@@ -1,8 +1,8 @@
-set MAXQUANTDIR=X:\MaxQuant_1.4.0.8
+set MAXQUANTDIR=F:\MaxQuant1412
 set THREADS=4
-set DATADIR=X:\Elite\Aida\SS_1
+set DATADIR=F:\Lars
 set PREFIXRAW=
-set PARAMFILE=TestFileCIDpar.xml
+set PARAMFILE=mqpar.xml
 set SEARCHTEXT=TestFile
 
 DIR /B %DATADIR%\%PREFIXRAW%*.raw > %DATADIR%\tempfile.txt
@@ -13,10 +13,10 @@ FOR /F "eol=  tokens=1,2 delims=." %%i in (%DATADIR%\tempfile.txt) do  (
 		if exist proc rmdir /S /Q proc
 		if exist %DATADIR%\combined rmdir /S /Q %DATADIR%\combined
 		if exist %DATADIR%\%%i rmdir /S /Q %DATADIR%\%%i
-		%MAXQUANTDIR%\bin\MaxQuantCmd.exe -mqpar=%DATADIR%\%%i.xml %THREADS%
-		if exist %DATADIR%\%%iRES rmdir /S /Q %DATADIR%\%%iRES
-		echo D| xcopy  /E /Y /Q %DATADIR%\combined\txt %DATADIR%\%%iRES
-		if exist %DATADIR%\%%iRES copy %DATADIR%\combined\*.apl %DATADIR%\%%iRES
+		%MAXQUANTDIR%\bin\MaxQuantCmd.exe -mqpar=%DATADIR%\%%i.xml -ncores=%THREADS%
+		if exist %DATADIR%\%%iREP rmdir /S /Q %DATADIR%\%%iREP
+		echo D| xcopy  /E /Y /Q %DATADIR%\combined\txt %DATADIR%\%%iREP
+		if exist %DATADIR%\%%iREP copy %DATADIR%\combined\andromeda\*.apl %DATADIR%\%%iREP
 		if exist %DATADIR%\%%i rmdir /S /Q %DATADIR%\%%i
 		if exist proc rmdir /S /Q proc
 		if exist %DATADIR%\combined rmdir /S /Q %DATADIR%\combined
