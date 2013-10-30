@@ -2,6 +2,8 @@ use strict;
 use warnings;
 my $file=shift @ARGV;
 open F1, "$file" or die "Can't open $file : $!";
+my $thr=shift @ARGV;
+
 
 my %seqh;
 my $seqc;
@@ -35,12 +37,14 @@ sub translate{
 	my $se=shift;
 	my @t=split(//,$se);
 	my $seqaa="";
+	my %cu;
 	for (my $c2=0;$c2<=$#t-3;$c2=$c2+3) {
 		$seqaa.=$c2a{$t[$c2].$t[$c2+1].$t[$c2+2]};
 		$cb{$t[$c2].$t[$c2+1].$t[$c2+2]}++;
+		$cu{$t[$c2].$t[$c2+1].$t[$c2+2]}++;
 		$tc++;
 	}
-	return $seqaa;
+	return $seqaa,%cu;
 }
 
 
@@ -54,9 +58,11 @@ foreach (keys %seqh){
         my $seqn=$_;
         my $seq=$seqh{$_};
         my $lgt=length($seq);
-        my $seqt=translate($seq);
-        #print "$seqn\t$lgt\t$seqt\n";
+        my ($seqt,%cut)=translate($seq);
+        if($cut{"AAA"}/($cut{"AAG"}+1)>$thr){print "$seqn\t$lgt\t",$cut{"AAA"},"-",$cut{"AAG"},"\n$seqt\n";}
 }
+
+__END__
 
 my $chk;
 foreach (keys %cb){
@@ -86,5 +92,7 @@ http://www.ncbi.nlm.nih.gov/refseq/rsg/browse/
 http://cardioserve.nantes.inserm.fr/mad/madgene/batch.php
 http://cardioserve.nantes.inserm.fr/madtools/madgene/batch.php
 http://www.ncbi.nlm.nih.gov/sites/batchentrez
+ftp://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/RefSeqGene/
+http://genome.ucsc.edu/cgi-bin/hgTables?hgsid=351570679&clade=mammal&org=Human&db=hg19&hgta_group=genes&hgta_track=refGene&hgta_table=0&hgta_regionType=genome&position=chr21%3A33%2C031%2C597-33%2C041%2C570&hgta_outputType=sequence&hgta_outFileName=
 
 email: sharma.animesh@gmail.com
