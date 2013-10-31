@@ -7,9 +7,7 @@ my $thr=shift @ARGV;
 
 my %seqh;
 my $seqc;
-my %cb;
-my $tc;
-
+my $cl=3;
 my %c2a = (
 	'TTT' => 'F','TTC' => 'F','TTA' => 'L','TTG' => 'L',
 	'TCT' => 'S','TCC' => 'S','TCA' => 'S','TCG' => 'S',
@@ -33,66 +31,49 @@ my %c2a = (
 );
 
 sub translate{
-
 	my $se=shift;
-	my @t=split(//,$se);
-	my $seqaa="";
+        my $lt=length($se);
+	my $ct=int($lt/$cl);
+	my $rr=$lt%$cl;
+	my $sa="";
 	my %cu;
-	for (my $c2=0;$c2<=$#t-3;$c2=$c2+3) {
-		$seqaa.=$c2a{$t[$c2].$t[$c2+1].$t[$c2+2]};
-		$cb{$t[$c2].$t[$c2+1].$t[$c2+2]}++;
-		$cu{$t[$c2].$t[$c2+1].$t[$c2+2]}++;
-		$tc++;
+	my $cp;
+	for (my $c2=0;$c2<$ct;$c2++) {
+		my $sp=$c2*$cl;
+		my $aa=substr($se,$sp,$cl);
+		$sa.=$c2a{$aa};
+		$cu{$aa}++;
+		if($c2a{$aa} eq "stop"){$cp.="$sp-";}
 	}
-	return $seqaa,%cu;
+	return($sa,$cp,$lt,$rr,%cu);
 }
 
 
 while(my $l1=<F1>){
-        $l1=~s/\r|\n|$//g;
+	chomp $l1;
+        $l1=~s/\r//g;
         if($l1=~/^>/){$seqc=$l1;}
-        else{$seqh{$seqc}.=uc($l1);}
+        else{$l1=~s/[0-9]|\s+//g;$seqh{$seqc}.=uc($l1);}
 }
 
 foreach (keys %seqh){
         my $seqn=$_;
         my $seq=$seqh{$_};
-        my $lgt=length($seq);
-        my ($seqt,%cut)=translate($seq);
-        if($cut{"AAA"}/($cut{"AAG"}+1)>$thr){print "$seqn\t$lgt\t",$cut{"AAA"},"-",$cut{"AAG"},"\n$seqt\n";}
+        my ($seqt,$scp,$lgt,$rem,%cut)=translate($seq);
+        print "$seqn\t$lgt\t$rem\t$scp\t",$cut{"AAA"},"\t",$cut{"AAG"},"\n";
 }
 
 __END__
 
-my $chk;
-foreach (keys %cb){
-	$chk+=$cb{$_};
-	my $freq=$cb{$_}/$tc;
-        print "$_\t$c2a{$_}\t$freq\t$cb{$_}\t$chk\t$tc\n",;
-}
 
 
+perl codonusage.pl /cygdrive/x/Elite/gaute/geir.txt 
 
 
-
-__END__
-
-
-sed 's/,/\n/g' /cygdrive/x/Elite/Aida/RNAproc.txt > /cygdrive/x/Elite/Aida/RNAprocsed.txt
-sed 's/;/\n/g' /cygdrive/x/Elite/Aida/RNAprocRS.txt > /cygdrive/x/Elite/Aida/RNAprocRSsed.txt
- 
-$ perl codonusage.pl /cygdrive/x/Elite/Aida/SSwCLREP/sequence.fasta | wc
-     64     128     466
-
-
-
-ftp://ftp.ensembl.org/pub/release-73/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh37.73.cdna.all.fa.gz
-http://david.abcc.ncifcrf.gov/helps/knowledgebase/DAVID_gene.html#gene
-http://www.ncbi.nlm.nih.gov/refseq/rsg/browse/
 http://cardioserve.nantes.inserm.fr/mad/madgene/batch.php
 http://cardioserve.nantes.inserm.fr/madtools/madgene/batch.php
 http://www.ncbi.nlm.nih.gov/sites/batchentrez
 ftp://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/RefSeqGene/
-http://genome.ucsc.edu/cgi-bin/hgTables?hgsid=351570679&clade=mammal&org=Human&db=hg19&hgta_group=genes&hgta_track=refGene&hgta_table=0&hgta_regionType=genome&position=chr21%3A33%2C031%2C597-33%2C041%2C570&hgta_outputType=sequence&hgta_outFileName=
+http://genome.ucsc.edu/cgi-bin/hgTables?hgsid=$cl51570679&clade=mammal&org=Human&db=hg19&hgta_group=genes&hgta_track=refGene&hgta_table=0&hgta_regionType=genome&position=chr21%$clA$cl$cl%2C0$cl1%2C597-$cl$cl%2C041%2C570&hgta_outputType=sequence&hgta_outFileName=
 
 email: sharma.animesh@gmail.com
