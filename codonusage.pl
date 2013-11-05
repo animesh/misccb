@@ -1,12 +1,13 @@
 use strict;
 use warnings;
-my $file=shift @ARGV;
-open F1, "$file" or die "Can't open $file : $!";
-my $thr=shift @ARGV;
-
-
+use Text::ParseWords;
+my $file1=shift @ARGV;
+my $file2=shift @ARGV;
+open F1, "$file1" or die "Can't open file : $file1 $!";
+open F2, "$file2" or die "Can't open file : $file2  $!";
 my %seqh;
 my $seqc;
+my %val;
 my $cl=3;
 my %c2a = (
 	'TTT' => 'F','TTC' => 'F','TTA' => 'L','TTG' => 'L',
@@ -52,28 +53,52 @@ sub translate{
 while(my $l1=<F1>){
 	chomp $l1;
         $l1=~s/\r//g;
-        if($l1=~/^>/){$seqc=$l1;}
+        if($l1=~/^>/){$l1=~s/^>//g;my @snt=split(/\|/,$l1);$seqc=$snt[0];}
         else{$l1=~s/[0-9]|\s+//g;$seqh{$seqc}.=uc($l1);}
 }
 
+while(my $l2=<F2>){
+	chomp $l2;
+	$l2=~s/\r//g;
+	my @tmp2=parse_line(',',0,$l2);
+	$val{$tmp2[0]}=$l2;
+}
+close F2;
+
+my $hl=0;
 foreach (keys %seqh){
-        my $seqn=$_;
-        my $seq=$seqh{$_};
-        my ($seqt,$scp,$lgt,$rem,%cut)=translate($seq);
-        print "$seqn\t$lgt\t$rem\t$scp\t",$cut{"AAA"},"\t",$cut{"AAG"},"\n";
+	$hl++;
+	if($hl==1){
+		print $val{"ccds_id"},",ID,Length,DivBy3Rem,StopCodons,StopCodonPos,";
+		foreach my $aa(keys %c2a){
+			print "$aa-$c2a{$aa},";
+		}
+		print "\n";
+	}
+	else{
+		my $seqn=$_;
+		my $seq=$seqh{$_};
+		my ($seqt,$scp,$lgt,$rem,%cut)=translate($seq);
+		my @stpcnt=split(/-/,$scp);
+		print "$val{$seqn},$seqn,$lgt,$rem,$#stpcnt,$scp,";
+		foreach my $aaa(keys %c2a){
+			print "$cut{$aaa},";
+		}
+		print "\n";
+        }
 }
 
 __END__
 
+perl codonusage.pl /cygdrive/x/Elite/gaute/test/CCDS_nucleotide.20131024.fna /cygdrive/x/Elite/gaute/test/CCDS.20131024.csv > /cygdrive/x/Elite/gaute/test/CCDS.20131024.annot.csv 2>err
 
-
-perl codonusage.pl /cygdrive/x/Elite/gaute/geir.txt 
-
-
-http://cardioserve.nantes.inserm.fr/mad/madgene/batch.php
-http://cardioserve.nantes.inserm.fr/madtools/madgene/batch.php
-http://www.ncbi.nlm.nih.gov/sites/batchentrez
-ftp://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/RefSeqGene/
-http://genome.ucsc.edu/cgi-bin/hgTables?hgsid=$cl51570679&clade=mammal&org=Human&db=hg19&hgta_group=genes&hgta_track=refGene&hgta_table=0&hgta_regionType=genome&position=chr21%$clA$cl$cl%2C0$cl1%2C597-$cl$cl%2C041%2C570&hgta_outputType=sequence&hgta_outFileName=
+https://groups.google.com/a/soe.ucsc.edu/forum/#!original/genome/yKentEyv2vM/qX8r9OwxnzEJ
+Table Browser tool as follows:
+group: Genes and Gene Prediction Tracks
+track: UCSC Genes
+table: knownCanonical
+region: genome
+output format: sequence
+ftp://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_human/CCDS_nucleotide.20131024.fna.gz
 
 email: sharma.animesh@gmail.com
