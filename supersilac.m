@@ -14,9 +14,41 @@ prot=xlsread('X:\Elite\gaute\modomics_list_MATCH.xlsx')
 prot=xlsread('X:\Elite\Aida\SSwCLREP\MQv1412combo.xlsx')
 prot=prot(:,[1:33]); % remove cell lines
 prot=prot(:,[1:43,45]); % remove U266 replicate which did not work
+prot=prot(:,[34:end]); % remove MGUS and MM
+
 
 prot=prot(:,[1:3,37:44]); % for cell lines
 prot=prot(:,[47:48]); % MM and MGUS
+
+prot=xlsread('X:\Elite\Aida\SSNov2013\SSNov13combined.xlsx')
+prot=prot(:,[1:12]); % MM and MGUS
+
+%% cluster analysis
+
+corrprot=corrcoef(prot,'rows','pairwise')
+corrprot=corrcoef(prot','rows','pairwise')
+ccprop=clustergram(prot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
+get(ccprop)
+
+%% comp
+
+[pcom, z, dev] = pca(prot)
+cumsum(dev./sum(dev) * 100)
+plot(pcom(:,1),pcom(:,2),'r.')
+tags = num2str((1:size(pcom,1))','%d');
+text(pcom(:,1),pcom(:,2),tags)
+xlabel('PC1');
+ylabel('PC2');
+title('PCA Scatter');
+
+%% tags
+
+cd = clusterdata(pcom(:,1:2),4);
+gscatter(pcom(:,1),pcom(:,2),cd)
+gname('name')
+
+
+
 
 %% plot MM with MGUS
 
@@ -36,12 +68,6 @@ proto=randn(1000,1).*(2*pi)
 proto=[proto  2*proto -1*proto sin(proto) cos(proto) sin(proto).*cos(proto)]
 
 
-%% cluster analysis
-
-corrprot=corrcoef(prot,'rows','pairwise')
-corrprot=corrcoef(prot','rows','pairwise')
-ccprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun',@('distance', 'mahalanobis')knnimpute)%,'Distance', 'mahalanobis')
-get(ccprop)
 
 %% correlation plot
 corrprot=corr(prot,'rows','pairwise')
@@ -91,3 +117,4 @@ mqpd=[0.825	0.772	0.774	0.306	0.252	0.302	1.672	1.729	1.779	0.977	0.999	1.023	0.
 
 plot(mqpd(1,:),mqpd(2,:),'b.')
 comm -12 <(sort pd.txt) <(sort mq.txt) | wc
+
