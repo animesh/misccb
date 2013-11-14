@@ -18,6 +18,10 @@ prot=prot(:,[1:43,45]); % remove U266 replicate which did not work
 prot=prot(:,[1:3,37:44]); % for cell lines
 prot=prot(:,[47:48]); % MM and MGUS
 
+prot=xlsread('L:\Elite\Aida\SSNov2013\SSNov13combined.xlsx')
+prot=prot(:,[1:12])'; % MM only
+
+
 %% plot MM with MGUS
 
 corr(log10(prot(:,1)),log10(prot(:,2)),'rows','pairwise')
@@ -40,7 +44,7 @@ proto=[proto  2*proto -1*proto sin(proto) cos(proto) sin(proto).*cos(proto)]
 
 corrprot=corrcoef(prot,'rows','pairwise')
 corrprot=corrcoef(prot','rows','pairwise')
-ccprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun',@('distance', 'mahalanobis')knnimpute)%,'Distance', 'mahalanobis')
+ccprop=clustergram(corrprot, 'Colormap', redgreencmap(256)) %,'ImputeFun',@('distance', 'mahalanobis')knnimpute)%,'Distance', 'mahalanobis')
 get(ccprop)
 
 %% correlation plot
@@ -91,3 +95,12 @@ mqpd=[0.825	0.772	0.774	0.306	0.252	0.302	1.672	1.729	1.779	0.977	0.999	1.023	0.
 
 plot(mqpd(1,:),mqpd(2,:),'b.')
 comm -12 <(sort pd.txt) <(sort mq.txt) | wc
+
+
+%% fit dist
+
+pd = fitdist(kam,'Normal')
+pd = fitdist(kam,'Kernel','Kernel','epanechnikov')
+x_values = 0:0.01:50;
+pdf = pdf(pd,x_values);
+plot(x_values,pdf,'LineWidth',2)
