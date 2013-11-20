@@ -1,9 +1,21 @@
 %% read files
 prot=xlsread('X:\Qexactive\Berit_Sissel\MCR22Proteins.xls')
+prot=prot(:,[28,36,44,52,60,68,76,84,92,100,108,116,124,132,140,148,156,164,172,180,188,196])
 prot=prot(:,6:27)
 
+
+%% scores and areas
+scorea=xlsread('X:\Qexactive\Berit_Sissel\B005\SMAcomp.xlsx')
+corr(scorea,'rows','pairwise')
+
+%% tobias
+ratio=xlsread('X:\Results\TS\MeanRatiosT0t5t12withTriplicateMedianValsNames.xls')
+corrprot=corrcoef(ratio(:,[1:3]),'rows','pairwise')
+ccprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
+spy(corrprot)
+
 %% comp
-[pcom, z, dev] = pca1(prot')
+[pcom, z, dev] = pca1(prot)
 cumsum(dev./sum(dev) * 100)
 plot3(pcom(:,1),pcom(:,2),pcom(:,3),'r.')
 tags = num2str((1:size(pcom,1))','%d');
@@ -15,7 +27,7 @@ title('PCA Scatter');
 
 %%cluster
 
-corrprot=corrcoef(prot,'rows','pairwise')
+corrprot=corrcoef(prot','rows','pairwise')
 ccprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
 
 

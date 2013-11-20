@@ -17,7 +17,7 @@ open(F2,$f2);
 while(my $l2=<F2>){
 	chomp $l2;
         $l2=~s/\r//g;
-        my @temp=split(/\;/,$l2);
+        my @temp=split(/\;|\,/,$l2);
         print "$temp[1],$temp[0],";
         foreach my $seq (keys %seqh){
         	if($seqh{$seq}=~/$temp[1]/){print "$seq,"}
