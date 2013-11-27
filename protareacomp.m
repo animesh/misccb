@@ -2,6 +2,17 @@
 
 beckprot=xlsread('V:\felles\PROTEOMICS and XRAY\Abundance\Beck-2011-supplementary table 1-protein copies per cell.xls')
 commprot=xlsread('V:\felles\PROTEOMICS and XRAY\Abundance\Common proteins in IF studies-Supplementary from review modified GS.xls')
+commprot=xlsread('X:\Elite\kamila\idcombo.xls')
+
+%% mRNA with SILAC
+corr(commprot)
+plot(commprot(:,1),commprot(:,2),'r.')
+
+thr=1.25
+sum(commprot(:,1)>=thr & commprot(:,2)>=thr)
+sum(commprot(:,1)<=-thr & commprot(:,2)<=-thr)
+sum(commprot(:,1)>=thr & commprot(:,2)<=thr)
+sum(commprot(:,1)<=thr & commprot(:,2)>=thr)
 
 %% compare lists
 

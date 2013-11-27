@@ -1,37 +1,12 @@
 %% read
-
-prot=tblread('X:\Elite\Aida\SS_1\4\FRES\txt\proteinGroups.txt','\t')
-protrev=tblread('X:\Elite\Aida\SS_1\4\RRES\txt\proteinGroups.txt','\t')
-% perl mqpevol.pl /cygdrive/x/Elite/Aida/SS_1/4 2>0 > /cygdrive/x/Elite/Aida/SS_1/4/compFR.txt 
-protcomb=tblread('X:\Elite\Aida\SS_1\4\compRF.txt','\t')
-
-prot=xlsread('X:\Elite\Aida\SS_2\comborem.xlsx');
-
-prot=xlsread('X:\Elite\Aida\SS3\SS3MQ.xlsx')
-
-prot=xlsread('X:\Elite\gaute\modomics_list_MATCH.xlsx')
-
-prot=xlsread('X:\Elite\Aida\SSwCLREP\MQv1412combo.xlsx')
-prot=prot(:,[1:33]); % remove cell lines
-prot=prot(:,[1:43,45]); % remove U266 replicate which did not work
-prot=prot(:,[34:end]); % remove MGUS and MM
-
-
-prot=prot(:,[1:3,37:44]); % for cell lines
-prot=prot(:,[47:48]); % MM and MGUS
-
-<<<<<<< HEAD
-prot=xlsread('L:\Elite\Aida\SSNov2013\SSNov13combined.xlsx')
-prot=prot(:,[1:12])'; % MM only
-=======
-prot=xlsread('X:\Elite\Aida\SSNov2013\SSNov13combined.xlsx')
-prot=prot(:,[1:12]); % MM and MGUS
+prot=xlsread('X:\Elite\Aida\SS_Result\MQcombo75.xlsx')
+prot=prot(:,[2:74,76]); % remove U266 replicate which did not work
 
 %% cluster analysis
 
 corrprot=corrcoef(prot,'rows','pairwise')
 corrprot=corrcoef(prot','rows','pairwise')
-ccprop=clustergram(prot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
+ccprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
 get(ccprop)
 
 %% comp

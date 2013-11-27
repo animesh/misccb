@@ -20,7 +20,10 @@ sub createhash{
 				my @name=split(/\;/,$tmp[0]);
 				foreach (@name) {
 					$nh{$_}++;$ch{"$_-$f1"}++;
-					if(abs($tmp[1])>0){$vh{"$_-$f1"}="$tmp[1]";}
+					if(abs($tmp[1])>0){
+						if($tmp[1]>0 and $tmp[1]<1){$vh{"$_-$f1"}=-1/$tmp[1];}
+						else{$vh{"$_-$f1"}=$tmp[1];}
+					}
 				}
 			}
 		}
