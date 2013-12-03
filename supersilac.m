@@ -9,6 +9,17 @@ corrprot=corrcoef(prot','rows','pairwise')
 ccprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
 get(ccprop)
 
+%% subgroup analysis
+protsg=prot(:,[61:63,22:24,34:36,10:12,19:21]);
+corrprot=corr(protsg','rows','pairwise')
+ccprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute');
+dpst = linkage(ccprop, 'ward');
+
+csize=2;
+dpsg = pdist(protsg', 'euclid');
+dpst = linkage(dpsg, 'ward');
+getid = cluster(dpst, 'maxclust',csize);
+
 %% comp
 
 [pcom, z, dev] = pca(prot)
