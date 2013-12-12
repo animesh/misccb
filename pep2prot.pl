@@ -33,7 +33,6 @@ close F2;
 
 __END__
 
- perl pep2prot.pl /cygdrive/x/FastaDB/SerpinB3P29508.fasta /cygdrive/x/Qexactive/LARS/2013/november/ole\ jan/SerpinResults.csv 2>0 > /cygdrive/x/Qexactive/LARS/2013/november/ole\ jan/SerpinResultsMapped.csv
-
+perl pep2prot.pl /cygdrive/x/FastaDB/SerpinB3P29508.fasta /cygdrive/x/Qexactive/LARS/2013/november/ole\ jan/SerpinResultsBlast.txt 2>0
 
 
