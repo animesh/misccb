@@ -5,10 +5,9 @@ use Text::ParseWords;
 my $path = shift @ARGV;
 my $idi = shift @ARGV;
 my $val = shift @ARGV;
-
 my %nc;
-
 my $lcnt;
+
 open (F1, $path) || die "can't open \"$path\": $!";
 while (my $line = <F1>) {
         chomp $line;
@@ -27,13 +26,20 @@ while (my $line = <F1>) {
 close F1;
 
 foreach my $g  (keys %nc){
-    if($g ne ""){
+    if($g ne "" and $nc{$g}>=1){
         print "$g\t$nc{$g}\n";
+    }
+    elsif($g ne "" and $nc{$g}>0){
+        print "$g\t",-1/$nc{$g},"\n";
+    }
+    elsif($g ne ""){
+        print "$g\t \n";
     }
 }
 
 
 __END__
 
-perl ungrouplist.pl /cygdrive/l/Elite/kamila/proteinGroupsOdense.txt 15 > /cygdrive/l/Elite/kamila/proteinGroupsOdenseUG.txt
+perl ungrouplist.pl /cygdrive/l/Elite/kamila/proteinGroupsOdense.txt 12 50 2>err > /cygdrive/l/Elite/kamila/proteinGroupsOdenseGNUG.txt
+
 

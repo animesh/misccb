@@ -1,7 +1,24 @@
 %% data
 [~,~,ss]=xlsread('X:\Elite\Aida\SS_1R\SS1RPGsortMGUS2MMmedvals.xls');
 [cu,~,~]=xlsread('L:\Elite\gaute\test\CDS_CU_EntrezID.xls');
-od=xlsread('L:\Elite\kamila\proteinGroupsOdenseUGcombo.xlsx');
+od=xlsread('L:\Elite\Aida\CellLines\cell-lines.xlsx');
+comb=xlsread('L:\Elite\kamila\SILACmRNA.xlsx');
+
+%% plot
+plot((comb(:,1)),(comb(:,2)),'r.')
+xlabel('mRNA')
+ylabel('SILAC')
+title('Fold change')
+%axis equal
+grid on
+
+
+%% correlation
+sum(comb(:,1)>0&comb(:,2)>0)
+[val pval]=corrcoef(comb(comb(:,1)>0&comb(:,2)>0,1),comb(comb(:,2)>0&comb(:,1)>0,2))
+[val pval]=corrcoef(comb(comb(:,1)<0&comb(:,2)<0,1),comb(comb(:,2)<0&comb(:,1)<0,2))
+
+
 
 %% handling NaN's and getting out codon values
 gene=cu(:,1)
