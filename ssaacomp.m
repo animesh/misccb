@@ -1,5 +1,23 @@
 %% data
 [~,~,ss]=xlsread('X:\Elite\Aida\SS_1R\SS1RPGsortMGUS2MMmedvals.xls');
+[cu,~,~]=xlsread('L:\Elite\gaute\test\CDS_CU_EntrezID.xls');
+od=xlsread('L:\Elite\kamila\proteinGroupsOdenseUGcombo.xlsx');
+
+%% handling NaN's and getting out codon values
+gene=cu(:,1)
+cu=cu(:,2:end)
+cu=cu*10;
+cu(~isfinite(cu))=1;
+
+%% cluster 
+od(~isfinite(od))=0;
+corrcu=corrcoef(od,'rows','pairwise')
+corrcu=corrcoef(cu)
+plot(corrcu)
+%corrprot=corrcoef(prot','rows','pairwise')
+ccprop=clustergram(corrcu, 'Colormap', redbluecmap)
+get(ccprop)
+
 
 %% fasta
 ff = fastaread('X:\FastaDB\uniprot-human-may-13.fasta');
