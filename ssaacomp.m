@@ -3,9 +3,10 @@
 [cu,~,~]=xlsread('L:\Elite\gaute\test\CDS_CU_EntrezID.xls');
 od=xlsread('L:\Elite\Aida\CellLines\cell-lines.xlsx');
 comb=xlsread('L:\Elite\kamila\SILACmRNA.xlsx');
+comb=xlsread('L:\Elite\kamila\Heart\combolfqs.xlsx');
 
 %% plot
-plot((comb(:,1)),(comb(:,2)),'r.')
+plot(log10(comb(:,1)),log10(comb(:,3)),'r.')
 xlabel('mRNA')
 ylabel('SILAC')
 title('Fold change')
@@ -14,6 +15,7 @@ grid on
 
 
 %% correlation
+corrcoef(comb,'rows','pairwise')
 sum(comb(:,1)>0&comb(:,2)>0)
 [val pval]=corrcoef(comb(comb(:,1)>0&comb(:,2)>0,1),comb(comb(:,2)>0&comb(:,1)>0,2))
 [val pval]=corrcoef(comb(comb(:,1)<0&comb(:,2)<0,1),comb(comb(:,2)<0&comb(:,1)<0,2))
