@@ -1,7 +1,12 @@
-data=read.csv("C:/Users/animeshs/Downloads/SHBER.csv")
-attach(data)
+#source("http://bioconductor.org/biocLite.R")
+#biocLite("GeneAnswers")
+#biocLite("org.Hs.eg.db")
+#biocLite("GO.db")
+#biocLite("biomaRt")
+#rm(list = ls())
+data=read.csv("L:/Elite/gaute/test/SHBER.csv")
 library(org.Hs.eg.db)
-egmap <- revmap(org.Hs.egUNIPROT)[Entry]
+egmap <- revmap(org.Hs.egUNIPROT)[as.character(data$Entry)]
 library('GeneAnswers')
 x <- geneAnswersBuilder(toTable(egmap), 'org.Hs.eg.db', categoryType='GO.BP', testType='hyperG',  pvalueT=0.1, FDR.correction=TRUE, geneExpressionProfile=data)
 geneAnswersReadable(x)
