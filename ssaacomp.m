@@ -6,7 +6,7 @@ comb=xlsread('L:\Elite\kamila\SILACmRNA.xlsx');
 comb=xlsread('L:\Elite\kamila\Heart\combolfqs.xlsx');
 
 %% plot
-plot((comb(:,1)),(comb(:,2)),'r.')
+plot(log(comb(:,1)),log(comb(:,2)),'r.')
 xlabel('mRNA')
 ylabel('SILAC')
 title('Fold change')

@@ -145,3 +145,145 @@
   145  sed 's/,/\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1.csv | sed 's/ /\n'/g | grep "GN=" | sed 's/GN\=//g'
   146  history > commands.txt
   147  history > history.sh
+  148  rm commands.txt 
+  149  sed 's/,/\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | sed 's/ /\n'/g | grep "GN=" | sed 's/GN\=//g'
+  150  sed 's/,/\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | sed 's/ /\n'/g | grep "GN=" | sed 's/GN\=//g' | wc
+  151  sed 's/,/\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | sed 's/ /\n'/g | grep "GN="
+  152  sed 's/,/\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | sed 's/ /\n'/g | grep "GN=" | wc
+  153  wc /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv 
+  154  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | grep "GN=" | wc
+  155  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | grep "GN\=" | wc
+  156  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv 
+  157  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | grep "GN\=" | less
+  158  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | grep "^GN\=" | less
+  159  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | grep "^GN\=" | wc
+  160  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | grep "^GN\=" | sort 
+  161  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | grep "^GN\=" | sort | uniq | less
+  162  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | grep "^GN\=" | sort | uniq | wc
+  163  history | grep matchlist.pl
+  164  perl matchlist.pl /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1GN.csv /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance_wgn.csv
+  165  perl matchlist.pl /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1GN.csv /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance_wgn.csv > /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1GN.AbundanceMatch.csv
+  166  perl matchlist.pl /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1GN.csv /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance_wgn.csv | wc
+  167  git status
+  168  git add .
+  169  git status
+  170  git commit -am "check threshold, arabidopsis gene set enrichment analysis, log command history"
+  171  git push
+  172  ssh promec1-vm.medisin.ntnu.no
+  173  perl matchlist.pl /cygdrive/l/Elite/kamila/mRNA.csv /cygdrive/l/Elite/kamila/mRNAredone.csv > /cygdrive/l/Elite/kamila/mRNAmatchRedone.csv
+  174  perl matchlist.pl /cygdrive/l/Elite/kamila/mRNAredone.csv /cygdrive/l/Elite/kamila/mRNA.csv > /cygdrive/l/Elite/kamila/mRNAwithRedone.csv
+  175  wget www.nature.com/nature/journal/v464/n7291/pdf/nature08987.pdf
+  176  wget
+  177  vim t
+  178  wc /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/chk.txt 
+  179  sort  /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/chk.txt  | uniq
+  180  sort  /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/chk.txt  | uniq | wc
+  181  wc /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/chk.txt 
+  182  less /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/chk.txt 
+  183  sed /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv 
+  184  sed 's/,/\t/g' /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv 
+  185  sed 's/,/\t/g' /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv | awk '{print $2}'
+  186  sed 's/,/ /g' /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv | awk '{print $2}'
+  187  cat /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv | awk '{print $2}'
+  188* grep "" /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv | awk '{print $3}'
+  189  sed 's/,/\n/g' /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv | awk '{print $2}'
+  190  sed 's/,/\n/g' /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv | grep "\[[A-Z]+_HUMAN\]" awk '{print $2}'
+  191  sed 's/,/\n/g' /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv | grep "_HUMAN" | awk '{print $2}'
+  192  sed 's/,/\n/g' /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv | grep "\[[A-Z]+_HUMAN\]" | awk '{print $2}'
+  193  sed 's/,/\n/g' /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv | grep "_HUMAN" | awk '{print $1}'
+  194  sed 's/,/\n/g' /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv | grep "_HUMAN"
+  195  sed 's/,/\n/g' /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv | grep "_HUMAN" | awk '{print -$1}'
+  196  sed 's/,/\n/g' /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv | grep "_HUMAN" | sed 's/ /\n/g'  | awk '{print $1}'
+  197  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | grep "^GN\=" | sort | uniq | less
+  198  sed 's/,/ /g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1.csv |  awk '{print $1}' | sort | uniq | less
+  199  sed 's/,/ /g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1.csv |  awk '{print $1}' | sort | uniq | wc
+  200  sed 's/,/ /g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1.csv |  awk '{print $1}' | sort | uniq  > tw
+  201  sed 's/,/ /g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv |  awk '{print $1}' | sort | uniq  | less
+  202  sed 's/,/ /g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance_wgn.csv |  awk '{print $1}' | sort | uniq  | less
+  203  sed 's/,/ /g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance_wgn.csv |  awk '{print $1}' | sort | uniq  > al
+  204  diff al tw
+  205  diff tw al
+  206  diff tw al | less
+  207  sed 's/,/ /g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance_wgn.csv |  awk '{print $1}' | less
+  208  lesss tw
+  209  less tw
+  210* sed 's/,/ /g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv |  awk '{print $1}' | sort | uniq  > tw
+  211  less tw
+  212  man tw
+  213  man diff
+  214  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | grep "^GN\=" | sort | uniq | less
+  215  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | grep "^GN\=" | sort | uniq | less
+  216  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | grep "^GN\=" | sort | uniq | sed 's/\=/ /g' | less
+  217  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | grep "^GN\=" | sort | uniq | sed 's/\=/ /g' |  awk '{print $2}' |less
+  218  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | grep "^GN\=" | sort | uniq | sed 's/\=/ /g' |  awk '{print $2}' > al
+  219  sed 's/,/ /g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1.csv |  awk '{print $1}' | sort | uniq  | wc
+  220  sed 's/,/ /g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1.csv |  awk '{print $1}' | sort | uniq  | less
+  221  sed 's/,/ /g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1.csv |  awk '{print $2}' | sort | uniq  | less
+  222  sed 's/,/ /g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1.csv |  awk '{print $2}' | sort | uniq  | less
+  223  sed 's/,/ /g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1.csv |  awk '{print $1}' | sort | uniq  
+  224  history | grep tw
+  225  sed 's/,/ /g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1.csv |  awk '{print $1}' | sort | uniq  > tw
+  226  less tw
+  227  sed 's/,/ /g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1GN.csv |  awk '{print $1}' | sort | uniq  
+  228  sed 's/,/ /g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1GN.csv |  awk '{print $1}' | sort | uniq  | wc 
+  229  sed 's/,/ /g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1GN.csv |  awk '{print $1}' | sort | uniq  | less
+  230  sed 's/,/ /g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1GN.csv |  awk '{print $1}' | sort | uniq  >  tw
+  231  diff -v tw al
+  232  diff  tw al
+  233  diff  tw al | less
+  234  bdiff
+  235  man diff
+  236  diff -s  tw al | less
+  237  man diff
+  238  man diff
+  239  diff -l  tw al | less
+  240  perl difflist.pl tw al
+  241  perl difflist.pl tw al
+  242  perl difflist.pl tw al
+  243  perl difflist.pl tw al
+  244  perl difflist.pl tw al 2>0  | less
+  245  perl difflist.pl tw al 2>0  | wc
+  246  perl difflist.pl tw al 2>0  > diff.txt
+  247  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | grep "^GN\=" | sort | uniq | sed 's/\=/ /g' |  awk '{print $2}' | less
+  248  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abundance.csv | grep "^GN\=" | sort | uniq | sed 's/\=/ /g' |  awk '{print $2}' | wc
+  249  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv | grep "^GN\=" | sort | uniq | sed 's/\=/ /g' |  awk '{print $2}' | less
+  250  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv | grep "^GN\=" | sort | uniq | sed 's/\=/ /g' |  awk '{print $2}' | wc
+  251  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv | grep "^GN=" | sort | uniq | sed 's/\=/ /g' |  awk '{print $2}' | wc
+  252  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv | grep "^GN=" | sort | uniq -c
+  253  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv | grep "^GN=" | sort | uniq -c | sort -r
+  254  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv | grep "^GN=" | sort | uniq -c | grep "      2 "
+  255  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv | grep "^GN=" | sort | uniq | sed 's/\=/ /g' |  awk '{print $2}' | wc
+  256  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv | grep "^GN=" | sort | uniq -c | grep "      3 "
+  257  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv | grep "^GN=" | sort | uniq -c | grep "      4 "
+  258  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv | grep "^GN=" | sort | uniq -c | grep "      5 "
+  259  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv | grep "^GN=" | sort | uniq -c | grep "      6 "
+  260  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv | grep "^GN=" | sort | uniq -c | grep "      3 "
+  261  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv | grep "^GN=" | less
+  262  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv | grep "^GN=" > al
+  263  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/chk.txt | grep "^GN=" 
+  264  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/chk.txt | grep "^GN="  | sed 's/GE=//g' 
+  265  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/chk.txt | grep "^GN="  | sed 's/GN=//g' 
+  266  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/chk.txt | grep "^GN="  | sed 's/GN=//g' 
+  267  sed 's/ /\n/g' /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/chk.txt | grep "GN="  | sed 's/GN=//g' 
+  268  perl getgn.pl /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv 
+  269  perl getgn.pl /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv | wc
+  270  perl getgn.pl /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv | wc
+  271  perl getgn.pl /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv 2>0 | less
+  272  perl getgn.pl /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv 2>0 > /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd_wgn.csv
+  273  perl matchlist.pl /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1GN.csv /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd_wgn.csv 2>0 | wc
+  274  perl matchlist.pl /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1GN.csv /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd_wgn.csv 2>0 > /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/tw2abd.csv
+  275  perl matchlist.pl /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/TrustWorthyScoreThr1GN.csv /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/notfoundinabundance.csv 2>0 > /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/notfound.csv
+  276  perl getgn.pl /cygdrive/v/felles/PROTEOMICS\ and\ XRAY/Linda/abundance\ analysis/abd.csv 2>0 | less
+  277  perl getgn.pl /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv 2>0 | less
+  278  perl getgn.pl /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv 2>0 | less | wc
+  279  perl getgn.pl /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv 2>0 |  sed 's/,/ /g' 
+  280  perl getgn.pl /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv 2>0 |  sed 's/,/ /g' | awk '{print $1}'
+  281  perl getgn.pl /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv 2>0 |  sed 's/,/ /g' | awk '{print $1}' > t
+  282  perl getgn.pl /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv 2>0 |  sed 's/,/ /g' | awk '{print $1}' > t.txt
+  283  perl getgn.pl /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv 2>0 |  sed 's/,/ /g' | awk '{print $1}' | sort | wc
+  284  perl getgn.pl /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv 2>0 |  sed 's/,/ /g' | awk '{print $1}' | sort | uniq | wc
+  285  perl getgn.pl /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv 2>0 |  sed 's/,/ /g' | awk '{print $1}' | sort | uniq | less
+  286  perl getgn.pl /cygdrive/l/Elite/LARS/2014/januar/TObias/MCR25Reports.csv 2>0 |  sed 's/,/ /g' | awk '{print $1}' | sort | uniq | less
+  287  ls
+  288  git pull
+  289  history > history.sh 
