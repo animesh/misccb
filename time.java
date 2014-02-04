@@ -1,9 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package time;
-
 import java.util.TimeZone;
 
 /**

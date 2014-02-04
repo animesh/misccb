@@ -1,6 +1,6 @@
 from NeuroPy import NeuroPy
-from pyeeg import *
-import pyglet
+#from pyeeg import *
+#import pyglet
 npo=NeuroPy('/dev/ttyS25')
 eegcoll = []
 
@@ -22,7 +22,7 @@ while i<100:
 		#song.play()
 		#pyglet.app.run()
 
-print hurst(eegcoll[:])
+#print hurst(eegcoll[:])
 
 
 #source libs
