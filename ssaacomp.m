@@ -4,21 +4,32 @@
 od=xlsread('L:\Elite\Aida\CellLines\cell-lines.xlsx');
 comb=xlsread('L:\Elite\kamila\SILACmRNA.xlsx');
 comb=xlsread('L:\Elite\kamila\Heart\combolfqs.xlsx');
+comb=xlsread('L:\Elite\kamila\mRNAwithRedone.xls');
+comb=xlsread('L:\Elite\kamila\GNmRNAcombSILAC.xlsx');
 
 %% plot
-plot(log(comb(:,1)),log(comb(:,2)),'r.')
-xlabel('mRNA')
-ylabel('SILAC')
+plot((comb(:,1)),(comb(:,2)),'r.')
+xlabel('SILAC')
+ylabel('mRNA')
 title('Fold change')
 %axis equal
 grid on
 
+%% histogram of SILAC ratios with a log2 fit
+histfit(log2(SILAC))
+xlim([-2.5 2.5])
 
 %% correlation
-corrcoef(comb,'rows','pairwise')
+corrcoef((comb(((comb(:,1)>0&comb(:,2)>0))|(comb(:,1)<0&comb(:,2)<0),1)),(comb(((comb(:,1)>0&comb(:,2)>0))|(comb(:,1)<0&comb(:,2)<0),2)),'rows','pairwise')
+corrcoef(comb(comb(:,1)<0&comb(:,2)<0,1),comb(comb(:,1)<0&comb(:,2)<0,2),'rows','pairwise')
+corrcoef(comb(comb(:,1)>0&comb(:,2)>0,1),comb(comb(:,1)>0&comb(:,2)>0,2),'rows','pairwise')
+corrcoef((comb(((comb(:,1)>0&comb(:,2)>0))|(comb(:,1)<0&comb(:,2)<0),1)),(comb(((comb(:,1)>0&comb(:,2)>0))|(comb(:,1)<0&comb(:,2)<0),2)),'rows','pairwise')
 sum(comb(:,1)>0&comb(:,2)>0)
+sum(comb(:,1)<0&comb(:,2)<0)
 [val pval]=corrcoef(comb(comb(:,1)>0&comb(:,2)>0,1),comb(comb(:,2)>0&comb(:,1)>0,2))
 [val pval]=corrcoef(comb(comb(:,1)<0&comb(:,2)<0,1),comb(comb(:,2)<0&comb(:,1)<0,2))
+
+
 
 
 

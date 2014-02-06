@@ -2,11 +2,13 @@
 prot=xlsread('X:\Qexactive\Berit_Sissel\MCR22Proteins.xls')
 prot=prot(:,[28,36,44,52,60,68,76,84,92,100,108,116,124,132,140,148,156,164,172,180,188,196])
 prot=prot(:,6:27)
+prot=xlsread('L:\Qexactive\Berit_Sissel\B005\iBAQproteinGroups.xls')
 
 
 %% scores and areas
 scorea=xlsread('X:\Qexactive\Berit_Sissel\B005\SMAcomp.xlsx')
 corr(scorea,'rows','pairwise')
+corr(prot(:,38:45),'rows','pairwise')
 
 %% tobias
 ratio=xlsread('X:\Results\TS\MeanRatiosT0t5t12withTriplicateMedianValsNames.xls')
