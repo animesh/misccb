@@ -3,8 +3,24 @@
 prot=xlsread('X:\BSA Direct vs. Trad\MC8RProtein.xlsx')
 pep=xlsread('X:\BSA Direct vs. Trad\MC8RPeptides.xlsx')
 si=xlsread('X:\BSA Direct vs. Trad\MC8RSI.xlsx')
+pepwg=xlsread('L:\Qexactive\MohmD\Rat_Liver_MWave_3x30Sec_4Hrs_SequestHt and Mascot.xlsx')
 
 [bsapep1 bsapep2 bsapep3] =xlsread('X:\BSA Direct vs. Trad\Blood_Plasma_prot_ca2ug_Trypsin_1,4,8,16hours_Combined_Mascot_SequestHT_Phospho_Varia_Mod_PhosPhoRS_Medium_Peptides_List.xlsx')
+
+
+%% density
+histfit(pepwg(:,20));
+X = [pepwg(:,22),pepwg(:,20)];
+hist3(X,[40 40]);
+xlabel('Retention Time'); ylabel('Molecular Weight');
+title('Density of eluting peptides');
+
+set(gcf,'renderer','opengl');
+set(get(gca,'child'),'FaceColor','interp','CDataMode','auto');
+colorbar
+
+%axis equal
+grid on
 
 %% Pie chart (Ident and Phospho)
 

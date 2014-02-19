@@ -6,6 +6,17 @@ comb=xlsread('L:\Elite\kamila\SILACmRNA.xlsx');
 comb=xlsread('L:\Elite\kamila\Heart\combolfqs.xlsx');
 comb=xlsread('L:\Elite\kamila\mRNAwithRedone.xls');
 comb=xlsread('L:\Elite\kamila\GNmRNAcombSILAC.xlsx');
+comb=xlsread('L:\Elite\Celine\LbH\combo.xlsx')
+
+%% cluster 
+corrcu=corrcoef(comb(:,1:6),'rows','pairwise')
+clustergram(comb(:,1:6), 'Colormap', redbluecmap,'ImputeFun','knnimpute')
+colormap
+corrcu=corrcoef(cu)
+plot(corrcu)
+%corrprot=corrcoef(prot','rows','pairwise')
+ccprop=clustergram(corrcu, 'Colormap', redbluecmap)
+get(ccprop)
 
 %% plot
 plot((comb(:,1)),(comb(:,2)),'r.')
@@ -30,23 +41,12 @@ sum(comb(:,1)<0&comb(:,2)<0)
 [val pval]=corrcoef(comb(comb(:,1)<0&comb(:,2)<0,1),comb(comb(:,2)<0&comb(:,1)<0,2))
 
 
-
-
-
 %% handling NaN's and getting out codon values
 gene=cu(:,1)
 cu=cu(:,2:end)
 cu=cu*10;
 cu(~isfinite(cu))=1;
 
-%% cluster 
-od(~isfinite(od))=0;
-corrcu=corrcoef(od,'rows','pairwise')
-corrcu=corrcoef(cu)
-plot(corrcu)
-%corrprot=corrcoef(prot','rows','pairwise')
-ccprop=clustergram(corrcu, 'Colormap', redbluecmap)
-get(ccprop)
 
 
 %% fasta

@@ -6,12 +6,14 @@ my $path = shift @ARGV;
 my $pat = "REP";
 my $fpat = "proteinGroups.txt";
 
+
 my $idi = shift @ARGV;
 my $i1 = shift @ARGV;
 if(!$i1){$i1=18;}
 if(!$idi){$idi=5;}
 
-my @files=<$path/*$pat/$fpat>;
+#my @files=<$path/*$pat/$fpat>;
+my @files=<*.txt>;
 my %mrna;
 my %nc;
 
@@ -64,4 +66,5 @@ foreach my $g  (keys %nc){
 
 __END__
 
-perl mqpevol.pl /cygdrive/l/Elite/kamila/Heart/ 7 20 2>/cygdrive/l/Elite/kamila/Heart/err > /cygdrive/l/Elite/kamila/Heart/combo.txt
+perl /cygdrive/c/Users/animeshs/misccb/mqpevol.pl /cygdrive/j/MSdata 7 20 2>0 > combo.csv
+

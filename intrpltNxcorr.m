@@ -1,6 +1,27 @@
 %% read
 d=xlsread('C:\Users\animeshs\SkyDrive\Gotland 125m Landsort Deep 400m.xls')
 d=xlsread('C:\Users\animeshs\SkyDrive\Density and year basin 1 and basin 2.xls')
+d=xlsread('C:\Users\animeshs\SkyDrive\Animesh cross correlation.xls')
+
+
+%% test
+
+t1 = 1960:10:1990
+d1 = sin(t1)
+plot(t1,d1,'r.')
+t2= 1970:1:2000
+d2 = interp1(t1,d1,t2,'spline')
+%d2 = interp1(t1,d1,t2)
+plot(t1,d1,'o',t2,d2)
+xcorr(d1,d2)
+[v i]=max(~isnan(cc))
+
+d2ond1viat1=interp1(uAt1,uAd1,uAt2)
+plot(d2ond1viat1,uAd2,'r.')
+[cc lags]=xcorr(d2ond1viat1(~isnan(d2ond1viat1)),uAd2(~isnan(d2ond1viat1)))
+[v i]=max(~isnan(cc))
+i((lags(i)))
+
 
 %% extract time and values
 
@@ -14,8 +35,8 @@ hist(n)
 uAt1 = uAt(sel, :);
 uAd1 = d1(sel, :);
 
-d2=d(~isnan(d(:,5)),5)
-i2=d(~isnan(d(:,5)),4)
+d2=d(~isnan(d(:,6)),6)
+i2=d(~isnan(d(:,6)),5)
 
 [uAt, ~, ui] = unique(i2)
 n = hist( ui, 1:max(ui) );
@@ -52,7 +73,7 @@ save('interpolatedd2.txt', 'savevar', '-ASCII')
 [cc lags]=xcorr(uAd2i(~isnan(uAd2i)),uAd1(~isnan(uAd2i)),'coeff')
 plot(lags,cc,'r.');
 
-[v i]=max(~isnan(cc))
+[v i]=max(~isnan(cc));
 i1((lags(i)))
 
 
