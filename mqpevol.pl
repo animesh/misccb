@@ -12,8 +12,8 @@ my $i1 = shift @ARGV;
 if(!$i1){$i1=18;}
 if(!$idi){$idi=5;}
 
-#my @files=<$path/*$pat/$fpat>;
-my @files=<*.txt>;
+my @files=<$path/*$pat/$fpat>;
+#my @files=<*.txt>;
 my %mrna;
 my %nc;
 
@@ -66,5 +66,5 @@ foreach my $g  (keys %nc){
 
 __END__
 
-perl /cygdrive/c/Users/animeshs/misccb/mqpevol.pl /cygdrive/j/MSdata 7 20 2>0 > combo.csv
-
+#perl /cygdrive/c/Users/animeshs/misccb/mqpevol.pl /cygdrive/j/MSdata 7 20 2>0 > combo.txt
+perl mqpevol.pl  /cygdrive/i/MQResults/CellLines/ 2>0 >  /cygdrive/i/MQResults/CellLines/combo.txt
