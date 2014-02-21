@@ -7,6 +7,11 @@ my $f1 = shift;
 my $bp = shift;
 my $gn = shift;
 
+my $f2 = shift;
+my $gnc = shift;
+my $scc = shift;
+my %score;
+
 open (F1, $f1) || die "can't open \"$f1\": $!";
 my $lc;
 while (my $line = <F1>) {
@@ -21,26 +26,52 @@ while (my $line = <F1>) {
 		$tmp2[$c] =~ s/\s+//g;
 		#if ($tmp2[$c]=~/^[0-9]/){
 		if ($tmp2[$c] ne ""){
-			$bh{$tmp1[$bp]}.="$tmp2[$c]\n";
+			$bh{$tmp1[$bp]}.="$tmp2[$c],";
 		}
 	}
 }
 close F1;
 
-
-foreach my $ncc (keys %bh){
-	my $fon=$ncc;
-	$fon=~s/\s+|\-|\,|\'//g;
-	my $fon="$f1.$fon.$bp.$gn.csv";
-	open (FO, ">$fon") || die "can't open \"$fon\": $!";
-	print "$ncc,$bhn{$ncc}\n";
-	print FO"$bh{$ncc}";
-	close FO;
+open (F2, $f2) || die "can't open \"$f2\": $!";
+while (my $line = <F2>) {
+	$line =~ s/\r//g;
+	$line =~ s/\'//g;
+	chomp $line;
+	my @tmp=parse_line('\t',0,$line);
+	$score{$tmp[$gnc]}=$tmp[$scc]+0;
 }
+close F2;
+
+
+my $fon="$f1.$bp.$gn.$f2.$gnc.$scc.txt";
+$fon=~s/\s+|\-|\,|\'|\/|\\//g;
+open (FO, ">$fon") || die "can't open \"$fon\": $!";
+foreach my $ncc (keys %bh){
+	my @tmp=split(/\,/,$bh{$ncc});
+	my %hold=();
+	@tmp = grep { ! $hold{$_} ++ } @tmp;
+	my ($sum,$cnt,$avg)=(0,1,0);
+	for(my $c=0;$c<=$#tmp;$c++){
+		if($score{$tmp[$c]}>0){
+			$sum+=$score{$tmp[$c]};
+			$cnt++;
+		}
+	}
+	if($cnt>1 and $ncc=~/[A-Z]/i){
+		$avg=$sum/($cnt-1);
+		print FO"$ncc\t$avg\t$bh{$ncc}\n";
+	}
+	
+}
+close FO;
+print "Processed $f1\t $f2 -> $fon\n";
 
 __END__
 
-cd /cygdrive/l/Qexactive/Berit_Sissel/B005/
+perl extractgnipa.pl /cygdrive/l/Qexactive/Berit_Sissel/B005/Bodil/Unstim-all-S1.txt 0 4 /cygdrive/l/Qexactive/Berit_Sissel/B005/Bodil/UnstimallSequestcutoff1c.txt 0 1
+
+cd /cygdrive/l/Qexactive/Berit_Sissel/B005/Bodil
 for j in /cygdrive/l/Qexactive/Berit_Sissel/B005/Bodil/*-all-*.txt ; do echo $j ; perl extractgnipa.pl $j 0 4;   done
 for i in /cygdrive/l/Qexactive/Berit_Sissel/B005/Bodil/*-all-*.0.4.csv; do echo $i; sort $i | uniq -ic | awk '{print $2","$1}' > $i.sort ; done
 for j in *sort ; do for i in *cutoff1c.csv ; do echo $i $j ; perl /cygdrive/c/Users/animeshs/misccb/matchlist.pl $j $i > $j.$i.ml.csv ; done ; done
+for i in *.csv.ml.csv; do echo $i ; awk -F"," '{x+=$6;n++}END{print x/n}' $i ; done >> combo.tab

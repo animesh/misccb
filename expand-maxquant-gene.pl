@@ -8,6 +8,8 @@ my $gn=7;
 my $cnt;
 my $cntt;
 
+#extract_codeblock($text, '{}', undef, '<>') 
+
 my $f1 = shift @ARGV;
 open (F1, $f1) || die "can't open \"$f1\": $!";
 my $lc;
@@ -61,7 +63,4 @@ foreach my $ncc (keys %nh){
 
 __END__
 
-$ perl remove-duplicate-gene.pl /cygdrive/x/Qexactive/Berit_Sissel/B005/MCR22ProteinsB5.csv | sed 's/\,/ /g' | awk '{print $3}' | sort | uniq -c
-   4105 149
-    101 298
-
+ perl expand-maxquant-gene.pl /cygdrive/l/Elite/LARS/2014/januar/SILAC\ 2ndparalell/MQcombo.txt > /cygdrive/l/Elite/LARS/2014/januar/SILAC\ 2ndparalell/MQcomboGN.csv
