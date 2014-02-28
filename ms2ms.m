@@ -122,6 +122,18 @@ Obb01926=mzxmlread('M:\RAW\melfalan0hr\Obb01926.MZXML')
 Obb01937=mzxmlread('M:\RAW\melfalan0hr\Obb01937.MZXML')
 Obb01937=mzxmlread('X:\Elite\Alexey\HCD\SIM66_Elite_HCD.mzXML')
 
+mohd=mzxmlread('L:\Qexactive\MohmD\LCR_tarLiverProteins_microWave_140224201741.mzXML')
+
+mohd=xlsread('L:\Qexactive\MohmD\MS2ScanRawMeat.xls')
+hist(ms2(:,2),[240*60])
+hist(ms2(:,7),[100])
+ms2=xlsread('L:\Qexactive\MohmD\FullScanRawMeat.xls')
+
+plot(ms2(:,2),ms2(:,7))
+hist(ms2(:,7))
+hist(ms2(:,2),[10000])
+
+
 %% 
 
 [MZs,Ys] = msheatmap(msppresample(mzxml2peaks(Obb01937,'level',1),5000))

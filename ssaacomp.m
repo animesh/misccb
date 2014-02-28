@@ -10,7 +10,8 @@ comb=xlsread('L:\Elite\Celine\LbH\combo.xlsx')
 
 %% cluster 
 corrcu=corrcoef(comb(:,1:6),'rows','pairwise')
-clustergram(comb(:,1:6), 'Colormap', redbluecmap,'ImputeFun','knnimpute')
+cu(isnan(cu)) = 0.5 ;
+clustergram(cu(:,2:65), 'Colormap', redbluecmap,'ImputeFun','knnimpute')
 colormap
 corrcu=corrcoef(cu)
 plot(corrcu)

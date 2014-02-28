@@ -9,8 +9,8 @@ my $fpat = "proteinGroups.txt";
 
 my $idi = shift @ARGV;
 my $i1 = shift @ARGV;
-if(!$i1){$i1=18;}
-if(!$idi){$idi=5;}
+if(!$i1){$i1=20;}
+if(!$idi){$idi=7;}
 
 my @files=<$path/*$pat/$fpat>;
 #my @files=<*.txt>;

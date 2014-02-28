@@ -1,13 +1,14 @@
 %% read
-prot=xlsread('X:\Elite\Aida\SS_Result\MQcombo75.xlsx')
-prot=prot(:,[2:74,76]); % remove U266 replicate which did not work
+prot=xlsread('L:\Elite\Aida\CLnew\CLnewCombined.xls');
+prot=prot(:,[1:20]); % remove count
 
 %% cluster analysis
 
 corrprot=corrcoef(prot,'rows','pairwise')
-corrprot=corrcoef(prot','rows','pairwise')
 ccprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
 get(ccprop)
+corrprot=corrcoef(prot','rows','pairwise')
+ccprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
 
 %% subgroup analysis
 protsg=prot(:,[61:63,22:24,34:36,10:12,19:21]);

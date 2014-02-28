@@ -46,6 +46,8 @@ close F2;
 my $fon="$f1.$bp.$gn.$f2.$gnc.$scc.txt";
 $fon=~s/\s+|\-|\,|\'|\/|\\//g;
 open (FO, ">$fon") || die "can't open \"$fon\": $!";
+print FO"$f1-$bp-$gn\t$f2-$gnc-$scc\n";
+
 foreach my $ncc (keys %bh){
 	my @tmp=split(/\,/,$bh{$ncc});
 	my %hold=();
@@ -59,7 +61,7 @@ foreach my $ncc (keys %bh){
 	}
 	if($cnt>1 and $ncc=~/[A-Z]/i){
 		$avg=$sum/($cnt-1);
-		print FO"$ncc\t$avg\t$bh{$ncc}\n";
+		print FO"$ncc\t$avg\n";
 	}
 	
 }
@@ -67,6 +69,14 @@ close FO;
 print "Processed $f1\t $f2 -> $fon\n";
 
 __END__
+
+for j in /cygdrive/l/Qexactive/Berit_Sissel/B005/Bodil/*-all-*.txt ; do for i in /cygdrive/l/Qexactive/Berit_Sissel/B005/Bodil/*GN.txt ; do echo $i $j ; perl /cygdrive/c/Users/animeshs/misccb/extractgnipa.pl  $j 0 4 $i 0 27 ; done ; done
+for j in /cygdrive/l/Qexactive/Berit_Sissel/B005/Bodil/*-all-*.txt ; do for i in /cygdrive/l/Qexactive/Berit_Sissel/B005/Bodil/*GN.txt ; do echo $i $j ; perl /cygdrive/c/Users/animeshs/misccb/extractgnipa.pl  $j 0 4 $i 0 28 ; done ; done
+for j in /cygdrive/l/Qexactive/Berit_Sissel/B005/Bodil/*-all-*.txt ; do for i in /cygdrive/l/Qexactive/Berit_Sissel/B005/Bodil/*GN.txt ; do echo $i $j ; perl /cygdrive/c/Users/animeshs/misccb/extractgnipa.pl  $j 0 4 $i 0 47 ; done ; done
+for j in /cygdrive/l/Qexactive/Berit_Sissel/B005/Bodil/*-all-*.txt ; do for i in /cygdrive/l/Qexactive/Berit_Sissel/B005/Bodil/*GN.txt ; do echo $i $j ; perl /cygdrive/c/Users/animeshs/misccb/extractgnipa.pl  $j 0 4 $i 0 48 ; done ; done
+
+for j in /cygdrive/l/Qexactive/Berit_Sissel/B005/Bodil/*-all-*.txt ; do echo $j ; perl extractgnipa.pl $j 0 4;   done
+
 
 perl extractgnipa.pl /cygdrive/l/Qexactive/Berit_Sissel/B005/Bodil/Unstim-all-S1.txt 0 4 /cygdrive/l/Qexactive/Berit_Sissel/B005/Bodil/UnstimallSequestcutoff1c.txt 0 1
 
