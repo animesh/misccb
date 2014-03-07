@@ -5,6 +5,7 @@ my $id=0;
 my $s=3;
 my $e=10;
 open(F,$file);
+print "MeropsID\tEnzyme\tPattern\tPosition\tAmbiguity\n";
 while(my $line=<F>){
         my @tmp=split(/\t/,$line);
         #my $mat = join('', @tmp[$s..$e]);
@@ -17,14 +18,17 @@ while(my $line=<F>){
                 if($tmp[$c]=~/[A-Z]/ && length($tmp[$c])>1){
                         $mat.="[$tmp[$c]]";
                 }
+                else{$mat.="[A-Z]";}
         }
-        if($mat=~/[A-Z]/ and $pep =~ /$mat/){
-        my @temp;
-        while($pep =~ /$mat/g){
-                                                my $posi=pos($pep);
-                                                $posi=($posi-($e-$s+1));
-                                                push(@temp,$posi);
-        }
-        print "$tmp[$id]\t$tmp[$id+1]\t$pep\t$mat\t@temp\n";
+        my $num=$mat=~s/\[A\-Z\]/\[A\-Z\]/g;
+        $mat=~s/^\[A\-Z\]+//g;
+        if($num!=($e-$s+1) and $mat=~/[A-Z]/ and $pep =~ /$mat/){
+		my @temp;
+		while($pep =~ /$mat/g){
+			my $posi=pos($pep);
+			$posi=($posi-($e-$s+1));
+			push(@temp,$posi);
+		}
+		print "$tmp[$id]\t$tmp[$id+1]\t$pep\t$mat\t@temp\t$num\n";
         }
 }

@@ -1,5 +1,6 @@
 %% read
 prot=xlsread('L:\Elite\Aida\CLnew\combo24.xlsx');
+prot=xlsread('L:\Elite\Celine\combi.xlsx');
 prot=prot(:,[1:24]); % remove count
 
 %% cluster analysis
