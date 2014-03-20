@@ -2,6 +2,7 @@
 prot=xlsread('L:\Elite\Aida\CLnew\combo24.xlsx');
 prot=xlsread('L:\Elite\Celine\combi.xlsx');
 prot=prot(:,[1:24]); % remove count
+prot=xlsread('L:\Elite\Aida\SS_Data\Subject21.xlsx');
 
 %% cluster analysis
 
@@ -10,6 +11,7 @@ ccprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimput
 get(ccprop)
 corrprot=corrcoef(prot','rows','pairwise')
 ccprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
+clustergram(prot(:,2:64), 'Colormap', redbluecmap,'ImputeFun','knnimpute')
 
 %% subgroup analysis
 protsg=prot(:,[61:63,22:24,34:36,10:12,19:21]);

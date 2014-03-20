@@ -4,7 +4,7 @@ use Scalar::Util qw(looks_like_number);
 my %vh;
 my %nh;
 my %ch;
-my $gn=7;
+my $gn=16;
 my $cnt;
 my $cntt;
 
@@ -29,7 +29,7 @@ while (my $line = <F1>) {
 				for($cnt=0;$cnt<=$#tmp;$cnt++) {
 					$tmp[$cnt] =~ s/^\s+|\s+$//;
 					if (looks_like_number($tmp[$cnt])){
-						if($vh{"$name-$cnt"}<$tmp[$cnt]){
+						if($vh{"$name-$cnt"}<abs($tmp[$cnt])){
 							$vh{"$name-$cnt"}=$tmp[$cnt];
 						}
 					}

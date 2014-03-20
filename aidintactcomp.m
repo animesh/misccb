@@ -1,3 +1,26 @@
+%% read file
+[~,A,~]=xlsread('L:\Elite\LARS\2014\mars\B5inputStim.xls');
+%[~,A,~]=xlsread('L:\Elite\LARS\2014\mars\B5inputUnstim.xls');
+A=A(2:end,1);
+size(unique(A),1)
+[~,B,~]=xlsread('L:\Qexactive\Berit_Sissel\B005\B5Stim.xls');
+%[~,B,~]=xlsread('L:\Qexactive\Berit_Sissel\B005\B5Unstim.xlsx');
+B=B(2:end,1);
+size(unique(B),1)
+
+%% extract ids
+
+comm=intersect(A,B)
+inA=setdiff(A,B);
+inB=setdiff(B,A);
+
+%% venn
+%venn([size(inA,1)+size(comm,1) size(inB,1)+size(comm,1)],size(comm,1),'FaceColor',{'r','y'},'FaceAlpha',{1,0.6},'EdgeColor','black')
+vennX([size(inA,1)+size(comm,1) size(comm,1) size(inB,1)+size(comm,1)], 0.1)
+
+%% write IDs
+
+
 %% read files
 prot=xlsread('X:\Qexactive\Berit_Sissel\MCR22Proteins.xls')
 prot=prot(:,[28,36,44,52,60,68,76,84,92,100,108,116,124,132,140,148,156,164,172,180,188,196])

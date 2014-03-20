@@ -32,3 +32,6 @@ while(my $line=<F>){
 		print "$tmp[$id]\t$tmp[$id+1]\t$pep\t$mat\t@temp\t$num\n";
         }
 }
+
+
+8.90E+06
