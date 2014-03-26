@@ -1,37 +1,10 @@
-data=read.csv("L:/Elite/LARS/2013/desember\ishita/listThr1p5.txt")
-data=read.csv("L:/Elite/LARS/2013/desember/ ishita/listThr1p5.txt")
-data=read.csv("L:/Elite/LARS/2013/desember\ ishita/listThr1p5.txt")
-data=read.csv("L:/Elite/LARS/2013/desember ishita/listThr1p5.txt")
-data=read.csv("L:/Elite/LARS/2013/desember/ishita/listThr1p5.txt")
-data
 library(org.Hs.eg.db)
-egmap <- revmap(org.Hs.egUNIPROT)[as.character(data$Entry)]
 library('GeneAnswers')
-data
 data=read.csv("L:/Elite/LARS/2013/desember/ishita/listThr1p5.txt")
 data
-'
-data
-'
-egmap <- revmap(org.Hs.egUNIPROT)[as.character(data$Entry)]
-egmap <- revmap(org.Hs.egUNIPROT)[as.character(data$Entry)]
-data=read.csv("L:/Elite/LARS/2013/desember/ishita/listThr1p5.txt")
-egmap <- revmap(org.Hs.egUNIPROT)[as.character(data$Entry)]
-data=read.csv("L:/Elite/LARS/2013/desember/ishita/listThr1p5.txt")
-egmap <- revmap(org.Hs.egUNIPROT)[as.character(data$Entry)]
-data=read.csv("L:/Elite/LARS/2013/desember/ishita/listThr1p5.txt")
-egmap <- revmap(org.Hs.egUNIPROT)[as.character(data$Entry)]
-data=read.csv("L:/Elite/LARS/2013/desember/ishita/listThr1p5.txt")
-egmap <- revmap(org.Hs.egUNIPROT)[as.character(data$Entry)]
 data=read.csv("L:/Elite/LARS/2013/desember/ishita/listThr1p5filtered.txt")
 egmap <- revmap(org.Hs.egUNIPROT)[as.character(data$Entry)]
-data=read.csv("L:/Elite/LARS/2013/desember/ishita/listThr1p5filtered.txt")
-egmap <- revmap(org.Hs.egUNIPROT)[as.character(data$Entry)]
-data=read.csv("L:/Elite/LARS/2013/desember/ishita/listThr1p5GN.txt")
-data=read.csv("L:/Elite/LARS/2013/desember/ishita/listThr1p5GN.txt")
-data
 egmap <- revmap(org.Hs.egUNIPROT)[as.character(data$Entry)]library('GeneAnswers')
-library('GeneAnswers')
 x <- geneAnswersBuilder(toTable(egmap), 'org.Hs.eg.db', categoryType='GO.BP', testType='hyperG',  pvalueT=0.1, FDR.correction=TRUE, geneExpressionProfile=data)
 x <- geneAnswersBuilder(toTable(data$Entry), 'org.Hs.eg.db', categoryType='GO.BP', testType='hyperG',  pvalueT=0.1, FDR.correction=TRUE, geneExpressionProfile=data)
 toTable(data$Entry)
@@ -253,3 +226,15 @@ basicProfile(at$TAIR , onto = "BP",level = 2, orgPackage = "org.At.tair.db")
 basicProfile(as.vector(at$TAIR) , onto = "BP",level = 2, orgPackage = "org.At.tair.db")
 basicProfile(as.vector(at$TAIR) , onto = "CC",level = 2, orgPackage = "org.At.tair.db")
 basicProfile(as.vector(at$TAIR) , onto = "MF",level = 2, orgPackage = "org.At.tair.db")
+
+library(org.Hs.eg.db)
+gn <- c("XRCC1","UNG")
+a <- select(org.Hs.eg.db,keys = as.vector(gn)) ,columns=c("ENTREZID", "SYMBOL","OMIM"),keytype="SYMBOL")
+select(org.Hs.eg.db, rep("ADORA2A", 4), "ENTREZID", "ALIAS")
+egmap <- revmap(org.Hs.egSYMBOL)[as.character(gn)]
+head(toTable(egmap)$gene_id)
+basicProfile(as.vector(head(toTable(egmap)$gene_id)), onto = "MF",level = 2, orgPackage = "org.Hs.eg.db")
+
+sc=read.table('M:/SILACrd.txt',header=TRUE)
+egmap <- revmap(org.Hs.egSYMBOL)[as.character(sc$Symbol)]
+basicProfile(as.vector((toTable(egmap)$gene_id)), onto = "BP",level = 2, orgPackage = "org.Hs.eg.db")
