@@ -2,16 +2,31 @@
 prot=xlsread('L:\Elite\Aida\CLnew\combo24.xlsx');
 prot=xlsread('L:\Elite\Celine\combi.xlsx');
 prot=prot(:,[1:24]); % remove count
-prot=xlsread('L:\Elite\Aida\SS_Data\Subject21.xlsx');
+prot=xlsread('L:\Elite\Aida\SS_Data\Copy of Subject21log2rMM2MGUS.xlsx');
+prot=xlsread('L:\Elite\Celine\REPL2H\proteinGroups.xlsx');
+prot=prot(:,2:25)
+
+%% time points
+cnt=~isnan(prot);
+[r c]=size(prot)
+tp=zeros(r,c/4);
+tc=0;
+for i=1:4:c
+    tc=tc+1;
+    tp(:,tc)=sum(cnt(:,i:i+3),2);
+end
+hist(tp)
+histfit(prot(:,26))
+%reshape(prot(~isnan(prot)),r,c)
 
 %% cluster analysis
-
+clustergram(prot(:,4:66), 'Cluster','column', 'Colormap', redbluecmap,'ImputeFun','knnimpute')
 corrprot=corrcoef(prot,'rows','pairwise')
 ccprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
 get(ccprop)
 corrprot=corrcoef(prot','rows','pairwise')
 ccprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
-clustergram(prot(:,2:64), 'Colormap', redbluecmap,'ImputeFun','knnimpute')
+spy(prot(:,2:25))
 
 %% subgroup analysis
 protsg=prot(:,[61:63,22:24,34:36,10:12,19:21]);

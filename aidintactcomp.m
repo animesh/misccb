@@ -1,10 +1,14 @@
 %% read file
-[~,A,~]=xlsread('L:\Elite\LARS\2014\mars\B5inputStim.xls');
+%[~,A,~]=xlsread('L:\Elite\LARS\2014\mars\B5inputStim.xls');
 %[~,A,~]=xlsread('L:\Elite\LARS\2014\mars\B5inputUnstim.xls');
+%[~,A,~]=xlsread('L:\Qexactive\Berit_Sissel\B005\B5Stimonly.xls');
+[~,A,~]=xlsread('L:\Qexactive\Berit_Sissel\B005\B5Unstimonly.xls');
 A=A(2:end,1);
 size(unique(A),1)
-[~,B,~]=xlsread('L:\Qexactive\Berit_Sissel\B005\B5Stim.xls');
-%[~,B,~]=xlsread('L:\Qexactive\Berit_Sissel\B005\B5Unstim.xlsx');
+%[~,B,~]=xlsread('L:\Qexactive\Berit_Sissel\B005\B5Stim.xls');
+%[~,B,~]=xlsread('L:\Qexactive\Berit_Sissel\B005\B5Unstim.xls');
+%[~,B,~]=xlsread('L:\Elite\LARS\2014\mars\B5inputStim.xls');
+[~,B,~]=xlsread('L:\Elite\LARS\2014\mars\B5inputUnstim.xls');    
 B=B(2:end,1);
 size(unique(B),1)
 
@@ -19,6 +23,14 @@ inB=setdiff(B,A);
 vennX([size(inA,1)+size(comm,1) size(comm,1) size(inB,1)+size(comm,1)], 0.1)
 
 %% write IDs
+%fid = fopen('L:\Qexactive\Berit_Sissel\B005\IPstimOnly.csv', 'w');
+%fid = fopen('L:\Qexactive\Berit_Sissel\B005\IPUnstimOnly.csv', 'w');
+fid = fopen('L:\Qexactive\Berit_Sissel\B005\UnstimIPOnly.csv', 'w');
+fprintf(fid,'Gene\n'); 
+%fprintf(fid,'%s\n', inB{:}); 
+fprintf(fid,'%s\n', inA{:}); 
+fclose(fid)
+
 
 
 %% read files
@@ -37,7 +49,7 @@ corr(prot(:,38:45),'rows','pairwise')
 ratio=xlsread('X:\Results\TS\MeanRatiosT0t5t12withTriplicateMedianValsNames.xls')
 corrprot=corrcoef(ratio(:,[1:3]),'rows','pairwise')
 ccprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
-spy(corrprot)
+spy(prot)
 
 %% comp
 [pcom, z, dev] = pca1(prot)
