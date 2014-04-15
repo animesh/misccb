@@ -4,6 +4,7 @@ prot=xlsread('L:\Elite\Celine\combi.xlsx');
 prot=prot(:,[1:24]); % remove count
 prot=xlsread('L:\Elite\Aida\SS_Data\Copy of Subject21log2rMM2MGUS.xlsx');
 prot=xlsread('L:\Elite\Celine\REPL2H\proteinGroups.xlsx');
+prot=xlsread('L:\Elite\Celine\MornEveMMMGUS.xlsx');
 prot=prot(:,2:25)
 
 %% time points

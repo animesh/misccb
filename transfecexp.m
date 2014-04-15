@@ -1,12 +1,23 @@
 %% read
 prot=xlsread('L:\Elite\LARS\2014\januar\SILAC 2ndparalell\PRN3R2MC3PNRhighB2gnContro2Control.xlsx');
+prot=xlsread('L:\Elite\LARS\2014\januar\SILAC 2ndparalell\Multiconsensus from 18 Reports.xlsx');
+prot=xlsread('L:\Elite\LARS\2014\januar\SILAC 2ndparalell\MCR18GN.xlsx');
+
+%% count
+hist(sum(~isnan(prot),2))
 sum(prot(:,5)<0.1&abs(prot(:,6))>0.58)
+hist(sum(~isnan(prot)))
+sum(~isnan(prot))
+cnt=~isnan(prot)
+hist(sum(cnt>0))
+sum(prot>1)
+sum(prot(cnt)',1)
 
 %% cluster analysis
-
+corrc=corr(prot(:,6:23))
+corrprot=clustergram(corrc)
 clustergram(prot(prot(:,5)<0.1&abs(prot(:,6))>0.58,13:30), 'Cluster','column', 'Colormap', redbluecmap,'ImputeFun','knnimpute')
 get(ccprop)
-corrprot=corrcoef(prot','rows','pairwise')
 ccprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
 
 
