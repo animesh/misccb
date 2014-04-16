@@ -4,7 +4,7 @@ use Text::ParseWords;
 
 my $idi = 1;
 my $i1 = 0;
-my @files=<SL325????.*txt>;
+my @files=<SL22?????.*hamr_mods.txt>;
 my %id;
 my %idc;
 my %ids;
@@ -46,5 +46,5 @@ foreach my $g  (keys %id){
 
 __END__
 
-cd /cygdrive/l/Elite/gaute/Brede_052313_Raw_Fastq/inirestRNA/hamr/
+cd /cygdrive/l/Elite/gaute/Brede_111412_Raw_Fastq
 perl /cygdrive/c/Users/animeshs/misccb/hamrcount.pl
