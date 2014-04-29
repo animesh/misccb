@@ -1,11 +1,33 @@
 %% read
-prot=xlsread('L:\Elite\Aida\CLnew\combo24.xlsx');
-prot=xlsread('L:\Elite\Celine\combi.xlsx');
-prot=prot(:,[1:24]); % remove count
-prot=xlsread('L:\Elite\Aida\SS_Data\Copy of Subject21log2rMM2MGUS.xlsx');
-prot=xlsread('L:\Elite\Celine\REPL2H\proteinGroups.xlsx');
-prot=xlsread('L:\Elite\Celine\MornEveMMMGUS.xlsx');
-prot=prot(:,2:25)
+[data,id,~]=xlsread('L:\Elite\Celine\Raw\M4E2PDv1p4.xlsx');
+
+%% check IDs
+upid=id(2:end,1);
+size(unique(upid),1)
+
+%% extract ratios
+both=[30:3:99]
+bod=data(:,both);
+mor=[30    33    36    39    42    45    48    51    66    69    72    75    90    93    96    99 ]
+eve=[54 57 60 63 78 81 84 87]
+mod=data(:,mor);
+evd=data(:,eve);
+
+%% distribution
+hist(log2(evd))
+hist(log2(mod))
+
+%% correlation
+corrprot=corrcoef(log2(bod),'rows','pairwise')
+corrprot=corrcoef((bod),'rows','pairwise')
+
+%% compare
+median(log2((evd(~isnan(evd)))),2)
+
+%% cluster
+clustergram(bod, 'Cluster','column', 'Colormap', redbluecmap,'ImputeFun','knnimpute')
+clustergram(corrprot, 'Colormap', redbluecmap,'ImputeFun','knnimpute')
+
 
 %% time points
 cnt=~isnan(prot);
