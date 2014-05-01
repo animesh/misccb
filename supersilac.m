@@ -1,5 +1,5 @@
 %% read
-[data,id,~]=xlsread('L:\Elite\Celine\Raw\M4E2PDv1p4.xlsx');
+[data,id,~]=xlsread('L:\Elite\Celine\Raw\M4E2PDv1p4GN.xlsx');
 
 %% check IDs
 upid=id(2:end,1);
@@ -22,12 +22,16 @@ corrprot=corrcoef(log2(bod),'rows','pairwise')
 corrprot=corrcoef((bod),'rows','pairwise')
 
 %% compare
-median(log2((evd(~isnan(evd)))),2)
+histfit(median(log2((evd(~isnan(evd)))),2))
+histfit(median(log2((mod(~isnan(mod)))),2))
 
 %% cluster
 clustergram(bod, 'Cluster','column', 'Colormap', redbluecmap,'ImputeFun','knnimpute')
 clustergram(corrprot, 'Colormap', redbluecmap,'ImputeFun','knnimpute')
 
+%% 
+load yeastdata
+whos yeastvalues genes
 
 %% time points
 cnt=~isnan(prot);
