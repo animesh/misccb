@@ -60,9 +60,5 @@ foreach (keys %match){
 
 __END__
 
-time perl matchlist.pl /cygdrive/x/Elite/LARS/2013/august/SorrySoaryAsses/MCR5R5and9and10and11and12at5.csv /cygdrive/x/Elite/LARS/2013/august/SorrySoaryAsses/uniprot-keywordAKW-0645.list | wc
-      5      70    1236
 
-real    0m32.531s
-user    0m32.119s
-sys     0m0.077s
+perl matchlist.pl /cygdrive/l/Elite/Aida/Sub2.csv /cygdrive/l/Elite/Aida/Subject21.csv > /cygdrive/l/Elite/Aida/Sub2with21.csv

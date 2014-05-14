@@ -1,4 +1,4 @@
-%% read data
+ls %% read data
 [cu,~,~]=xlsread('L:\Elite\gaute\test\CDS_CU_EntrezID.xls');
 cu(isnan(cu)) = 0.5 ; % cleanup and replace mssing vals
 

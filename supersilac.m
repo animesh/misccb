@@ -1,5 +1,10 @@
 %% read
 [data,id,~]=xlsread('L:\Elite\Celine\Raw\M4E2PDv1p4GN.xlsx');
+prot =xlsread('L:\Elite\Aida\Sub2Rwith21.xlsx');
+
+%% cluster analysis
+corrprot=corrcoef(prot,'rows','pairwise')
+clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
 
 %% check IDs
 upid=id(2:end,1);
