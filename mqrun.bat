@@ -1,6 +1,6 @@
-set MAXQUANTDIR=F:\MaxQuant1412
+set MAXQUANTDIR=F:\promec\MaxQuant1412
 set THREADS=4
-set DATADIR=F:\Lars
+set DATADIR=F:\promec\Elite\Celine\DMSO\test
 set PREFIXRAW=
 set PARAMFILE=mqpar.xml
 set SEARCHTEXT=TestFile

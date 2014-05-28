@@ -1,6 +1,6 @@
 %% read
 [data,id,~]=xlsread('L:\Elite\Celine\Raw\M4E2PDv1p4GN.xlsx');
-prot =xlsread('L:\Elite\Aida\Sub2Rwith21.xlsx');
+prot =xlsread('L:\Elite\Aida\MM20.xlsx');
 
 %% cluster analysis
 corrprot=corrcoef(prot,'rows','pairwise')
