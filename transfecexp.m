@@ -1,45 +1,41 @@
 %% read
-prot=xlsread('L:\Elite\LARS\2014\januar\SILAC 2ndparalell\PRN3R2MC3PNRhighB2gnContro2Control.xlsx');
-prot=xlsread('L:\Elite\LARS\2014\januar\SILAC 2ndparalell\Multiconsensus from 18 Reports.xlsx');
-prot=xlsread('L:\Elite\LARS\2014\januar\SILAC 2ndparalell\MCR18GN.xlsx');
-prot=xlsread('L:\Elite\LARS\2014\januar\SILAC 2ndparalell\match2table.xlsx');
-prot=xlsread('L:\Elite\LARS\2014\mai\transfection 3rd paralell\TransFecMCR27logBm2Imputed.xlsx');
 prot=xlsread('L:\Elite\LARS\2014\mai\transfection 3rd paralell\TransFecMCR27logBm2.xlsx');
-protunan=knnimpute(protunan);
-%protunan(isnan(protunan))=1;
-protunan(isnan(protunan))=0;
-hist(protunan)
 
 %% impute
 
-protunan=prot(:,65:73);
-% mean_ignore_nans(prot(:,1))
-% sum(~isnan(prot(:,65)))
-% std(prot(~isnan(prot(:,65)),65))
-% mean(prot(~isnan(prot(:,65)),65))
+protunan=prot(:,67:75);
+
 for i=1:size(protunan,2)
-%impval(i)=mean(prot(~isnan(prot(i,65)),65))+std(prot(~isnan(prot(i,65)),65))*randn()
-%protunan(isnan(protunan))=mean(protunan(~isnan(protunan(:,65)),65))+std(protunan(~isnan(protunan(:,65)),65))*randn()
-    protunan(isnan(protunan(:,i)),i)=mean(protunan(~isnan(protunan(:,i)),i))-1.8+std(protunan(~isnan(protunan(:,i)),i))*randn()*0.3;
-    %protunan(isnan(protunan(:,1)))=mean(protunan(~isnan(protunan(:,1)),1))-2+1/2*std(protunan(~isnan(protunan(:,1)),1))*randn()
+    i
+    meanval(i)=mean(protunan(~isnan(protunan(:,i)),i))
+    stdval(i)=std(protunan(~isnan(protunan(:,i)),i))
 end
+
+stp=3;
+for i=1:stp:size(protunan,2)
+    for j=1:stp
+        i,j
+        meanvalmu(i+j-1)=mean(meanval(i:i+stp-1))
+        stdvalmu(i+j-1)=mean(stdval(i:i+stp-1))
+    end
+end
+
+rng(1234);
+ranmat=randn(size(protunan,1),size(protunan,2)).*repmat(stdvalmu,size(protunan,1),1)*0.5+repmat(meanvalmu,size(protunan,1),1)-1.5
+protunan(isnan(protunan))=ranmat(isnan(protunan));
 hist(protunan)
 
-%% test
 clear anovaimp;
 clear ttimp;
 grp={'TF','TF','TF','N','N','N','R','R','R'};
-%grp={'TF','TF','TF','TF','TF','TF','TF','TF','TF','N','N','N','N','N','N','N','N','N','R','R','R','R','R','R','R','R','R'};
 for i=1:size(prot,1)
-    %anova(i)=anova1(protunan(i,9:35),grp,'off');
     anovaknn(i)=anova1(protunan(i,:),grp,'off');
-    [x ttknn(i)]=ttest(protunan(i,1:3),protunan(i,4:6));
-    %anovamqimp(i)=anova1(prot(:,1:9),grp,'off');
+    [x ttknn(i)]=ttest2(protunan(i,1:3),protunan(i,4:6),0.05,'right');
 end
-%anovaknn=anovaknn';
-%ttknn=ttknn';
 hist(anovaknn)
 hist(ttknn)
+plot(prot(:,7),-log10(anovaknn),'r.')
+plot(prot(:,7),-log10(ttknn),'r.')
 
 %% test
 grp={'FP','FP','FP','FP','FP','FP','C','C','C','C','C','C','F','F','F','F','F','F'}
