@@ -1,9 +1,9 @@
 %% read
-prot=xlsread('L:\Elite\LARS\2014\mai\transfection 3rd paralell\TransFecMCR27logBm2.xlsx');
+prot=xlsread('L:\Elite\LARS\2014\mai\transfection 3rd paralell\TransFecMCR27logBm2withFugene.xlsx');
 
 %% impute
 
-protunan=prot(:,67:75);
+protunan=prot(:,71:79);
 
 for i=1:size(protunan,2)
     i
@@ -12,6 +12,7 @@ for i=1:size(protunan,2)
 end
 
 stp=3;
+
 for i=1:stp:size(protunan,2)
     for j=1:stp
         i,j
@@ -21,9 +22,13 @@ for i=1:stp:size(protunan,2)
 end
 
 rng(1234);
-ranmat=randn(size(protunan,1),size(protunan,2)).*repmat(stdvalmu,size(protunan,1),1)*0.5+repmat(meanvalmu,size(protunan,1),1)-1.5
+ranmat=randn(size(protunan,1),size(protunan,2)).*repmat(stdvalmu,size(protunan,1),1)*0.5+repmat(meanvalmu,size(protunan,1),1)-1.5;
 protunan(isnan(protunan))=ranmat(isnan(protunan));
-hist(protunan)
+histfit(protunan(:,9))
+
+mean(protunan(~isnan(protunan(:,9)),9))
+std(protunan(~isnan(protunan(:,9)),9))
+plot(protunan(~isnan(protunan(:,9)),9))
 
 clear anovaimp;
 clear ttimp;
@@ -31,11 +36,35 @@ grp={'TF','TF','TF','N','N','N','R','R','R'};
 for i=1:size(prot,1)
     anovaknn(i)=anova1(protunan(i,:),grp,'off');
     [x ttknn(i)]=ttest2(protunan(i,1:3),protunan(i,4:6),0.05,'right');
+    [y ttfugene(i)]=ttest2(protunan(i,7:9),protunan(i,4:6),0.05,'right');
+    [z tttrans2fugene(i)]=ttest2(protunan(i,1:3),protunan(i,7:9),0.05,'right');
 end
 hist(anovaknn)
 hist(ttknn)
+hist(ttfugene)
 plot(prot(:,7),-log10(anovaknn),'r.')
 plot(prot(:,7),-log10(ttknn),'r.')
+plot(prot(:,13),-log10(ttfugene),'r.')
+plot(prot(:,13),-log10(ttfugene),'r.')
+hist(tttrans2fugene)
+histfit(prot(:,7))
+
+icdf('Normal',0.95,meanvalmu,stdvalmu)
+cdf('Normal',0.58,meanvalmu,stdvalmu)
+cdf('Normal',0.58,meanval,stdval)
+
+
+%% getting threshold for a given p-value
+
+xn=icdf('Normal',0.9,0,1)
+xt=icdf('T',0.1,8602)
+
+
+%% trp
+anovaknn=anovaknn'
+ttknn=ttknn'
+ttfugene=ttfugene'
+tttrans2fugene=tttrans2fugene'
 
 %% test
 grp={'FP','FP','FP','FP','FP','FP','C','C','C','C','C','C','F','F','F','F','F','F'}
