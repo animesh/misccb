@@ -1,9 +1,9 @@
 ## source template from Arnar Flatberg
-## source("http://bioconductor.org/biocLite.R")
-## biocLite("illuminaHumanv3.db")
-## biocLite("lumi")
-## biocLite("limma")
-## install.packages("pls")
+source("http://bioconductor.org/biocLite.R")
+biocLite("illuminaHumanv3.db")
+biocLite("lumi")
+biocLite("limma")
+install.packages("pls")
 
 library(lumi) 
 library(limma) 
