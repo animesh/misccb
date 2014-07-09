@@ -1,9 +1,13 @@
 %% read
-prot=xlsread('L:\Elite\LARS\2014\mai\transfection 3rd paralell\TransFecMCR27logBm2withFugene.xlsx');
+prot=xlsread('L:\Elite\LARS\2014\mai\transfection 3rd paralell\TransFecMCR27logBm2withFugeneandControl.xlsx');
+
+%% check normal ratio distribution
+histfit(prot(prot(:,15)~=0,15)) % check for median ratios heavy normal to light normal
+xlim([-3 3])
+
+hist(prot(prot(:,15)~=0,15),[100]) % check for median ratios heavy normal to light normal
 
 %% impute
-
-protunan=prot(:,71:79);
 
 for i=1:size(protunan,2)
     i
@@ -58,6 +62,12 @@ cdf('Normal',0.58,meanval,stdval)
 
 xn=icdf('Normal',0.9,0,1)
 xt=icdf('T',0.1,8602)
+
+
+%% log 2 SILAC ratios
+protunan=prot(:,35:43);
+protunan(isnan(protunan))=0;
+histfit(reshape(protunan,size(protunan,1)*size(protunan,2),1))
 
 
 %% trp
