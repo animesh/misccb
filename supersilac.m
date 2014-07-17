@@ -1,10 +1,33 @@
 %% read
-[data,id,~]=xlsread('L:\Elite\Celine\Raw\M4E2PDv1p4GN.xlsx');
+[data,id,~]=xlsread('L:\Elite\Celine\heatmap_data.xlsx');
 prot =xlsread('L:\Elite\Aida\MM20.xlsx');
+protab = tblread('L:\Elite\Aida\RawFiles\CellLines RawFiles\proteinGroups.txt','\t')
+
+%% check
+prot=protab(:,[181:6:361]);
+prot=log2(data);
+hist(prot)
+protknn=knnimpute(prot);
 
 %% cluster analysis
-corrprot=corrcoef(prot,'rows','pairwise')
-clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
+corrprot=corrcoef(log2(prot),'rows','pairwise')
+cgprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
+
+%% write correlation matrix
+
+dlmwrite('pairwisecorrcoef.csv',corrprot)
+
+%% comp
+protimp=knnimpute(log2(prot))
+[pcom, z, dev] = princomp(log2(prot),'Rows','pairwise')
+cumsum(dev./sum(dev) * 100)
+plot(pcom(:,1),pcom(:,2),'r.')
+tags = num2str((1:size(pcom,1))','%d');
+text(pcom(:,1),pcom(:,2),tags)
+xlabel('PC1');
+ylabel('PC2');
+title('PCA Scatter');
+
 
 %% check IDs
 upid=id(2:end,1);
@@ -71,16 +94,6 @@ dpsg = pdist(protsg', 'euclid');
 dpst = linkage(dpsg, 'ward');
 getid = cluster(dpst, 'maxclust',csize);
 
-%% comp
-
-[pcom, z, dev] = pca(prot)
-cumsum(dev./sum(dev) * 100)
-plot(pcom(:,1),pcom(:,2),'r.')
-tags = num2str((1:size(pcom,1))','%d');
-text(pcom(:,1),pcom(:,2),tags)
-xlabel('PC1');
-ylabel('PC2');
-title('PCA Scatter');
 
 %% tags
 

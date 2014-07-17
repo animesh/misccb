@@ -1,20 +1,20 @@
 #source("http://bioconductor.org/biocLite.R")
+#biocLite("gage")
 #biocLite("pathview")
 #biocLite("GeneAnswers")
 #biocLite("org.Hs.eg.db")
 #biocLite("GO.db")
 #biocLite("biomaRt")
 #rm(list = ls())
-data=read.csv("L:/Elite/gaute/test/SHBER.csv")
-library(pathview)
-pathview(hda,pathway.id="ksa03410",gene.idtype="UNIPROT")
-data(gene.idtype.list)
-gene.idtype.list
-hsim <- sim.mol.data(mol.type="gene",id.type="uniprot",species="hsa",nmol=10)
-biocLite("gage")
+
+## pathview 
 library(gage)
 hda=readExpData("L:/Elite/gaute/test/SHBER.txt",row.names=1)
+library(pathview)
+pathview(hda,pathway.id="hsa03410",gene.idtype="UNIPROT")
 
+## PCA
+data=read.csv("L:/Elite/gaute/test/SHBER.csv")
 gene=as.character(data[,1])
 data=data[,-1]
 prco=prcomp(data)
