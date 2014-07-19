@@ -10,20 +10,42 @@ hist(prot)
 protknn=knnimpute(prot);
 
 %% cluster analysis
-corrprot=corrcoef(log2(prot),'rows','pairwise')
+[corrprot cpv]=corrcoef(log2(prot),'rows','pairwise')
 cgprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
 
 %% write correlation matrix
 
-dlmwrite('pairwisecorrcoef.csv',corrprot)
+dlmwrite('pairwisecorrcoefnum.csv',corrprot)
+dlmwrite('pairwisecorrcoefpvalue.csv',cpv)
 
 %% comp
-protimp=knnimpute(log2(prot))
-[pcom, z, dev] = princomp(log2(prot),'Rows','pairwise')
+%protimp=knnimpute(log2(prot'))
+prot=protab(:,[181:6:361]);
+prot(any(isnan(prot), 2),:)=[];
+%[wcoeff,score,latent,tsquared,explained] = pca(prot','Rows','pairwise');
+[wcoeff,score,latent,tsquared,explained] = pca(log2(prot'),'Rows','pairwise');
+plot3(score(:,1),score(:,2),score(:,3),'.')
+xlabel('1st Principal Component')
+ylabel('2nd Principal Component')
+zlabel('3rd Principal Component')
+%gname
+
+%% random playing with components
+
+pareto(explained)
+biplot(wcoeff(:,1:2),'scores',score(:,1:2));
+
+%source http://www.mathworks.se/help/stats/feature-transformation.html#f75476
+
+%% auto label plot
+tags = num2str((1:size(pcom,1))','%d');
+text(score(:,1),score(:,2),score(:,3),tags,'FontSize',8)
+[st2,index] = sort(tsquared,'descend');
 cumsum(dev./sum(dev) * 100)
 plot(pcom(:,1),pcom(:,2),'r.')
 tags = num2str((1:size(pcom,1))','%d');
 text(pcom(:,1),pcom(:,2),tags)
+text(score(:,1),score(:,2),tags)
 xlabel('PC1');
 ylabel('PC2');
 title('PCA Scatter');
@@ -182,7 +204,6 @@ mqpd=[0.825	0.772	0.774	0.306	0.252	0.302	1.672	1.729	1.779	0.977	0.999	1.023	0.
 plot(mqpd(1,:),mqpd(2,:),'b.')
 comm -12 <(sort pd.txt) <(sort mq.txt) | wc
 
-<<<<<<< HEAD
 
 %% fit dist
 
@@ -191,5 +212,3 @@ pd = fitdist(kam,'Kernel','Kernel','epanechnikov')
 x_values = 0:0.01:50;
 pdf = pdf(pd,x_values);
 plot(x_values,pdf,'LineWidth',2)
-=======
->>>>>>> 5307f70af61f5ac82ab8a44b805cae431deb83da
