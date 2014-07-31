@@ -2,6 +2,8 @@
 [data,id,~]=xlsread('L:\Elite\Celine\heatmap_data.xlsx');
 prot =xlsread('L:\Elite\Aida\MM20.xlsx');
 protab = tblread('L:\Elite\Aida\RawFiles\CellLines RawFiles\proteinGroups.txt','\t')
+protab = tblread('L:\Elite\Aida\RawFiles\Samples\combined\txt\proteinGroups.txt','\t')
+ 
 
 %% check
 prot=protab(:,[181:6:361]);

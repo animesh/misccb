@@ -64,6 +64,11 @@ dev.off()
 
 ?plot
 
+# from Luo
+hda=as.matrix(hda)
+hda.d=hda[,1:3]-hda[,4:6]
+pathview(hda.d,pathway.id="hsa03410",gene.idtype="UNIPROT", limit = list(gene = 5, cpd = 1), out.suffix="fc")
+
 ## PCA
 data=read.csv("L:/Elite/gaute/test/SHBER.csv")
 gene=as.character(data[,1])
