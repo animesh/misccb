@@ -12,6 +12,57 @@ library(gage)
 hda=readExpData("L:/Elite/gaute/test/SHBER.txt",row.names=1)
 library(pathview)
 pathview(hda,pathway.id="hsa03410",gene.idtype="UNIPROT")
+hda=as.matrix(hda)
+hda.d=hda[,1:3]-hda[,4:6]
+pathview(hda.d,pathway.id="hsa03410",gene.idtype="UNIPROT", limit = list(gene = 5, cpd = 1), out.suffix="fcnn")
+pv.out <- pathview(hda.d,pathway.id="hsa03410",gene.idtype="UNIPROT", limit = list(gene = 5, cpd = 1), out.suffix="fcnn", kegg.native = TRUE)
+str(pv.out)
+head(pv.out$plot.data.gene)
+
+dev.off() 
+
+## MS to SNP
+
+source("http://bioconductor.org/biocLite.R")
+biocLite("sapFinder")
+library("sapFinder")
+browseVignettes("sapFinder")
+vcf <- system.file("extdata/sapFinder_test.vcf",
+                   package="sapFinder")
+annotation <- system.file("extdata/sapFinder_test_ensGene.txt",
+                          package="sapFinder")
+refseq <- system.file("extdata/sapFinder_test_ensGeneMrna.fa",
+                      package="sapFinder")
+outdir <- "db_dir"
+prefix <- "sapFinder_test"
+db.files <- dbCreator(vcf=vcf, annotation=annotation,
+                      refseq=refseq, outdir=outdir,prefix=prefix)
+
+
+#DEMO
+
+#load data
+
+#KEGG view: gene data only
+i <- 1
+pv.out <- pathview(gene.data = gse16873.d[, 1], pathway.id =
+                     demo.paths$sel.paths[i], species = "hsa", out.suffix = "gse16873",
+                   kegg.native = TRUE)
+str(pv.out)
+head(pv.out$plot.data.gene)
+#result PNG file in current directory
+
+#Graphviz view: gene data only
+data(gse16873.d)
+data(demo.paths)
+pv.out <- pathview(gene.data = gse16873.d[, 1], pathway.id = demo.paths$sel.paths[i], species = "hsa", out.suffix = "gse16873",kegg.native = FALSE, sign.pos = demo.paths$spos[i])
+#result PDF file in current directory
+
+png('test.png')
+plot(sin(seq(-10,10,0.1)),type = "l", cex = .1, col = "dark red")
+dev.off()
+
+?plot
 
 ## PCA
 data=read.csv("L:/Elite/gaute/test/SHBER.csv")
