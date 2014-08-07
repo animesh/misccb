@@ -1,17 +1,22 @@
 %% read
 [data,id,~]=xlsread('L:\Elite\Celine\heatmap_data.xlsx');
 prot =xlsread('L:\Elite\Aida\MM20.xlsx');
-protab = tblread('L:\Elite\Aida\RawFiles\CellLines RawFiles\proteinGroups.txt','\t')
-protab = tblread('L:\Elite\Aida\RawFiles\Samples\combined\txt\proteinGroups.txt','\t')
- 
+protcl = tblread('L:\Elite\Aida\RawFiles\CellLines RawFiles\combined\txt\proteinGroups.txt','\t')
+protmm = tblread('L:\Elite\Aida\RawFiles\Samples\combined\txt\proteinGroups.txt','\t')
+prot =xlsread('L:\Elite\Aida\MM20CL8.xls');
+
 
 %% check
-prot=protab(:,[181:6:361]);
+corrprot
+clprot=protcl(:,[181:6:361]);
+mmprot=protmm(:,[326:6:680]);
 prot=log2(data);
 hist(prot)
 protknn=knnimpute(prot);
 
 %% cluster analysis
+[corrprot cpv]=corrcoef(prot,'rows','pairwise')
+spy(cpv)
 [corrprot cpv]=corrcoef(log2(prot),'rows','pairwise')
 cgprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
 
