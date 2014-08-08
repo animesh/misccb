@@ -15,6 +15,13 @@ pathview(hda,pathway.id="hsa03410",gene.idtype="UNIPROT")
 hda=as.matrix(hda)
 hda.d=hda[,1:3]-hda[,4:6]
 pathview(hda.d,pathway.id="hsa03410",gene.idtype="UNIPROT", limit = list(gene = 5, cpd = 1), out.suffix="fcnn")
+
+# with MM20CL14 SS data over BER pathway
+hda=readExpData("L:/Elite/Aida/MM20CL14rd.txt",row.names=1)
+hda=as.matrix(hda)
+pathview(hda,pathway.id="hsa03410",gene.idtype="UNIPROT")
+
+
 pv.out <- pathview(hda.d,pathway.id="hsa03410",gene.idtype="UNIPROT", limit = list(gene = 5, cpd = 1), out.suffix="fcnn", kegg.native = TRUE)
 str(pv.out)
 head(pv.out$plot.data.gene)

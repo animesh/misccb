@@ -4,7 +4,27 @@ prot =xlsread('L:\Elite\Aida\MM20.xlsx');
 protcl = tblread('L:\Elite\Aida\RawFiles\CellLines RawFiles\combined\txt\proteinGroups.txt','\t')
 protmm = tblread('L:\Elite\Aida\RawFiles\Samples\combined\txt\proteinGroups.txt','\t')
 prot =xlsread('L:\Elite\Aida\MM20CL8.xls');
+prot =xlsread('L:\Elite\Aida\mm20celllinecanonicalpathwayheatmap.xlsx');
 
+%% compare pathways
+clhm=dataset('XLSFile', 'L:\Elite\Aida\celllinecanonicalpathwayheatmap.xls');
+mmhm=dataset('XLSFile', 'L:\Elite\Aida\MM20CanPathHeatMap.xls');
+hm=join(clhm, mmhm,'Type','outer')
+hmd=hmd(:, any(~isnan(hmd), 1)); % remove columns with all NaNs
+hmd=hmd(any(~isnan(hmd), 2),:); % remove rows with all NaNs
+[corrprot cpv]=corrcoef(hmd,'rows','pairwise')
+cgprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
+spy(cpv)
+dlmwrite('pairwisecorrcoefnum.csv',corrprot)
+dlmwrite('pairwisecorrcoefpvalue.csv',cpv)
+
+%% ugly iterator
+hmd=zeros(size(hm,1),size(hm,2));
+for i = 1:size(hm,1)
+    for j = 1:size(hm,2)
+        hmd(i,j)=str2double(hm{i,j});
+    end
+end
 
 %% check
 corrprot
