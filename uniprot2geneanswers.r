@@ -6,27 +6,77 @@
 #biocLite("GO.db")
 #biocLite("biomaRt")
 #rm(list = ls())
+dev.off() 
 
 ## pathview 
 library(gage)
-hda=readExpData("L:/Elite/gaute/test/SHBER.txt",row.names=1)
 library(pathview)
-pathview(hda,pathway.id="hsa03410",gene.idtype="UNIPROT")
+hda=readExpData("L:/Elite/gaute/test/SHBER.txt",row.names=1)
 hda=as.matrix(hda)
 hda.d=hda[,1:3]-hda[,4:6]
-pathview(hda.d,pathway.id="hsa03410",gene.idtype="UNIPROT", limit = list(gene = 5, cpd = 1), out.suffix="fcnn")
+summary(hda.d))
+pv.out<-pathview(hda.d,pathway.id="hsa03410",gene.idtype="UNIPROT", limit = list(gene = 5, cpd = 1), out.suffix=proc.time())
+str(pv.out)
+head(pv.out$plot.data.gene)
 
-# with MM20CL14 SS data over BER pathway
+#check mapping significant
+data=nrow(hda.d)
+dm=10
+km=100
+kegg=60
+GOmap <-  matrix(c(data-dm, dm,kegg-dm, km), nrow = 2, dimnames = list(DATA = c("mapped", "unmapped"), KEGG = c("mapped", "unmapped")))
+fisher.test(GOmap, alternative = "greater")
+
+# test on http://www.nature.com/nri/journal/v5/n5/fig_tab/nri1604_F1.html 
+pathview(hda.d,pathway.id="hsa04630",gene.idtype="UNIPROT",out.suffix="jak")
+
+
+
+
+
+# with MM20CL14 SS data over Hedgehog signaling pathway
 hda=readExpData("L:/Elite/Aida/MM20CL14rd.txt",row.names=1)
 hda=as.matrix(hda)
+#cancer related hsa05200
+pathview(hda,pathway.id="hsa05200",gene.idtype="UNIPROT")
+
+# Trasfection
+hda=readExpData("L:/Elite/LARS/2014/mai/transfection 3rd paralell/ListPV1in20FC2.txt",row.names=1)
+hda=as.matrix(hda)
+# herpes simplex
 pathview(hda,pathway.id="hsa03410",gene.idtype="UNIPROT")
+pathview(hda,pathway.id="hsa05168",gene.idtype="UNIPROT")
+
+
+source("http://bioconductor.org/biocLite.R")
+biocLite("GOstats")
+library("org.Hs.eg.db")
+frame = toTable(org.Hs.egGO)
+goframeData = data.frame(frame$go_id, frame$Evidence, frame$gene_id)
+head(goframeData)
+goFrame=GOFrame(goframeData,organism="Homo sapiens")
+goAllFrame=GOAllFrame(goFrame)
+library("GSEABase")
+gsc <- GeneSetCollection(goAllFrame, setType = GOCollection())
+library("GOstats")
+universe = Lkeys(org.Hs.egGO)
+genes = universe[1:500]
+params <- GSEAGOHyperGParams(name="My Custom GSEA based annot Params",
+                              geneSetCollection=gsc,
+                              geneIds = genes,
+                              universeGeneIds = universe,
+                              ontology = "MF",
+                              pvalueCutoff = 0.05,
+                              conditional = FALSE,
+                              testDirection = "over")
+Over <- hyperGTest(params)
+head(summary(Over))
 
 
 pv.out <- pathview(hda.d,pathway.id="hsa03410",gene.idtype="UNIPROT", limit = list(gene = 5, cpd = 1), out.suffix="fcnn", kegg.native = TRUE)
 str(pv.out)
 head(pv.out$plot.data.gene)
 
-dev.off() 
 
 ## MS to SNP
 

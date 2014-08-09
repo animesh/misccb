@@ -14,6 +14,7 @@ hmd=hmd(:, any(~isnan(hmd), 1)); % remove columns with all NaNs
 hmd=hmd(any(~isnan(hmd), 2),:); % remove rows with all NaNs
 [corrprot cpv]=corrcoef(hmd,'rows','pairwise')
 cgprop=clustergram(corrprot, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
+cgprop=clustergram(hmd, 'Colormap', redgreencmap(256),'ImputeFun','knnimpute')%,'Distance', 'mahalanobis')
 spy(cpv)
 dlmwrite('pairwisecorrcoefnum.csv',corrprot)
 dlmwrite('pairwisecorrcoefpvalue.csv',cpv)
