@@ -44,7 +44,7 @@ fclose(ns);
 
 %% analyse signal file
 
-ms=load('C:\Users\animeshs\SkyDrive\eegsig.txt');
+ms=load('C:\Users\animeshs\OneDrive\eegsig.txt');
 
 for i = 1:size(ms,1)
     periodogram(ms(i,:))
@@ -91,5 +91,6 @@ nFFT = 2^10;
 http://www.mathworks.se/help/instrument/reading-and-writing-data-over-the-bluetooth-interface.html
 http://stackoverflow.com/questions/3115833/real-time-plot-in-matlab
 http://www.nbtwiki.net/doku.php?id=tutorial:power_spectra_wavelet_analysis_and_coherence#.UPW_kEEcLt1
+http://www.open-electronics.org/guest_projects/a-pc-and-an-arduino-heres-your-diy-oscilloscope/
 
 

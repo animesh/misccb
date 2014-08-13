@@ -1,4 +1,5 @@
 #source("http://bioconductor.org/biocLite.R")
+#biocLite("BiocUpgrade")
 #biocLite("gage")
 #biocLite("pathview")
 #biocLite("GeneAnswers")
@@ -11,10 +12,10 @@ dev.off()
 ## pathview 
 library(gage)
 library(pathview)
-hda=readExpData("L:/Elite/gaute/test/SHBER.txt",row.names=1)
+hda=readExpData("C:/Users/animeshs/OneDrive/SHBER.txt",row.names=1)
 hda=as.matrix(hda)
 hda.d=hda[,1:3]-hda[,4:6]
-summary(hda.d))
+summary(hda.d)
 pv.out<-pathview(hda.d,pathway.id="hsa03410",gene.idtype="UNIPROT", limit = list(gene = 5, cpd = 1), out.suffix=proc.time())
 str(pv.out)
 head(pv.out$plot.data.gene)
@@ -30,15 +31,25 @@ fisher.test(GOmap, alternative = "greater")
 # test on http://www.nature.com/nri/journal/v5/n5/fig_tab/nri1604_F1.html 
 pathview(hda.d,pathway.id="hsa04630",gene.idtype="UNIPROT",out.suffix="jak")
 
+pathview(hda.d,pathway.id="hsa00020",gene.idtype="UNIPROT",out.suffix="joxphos")
 
 
 
 
 # with MM20CL14 SS data over Hedgehog signaling pathway
-hda=readExpData("L:/Elite/Aida/MM20CL14rd.txt",row.names=1)
+hda=readExpData("C:/Users/animeshs/OneDrive/MM20MQv1p5XcompNewRD.txt",row.names=1)
 hda=as.matrix(hda)
 #cancer related hsa05200
-pathview(hda,pathway.id="hsa05200",gene.idtype="UNIPROT")
+pathview(hda,pathway.id="hsa05200",gene.idtype="UNIPROT",out.suffix="jak")
+
+# http://www.genome.jp/kegg/pathway/map/map00020.html
+pathview(hda,pathway.id="hsa00020",gene.idtype="UNIPROT",out.suffix="TCA")
+# http://www.genome.jp/kegg/pathway/map/map00030.html
+pathview(hda,pathway.id="hsa00030",gene.idtype="UNIPROT",out.suffix="PPP")
+# http://www.genome.jp/kegg/pathway/map/map00190.html 
+pathview(hda,pathway.id="hsa00190",gene.idtype="UNIPROT",out.suffix="OxPhos")
+# http://www.genome.jp/kegg/pathway/map/map00010.html
+pathview(hda,pathway.id="hsa00010",gene.idtype="UNIPROT",out.suffix="Glycolysis")
 
 # Trasfection
 hda=readExpData("L:/Elite/LARS/2014/mai/transfection 3rd paralell/ListPV1in20FC2.txt",row.names=1)
