@@ -1,3 +1,4 @@
+#setwd('L:/Results/Ani')
 #source("http://bioconductor.org/biocLite.R")
 #biocLite("BiocUpgrade")
 #biocLite("gage")
@@ -7,18 +8,16 @@
 #biocLite("GO.db")
 #biocLite("biomaRt")
 #rm(list = ls())
-dev.off() 
+#dev.off() 
 
 ## pathview 
 library(gage)
 library(pathview)
-hda=readExpData("C:/Users/animeshs/OneDrive/SHBER.txt",row.names=1)
+# with MM20CL14 SS data over Hedgehog signaling pathway
+hda=readExpData("L:/Elite/Aida/MM20MQv1p5XcompNewRD.txt",row.names=1)
 hda=as.matrix(hda)
-hda.d=hda[,1:3]-hda[,4:6]
-summary(hda.d)
-pv.out<-pathview(hda.d,pathway.id="hsa03410",gene.idtype="UNIPROT", limit = list(gene = 5, cpd = 1), out.suffix=proc.time())
-str(pv.out)
-head(pv.out$plot.data.gene)
+#cancer related hsa05200
+pathview(hda,pathway.id="hsa05200",gene.idtype="UNIPROT",out.suffix="jak")
 
 #check mapping significant
 data=nrow(hda.d)
@@ -28,19 +27,20 @@ kegg=60
 GOmap <-  matrix(c(data-dm, dm,kegg-dm, km), nrow = 2, dimnames = list(DATA = c("mapped", "unmapped"), KEGG = c("mapped", "unmapped")))
 fisher.test(GOmap, alternative = "greater")
 
+
+hda=readExpData("C:/Users/animeshs/OneDrive/SHBER.txt",row.names=1)
+hda=as.matrix(hda)
+hda.d=hda[,1:3]-hda[,4:6]
+summary(hda.d)
+pv.out<-pathview(hda.d,pathway.id="hsa03410",gene.idtype="UNIPROT", limit = list(gene = 5, cpd = 1), out.suffix=proc.time())
+str(pv.out)
+head(pv.out$plot.data.gene)
+
+
 # test on http://www.nature.com/nri/journal/v5/n5/fig_tab/nri1604_F1.html 
 pathview(hda.d,pathway.id="hsa04630",gene.idtype="UNIPROT",out.suffix="jak")
-
 pathview(hda.d,pathway.id="hsa00020",gene.idtype="UNIPROT",out.suffix="joxphos")
 
-
-
-
-# with MM20CL14 SS data over Hedgehog signaling pathway
-hda=readExpData("C:/Users/animeshs/OneDrive/MM20MQv1p5XcompNewRD.txt",row.names=1)
-hda=as.matrix(hda)
-#cancer related hsa05200
-pathview(hda,pathway.id="hsa05200",gene.idtype="UNIPROT",out.suffix="jak")
 
 # http://www.genome.jp/kegg/pathway/map/map00020.html
 pathview(hda,pathway.id="hsa00020",gene.idtype="UNIPROT",out.suffix="TCA")

@@ -24,9 +24,9 @@ while (my $line = <F1>) {
 		# extracting unigene as ID
 		my @tmpp=split(/\||;|\s+/,$tmp[$gn]);
 		for($cntt=0;$cntt<=$#tmpp;$cntt++){
-		#	if($tmpp[$cntt] =~ m/(\w+_\w+)/ and $tmpp[$cntt] !~ /\:/){
+			if($tmpp[$cntt] =~ m/(\w+_\w+)/ and $tmpp[$cntt] !~ /\:/){
 		# using GN=<gene name> as ID
-			if($tmpp[$cntt] =~ m/(GN=\w+)/ and $tmpp[$cntt] !~ /\:/){
+		#	if($tmpp[$cntt] =~ m/(GN=\w+)/ and $tmpp[$cntt] !~ /\:/){
 				my ($name)=uc($tmpp[$cntt]);
 				$nh{$name}++;
 				for($cnt=0;$cnt<=$#tmp;$cnt++) {
