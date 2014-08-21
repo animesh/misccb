@@ -3,6 +3,8 @@ Protein Expression Analysis with Uniprot IDs
 ```{r install libraries and setup}
 #setwd('C:/Users/animeshs/SkyDrive')
 #source("http://bioconductor.org/biocLite.R")
+#biocLite("GSA")
+#biocLite("BiocUpgrade")
 #install.packages("pvclust")
 #install.packages("knitr")
 #rm(list = ls())
@@ -11,6 +13,37 @@ Protein Expression Analysis with Uniprot IDs
 #library("knitr")
 #clustering
 ```
+
+
+```{r pathview}
+library("GSA")
+?GSA
+######### two class unpaired comparison
+# y must take values 1,2
+
+set.seed(100)
+x<-matrix(rnorm(1000*20),ncol=20)
+dd<-sample(1:1000,size=100)
+
+u<-matrix(2*rnorm(100),ncol=10,nrow=100)
+x[dd,11:20]<-x[dd,11:20]+u
+y<-c(rep(1,10),rep(2,10))
+
+
+genenames=paste("g",1:1000,sep="")
+
+#create some random gene sets
+genesets=vector("list",50)
+for(i in 1:50){
+ genesets[[i]]=paste("g",sample(1:1000,size=30),sep="")
+}
+geneset.names=paste("set",as.character(1:50),sep="")
+
+GSA.obj<-GSA(x,y, genenames=genenames, genesets=genesets,  resp.type="Two class unpaired", nperms=100)
+GSA.listsets(GSA.obj, geneset.names=geneset.names,FDRcut=.5)
+
+```
+
 
 ```{r pathview}
 library(gage)
@@ -36,8 +69,16 @@ data=nrow(hda)
 dm=10
 km=100
 kegg=60
-GOmap <-  matrix(c(data-dm, dm,kegg-dm, km), nrow = 2, dimnames = list(DATA = c("mapped", "unmapped"), KEGG = c("mapped", "unmapped")))
+#GOmap <-  matrix(c(data-dm, dm,kegg-dm, km), nrow = 2, dimnames = list(S = c("+", "-"), B = c("+", "-")))
+GOmap <-  matrix(c(7,9,73, 2034), nrow = 2, dimnames = list(S = c("+", "-"), B = c("+", "-"))) # from ipaAdvMan. C:\Users\animeshs\Google Drive\IPA Training Data
 fisher.test(GOmap, alternative = "greater")
+GOmap <-  matrix(c(1,2,1,30), nrow = 2, dimnames = list(S = c("+", "-"), B = c("+", "-")))
+fisher.test(GOmap) #(2*factorial(32)*factorial(3)*factorial(31))/(2*factorial(30)*factorial(34))
+x <- rnorm(1000)
+hist(x)
+p <- 2*pnorm(sort(-abs(x)))
+p.adjust(p, method = "BH")
+
 ```
 
 ```{r cluster bootstrap}
