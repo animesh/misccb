@@ -5,7 +5,8 @@ protcl = tblread('L:\Elite\Aida\RawFiles\CellLines RawFiles\combined\txt\protein
 protmm = tblread('L:\Elite\Aida\RawFiles\Samples\combined\txt\proteinGroups.txt','\t')
 prot =xlsread('L:\Elite\Aida\MM20CL8.xls');
 prot =xlsread('L:\Elite\Aida\mm20celllinecanonicalpathwayheatmap.xlsx');
-
+prot = tblread('L:\Elite\kamila\lymphoma\combined1\txt\proteinGroups.txt','\t')
+prot=prot(:,[54:6:90])
 %% compare pathways
 clhm=dataset('XLSFile', 'L:\Elite\Aida\celllinecanonicalpathwayheatmap.xls');
 mmhm=dataset('XLSFile', 'L:\Elite\Aida\MM20CanPathHeatMap.xls');

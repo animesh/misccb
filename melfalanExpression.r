@@ -1,17 +1,31 @@
 ## source template from Arnar Flatberg
 #source("http://bioconductor.org/biocLite.R")
+#biocLite("BiocUpgrade")
 #biocLite("illuminaHumanv3.db")
 #biocLite("lumi")
 #biocLite("limma")
 #install.packages("pls")
-
+#install.packages("RCurl")
+#.libPaths()
+#remove.packages('limma')
+#detach(package:limma, unload=TRUE)
 library(lumi) 
 library(limma) 
 library(stringr)
 library(illuminaHumanv3.db) 
 
+source("http://bioconductor.org/biocLite.R")
+biocLite("limma")
 
 data <- lumiR('L:/Elite/kamila/GRC-2010-191-Slupphaug-redo/data/GRC-2010-191-Slupphaug_Sample_Probe_Profile.txt', convertNuID=FALSE, inputAnnotation=FALSE, QC=FALSE)
+
+
+# normalize and write csv 
+dataN <- lumiN(data)
+write.table(dataN,file="dataN.txt")
+dataNQ <- lumiExpresso(data)
+write.exprs(dataNQ, file='dataNQ.txt')
+
 desc <- read.csv('L:/Elite/kamila/GRC-2010-191-Slupphaug-redo/data/GRC-2010-191-Slupphaug_SampleSheet.csv', skip=7, header=TRUE)
 sids <- as.character(desc[,1])
 rownames(desc) <- sids
