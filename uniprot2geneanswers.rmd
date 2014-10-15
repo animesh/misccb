@@ -88,8 +88,34 @@ plot(result)
 pvrect(result, alpha=0.95)
 ```
 
-
 ```{r check pathview for base excision repair pathway}
+
+# PDT over KEGG Apoptosis
+hda=readExpData("L:/Qexactive/Linda/TW283.txt",row.names=1)
+hda=as.matrix(hda)
+pathview(hda,pathway.id="hsa04210",gene.idtype="UNIPROT")
+biocLite("goProfiles")
+library(goProfiles)
+basicProfile(hda, onto = "CC",level = 2, orgPackage = "org.Hs.eg.db")
+basicProfile(hda, onto = "MF",level = 3, orgPackage = "org.Hs.eg.db")
+basicProfile(hda, onto = "BP",level = 4, orgPackage = "org.Hs.eg.db")
+biocLite("GeneAnswers")
+library('GeneAnswers')
+humga<-geneAnswersBuilder(revmap(org.Hs.egUNIPROT['P13051'])
+, "org.Hs.eg.db", categoryType='GO.BP', testType='hyperG',  pvalueT=0.1, FDR.correction=TRUE, geneExpressionProfile=hda)
+geneAnswersReadable(humga)
+uniprot <- c("A0A183", "A0A5E8", "A0AUZ9","A0AV02","123")
+
+gmap <- revmap(org.Hs.egUNIPROT)[uniprot]
+mappedLkeys(gmap)
+
+genes = mget(revmap(org.Hs.egUNIPROT)[uniprot], ifnotfound=NA)
+biocLite("AnnotationFuncs")
+library(AnnotationFuncs)
+translate(rownames(hda),org.Hs.egUNIPROT,return.list=FALSE)
+translate(c("A0A183", "A0A5E8", "A0AUZ9","A0AV02"), org.Hs.egUNIPROT, org.Hs.egGENENAME)
+ warnings()
+
 hda=readExpData("C:/Users/animeshs/OneDrive/SHBER.txt",row.names=1)
 hda=as.matrix(hda)
 hda.d=hda[,1:3]-hda[,4:6]
@@ -250,20 +276,3 @@ xx <- as.list(x[mapped_genes])
 goids <- xx[2:3]
 names(goids[[1]])
 ```
-
-```{r fig.width=7, fig.height=6}
-plot(cars)
-```
-
-```{r generate randome graph for test}
-
-set.seed(1213)  # for reproducibility
-x = cumsum(rnorm(100))
-mean(x)  # mean of x
-## [1] -1.939758
-plot(x, type = 'l')  # Brownian motion
-
-x = cumsum(rnorm(100))
-mean(x)  # mean of x
-````
-

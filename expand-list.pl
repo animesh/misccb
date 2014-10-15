@@ -9,8 +9,7 @@ my $cntt;
 
 my $f1 = shift @ARGV;
 open (F1, $f1) || die "can't open \"$f1\": $!";
-my $gn=shift;
-#if(!looks_like_number($gn)){$gn=16;}
+my $gn=0;
 
 my $lc;
 while (my $line = <F1>) {
@@ -19,13 +18,9 @@ while (my $line = <F1>) {
 	chomp $line;
 	if($lc==1){$vh{"header"}="$line";}
 	else{
-		$line =~ s/\`|\"|\'/ /g;
 		my @tmp=parse_line('\t',0,$line);
-		# extracting unigene as ID
-		my @tmpp=split(/\||;|\s+/,$tmp[$gn]);
+		my @tmpp=split(/\;/,$tmp[$gn]);
 		for($cntt=0;$cntt<=$#tmpp;$cntt++){
-			#if($tmpp[$cntt] =~ m/(\w+_\w+)/ and $tmpp[$cntt] !~ /\:/){#using GN=<gene name> as ID
-			#if($tmpp[$cntt] =~ m/(GN=\w+)/ and $tmpp[$cntt] !~ /\:/){
 			if($tmpp[$cntt] !~ ""){
 				my ($name)=uc($tmpp[$cntt]);
 				$nh{$name}++;
@@ -66,4 +61,5 @@ foreach my $ncc (keys %nh){
 
 __END__
 
- perl expand-maxquant-gene.pl /cygdrive/l/Elite/LARS/2014/januar/SILAC\ 2ndparalell/MQcombo.txt > /cygdrive/l/Elite/LARS/2014/januar/SILAC\ 2ndparalell/MQcomboGN.csv
+ perl expand-list.pl /cygdrive/l/Elite/LARS/2014/juni/Pseudomonas\ biol\ rep\ 2/MQSagainstSdb.txt > /cygdrive/l/Elite/LARS/2014/juni/Pseudomonas\ biol\ rep\ 2/MQSagainstSdbGN.csv
+ 

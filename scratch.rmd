@@ -3,6 +3,26 @@ Scratch for R
 **check**
 frac $\frac{1}{n}$ 
 
+
+```{r MSstat}
+source("http://bioconductor.org/biocLite.R")
+biocLite("MSstats")
+library("MSstats")
+
+
+```
+
+```{r interactive}
+#install.packages("shiny")
+library(shiny)
+runExample("01_hello")
+```
+
+```{r google}
+install.packages("RGoogleAnalytics")
+library("RGoogleAnalytics")
+```
+
 ```{r googleVis}
 #install.packages("googleVis")
 #suppressPackageStartupMessages(library(googleVis))

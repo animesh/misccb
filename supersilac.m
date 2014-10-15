@@ -6,7 +6,14 @@ protmm = tblread('L:\Elite\Aida\RawFiles\Samples\combined\txt\proteinGroups.txt'
 prot =xlsread('L:\Elite\Aida\MM20CL8.xls');
 prot =xlsread('L:\Elite\Aida\mm20celllinecanonicalpathwayheatmap.xlsx');
 prot = tblread('L:\Elite\kamila\lymphoma\combined1\txt\proteinGroups.txt','\t')
-prot=prot(:,[54:6:90])
+prot=protmm(:,[401:6:845])
+
+%% score distribution
+histfit(prot,15,'exponential')
+xlabel('Score')
+ylabel('Count')
+title('Score distribution of IDs exclusive to RT120')
+
 %% compare pathways
 clhm=dataset('XLSFile', 'L:\Elite\Aida\celllinecanonicalpathwayheatmap.xls');
 mmhm=dataset('XLSFile', 'L:\Elite\Aida\MM20CanPathHeatMap.xls');
@@ -122,6 +129,7 @@ for i=1:4:c
     tp(:,tc)=sum(cnt(:,i:i+3),2);
 end
 hist(tp)
+hist(prot)
 histfit(prot(:,26))
 %reshape(prot(~isnan(prot)),r,c)
 
