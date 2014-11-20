@@ -1,0 +1,57 @@
+Synergy check
+========================================================
+
+```{r load file}
+syn=read.csv('L:/Elite/kamila/FA-UDC-IM-M.csv')
+```
+
+```{r check FA}
+sync=syn/syn$CFA
+ar=lm(sync$FApM~sync$FA+sync$MFA+sync$FA*sync$MFA)
+anova(ar)
+```
+
+```{r check FA}
+sync=syn/syn$CUDCIM
+ar=lm(sync$IMpM~sync$IM+sync$MUI+sync$MUI*sync$IM)
+anova(ar)
+```
+
+```{r UDC}
+sync=syn/syn$CUDCIM
+ar=lm(sync$UDCpM~sync$MUI+sync$UDC+sync$MUI*sync$UDC)
+anova(ar)
+plot(sync$MUI,sync$UDC)
+```
+
+```{r plot}
+interaction.plot(sync$FA,sync$MFA,sync$FApM)
+```
+
+
+
+
+```{r check mixlow}
+#install.packages('mixlow')
+#library("mixlow")
+?mixlow
+data(trayData)
+mixlowData <- prepareData(trayData)
+trays <- getTrays(trayData)
+parameterDefaults <- getNlsParameterDefaults(trays[1:9])
+parameterDefaults["vin_tr1","param.lambda"] = .2
+parameterDefaults["vin_tr2","param.lambda"] = .2
+parameterDefaults["vin_tr3","param.lambda"] = .2
+nlsData = doNls(mixlowData, parameterDefaults) 
+nlmeData = doNlme(mixlowData, nlsData)
+loeweData = doLoewe(mixlowData, nlmeData)
+
+```
+
+```{r sources}
+http://www.stat.columbia.edu/~martin/W2024/R8.pdf
+
+http://cran.r-project.org/web/packages/mixlow/mixlow.pdf
+http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0008919
+http://bioinformatics.psb.ugent.be/webtools/Venn/
+```

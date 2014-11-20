@@ -27,7 +27,7 @@ while (my $line = <F1>) {
 			}
 			else{
 				$tmp[$c]=~s/\s+//g;
-				$vh{"$name-$c"}.=" ";
+				$vh{"$name-$c"}.="$tmp[$c]; ";
 			}
 		}
 	}
