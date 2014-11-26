@@ -2,18 +2,30 @@ Synergy check
 ========================================================
 
 ```{r load file}
-syn=read.csv('L:/Elite/kamila/FA-UDC-IM-M.csv')
+#syn=read.csv('L:/Elite/kamila/FA-UDC-IM-M-6.csv')
+#syn=read.csv('L:/Elite/kamila/flufenamic acid for Animesh.csv')
+#syn=read.csv('L:/Elite/kamila/UDCIMrawLR5.csv')
+syn=read.csv('L:/Elite/kamila/UDCIMraw8228.csv')
 ```
 
-```{r check FA}
-sync=syn/syn$CFA
-ar=lm(sync$FApM~sync$FA+sync$MFA+sync$FA*sync$MFA)
+```{r dose-response-curve}
+sync=syn/syn$F0
+sync$F0
+plot(sync[-1,],sync[1,])
+plot(sync[1,1:4],sync[2,1:4])
+cor(sync[1,],sync[2,])
+plot(sin(1:100))
+```
+
+```{r check U}
+sync=log2(syn/syn$C)
+sync=syn/syn$C
+ar=lm(sync$UM~sync$U+sync$M+sync$U*sync$M)
 anova(ar)
 ```
 
-```{r check FA}
-sync=syn/syn$CUDCIM
-ar=lm(sync$IMpM~sync$IM+sync$MUI+sync$MUI*sync$IM)
+```{r check I}
+ar=lm(sync$IM~sync$I+sync$M+sync$I*sync$M)
 anova(ar)
 ```
 

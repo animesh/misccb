@@ -1,46 +1,55 @@
 use strict;
 use warnings;
-use Text::ParseWords;
 
 my $fpat = shift @ARGV;
+opendir my $dir, $fpat or die "unable to open directory: $!";
+my @files = readdir $dir;
+closedir $dir;
 
-my $idi = shift @ARGV;
-my $i1 = shift @ARGV;
+my $idn="Accession";
+my $idc=0;
+my $val=1;
 
-my @files=<*$fpat>;
 my %mrna;
 my %nc;
 
-
-print "ID-$idi-Feature-$i1\t";
+print "$idn\t";
 foreach my $f1 (@files){
     my @tmp;
     my @name;
     my %pg;
-    my $lcnt;
-    my @fn=split(/\./,$f1);
-    print "$fn[0]\t";
-    open (F1, $f1) || die "can't open \"$f1\": $!";
-    while (my $line = <F1>) {
-        chomp $line;
-        $line =~ s/\r|\`|\"|\'/ /g;
-        $lcnt++;
-    	@tmp=parse_line('\s+',0,$line);
-	my $key="$fn[0]_$tmp[$idi]";
-	if($tmp[$idi]){$mrna{$key}.="+$tmp[$i1]";}
-	$nc{$tmp[$idi]}++;
-	#print "$lcnt\t$key\t$mrna{$key}\t$i1-$tmp[$i1]\t$idi-$tmp[$idi]\t$nc{$idi}\n";
+    my $fn=$f1;
+    $fn =~ s/[^a-zA-Z0-9+]//g;
+    if($fn=~/[a-zA-Z0-9+]/){
+	    open (F1, "$fpat/$f1") || die "can't open \"$f1\": $!";
+	    print "$fn\t";
+	    while (my $line = <F1>) {
+		$line =~ s/\r//g;
+		$line =~ s/\'/-/g;
+		$line =~ s/\n/\t/g;
+		@tmp=split('\t',$line);
+		if($tmp[$idc]=~/^[a-zA-Z0-9+]/){
+			my $key="$fn.$tmp[$idc]";
+			#if($mrna{$key}<abs($tmp[$val])){$mrna{$key}=$tmp[$val]}
+			$mrna{$key}.="$tmp[$val] ";
+			$nc{$tmp[$idc]}++;
+		}
+	    }
+	    close F1;
     }
-    close F1;
 }
-print "TotalDetect\n";
+
+print "#file\n";
 
 foreach my $g  (keys %nc){
         print "$g\t";
-        foreach  my $f (@files){
-		my @fn=split(/\./,$f);
-        	my $key="$fn[0]_$g";
-        	print "$mrna{$key}\t";
+        foreach  my $f1 (@files){
+            my $fn=$f1;
+ 	    $fn =~ s/[^a-zA-Z0-9+]//g;
+	    if($fn=~/[a-zA-Z0-9+]/){
+		my $key="$fn.$g";
+		print "$mrna{$key}\t";
+	    }
         }
         print "$nc{$g}\n";
 }
@@ -48,4 +57,4 @@ foreach my $g  (keys %nc){
 
 __END__
 
-perl /home/animeshs/misccb/filecombo.pl  cnt.txt 2 1 > /home/animeshs/misccb/test.txt
+perl /home/animeshs/misccb/filecombo.pl  directory 2>0 > output
