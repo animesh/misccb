@@ -5,35 +5,71 @@ Synergy check
 #syn=read.csv('L:/Elite/kamila/FA-UDC-IM-M-6.csv')
 #syn=read.csv('L:/Elite/kamila/flufenamic acid for Animesh.csv')
 #syn=read.csv('L:/Elite/kamila/UDCIMrawLR5.csv')
-syn=read.csv('L:/Elite/kamila/UDCIMraw8228.csv')
+#syn=read.csv('L:/Elite/kamila/UDCIMraw.csv')
+#syn=read.csv('L:/Elite/kamila/FM.csv')
+syn=read.csv('L:/Elite/kamila/flufenamic acid.csv')
+```
+
+```{r ld50}
+sync=syn[syn[, "T"] == "LR5",]
+#sync=sync[1,]
+kalythos <- data.frame(x = c (0, 10, 40, 80), n = rep(1,6), y = c(sync$control,sync$flufenamic..10uM, sync$flufenamic..40uM,sync$flufenamic..80uM))
+kalythos$Ymat <- cbind(kalythos$y, kalythos$n - kalythos$y)
+fmp <- glm(Ymat ~ x, family = binomial(link=probit), data = kalythos)
+fml <- glm(Ymat ~ x, family = binomial, data = kalythos)
+ld50 <- function(b) -b[1]/b[2]
+ldp <- ld50(coef(fmp)); ldl <- ld50(coef(fml))
+c(ldp, ldl)
+adap_flop<-c(ldp, ldl)
+#rm(kalythos)
+#source http://stats.stackexchange.com/questions/64555/providing-starting-values-for-a-generalized-linear-mixed-model-with-glmmpql
 ```
 
 ```{r dose-response-curve}
-sync=syn/syn$F0
-sync$F0
+#install.packages('drc')
+#library('drc')
+data(acidiq)
+#acidiq.free <- drm(rgr ~ dose, pct, data = acidiq, fct = LL.4(), pmodels = list(~factor(pct), ~1, ~1, ~factor(pct) - 1))
+acidiq.free <- drm(rgr ~ dose,fct = LL.4())
+modelFit(acidiq.free)
+sync=syn/syn$C
 plot(sync[-1,],sync[1,])
-plot(sync[1,1:4],sync[2,1:4])
-cor(sync[1,],sync[2,])
-plot(sin(1:100))
+cor(sync[-1,])
+#source http://www.tandfonline.com/doi/pdf/10.1080/10543400701199593
 ```
 
 ```{r check U}
-sync=log2(syn/syn$C)
-sync=syn/syn$C
+sync=syn[syn[, "T"] == "LR5",]
+#sync=syn[syn[, "T"] == "C8226",]
+sync=sync/sync$C
+sync$U=log2(sync$U/sync$C)
+sync$M=log2(sync$M/sync$C)
+sync$UM=log2(sync$UM/sync$C)
 ar=lm(sync$UM~sync$U+sync$M+sync$U*sync$M)
 anova(ar)
 ```
 
 ```{r check I}
+#sync=syn[syn[, "T"] == "LR5",]
+sync=syn[syn[, "T"] == "C8226",]
+sync=sync/sync$C
+sync$I=log2(sync$I/sync$C)
+sync$M=log2(sync$M/sync$C)
+sync$IM=log2(sync$IM/sync$C)
 ar=lm(sync$IM~sync$I+sync$M+sync$I*sync$M)
 anova(ar)
 ```
 
-```{r UDC}
-sync=syn/syn$CUDCIM
-ar=lm(sync$UDCpM~sync$MUI+sync$UDC+sync$MUI*sync$UDC)
+```{r check F}
+sync=syn[syn[, "T"] == "LR5",]
+#sync=syn[syn[, "T"] == "C8226",]
+#sync=sync/sync$C
+sync$F=log2(sync$F/sync$C)
+sync$M=log2(sync$M/sync$C)
+sync$FM=log2(sync$FM/sync$C)
+ar=lm(sync$FM~sync$F+sync$M+sync$F*sync$M)
+#ar=lm(sync$FM~sync$F+sync$T+sync$M+sync$F*sync$M*sync$T)
 anova(ar)
-plot(sync$MUI,sync$UDC)
 ```
 
 ```{r plot}
