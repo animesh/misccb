@@ -1,0 +1,17 @@
+```{r data}
+#data <- read.table("L://Elite/kamila/BT/datamwithoutsingletons.txt", header = T)
+data <- read.table("L://Elite/kamila/BT/datam.txt", header = T)
+```
+
+```{r relation}
+plot(data$cd34 ~ data$trans, pch=16, xlab="Transfusions - yes or no", ylab="CD34+ cell dose", col="blue")
+abline(lm(data$cd34 ~ data$time), col = "blue")
+anova(lm(data$cd34 ~ data$time))
+anova(lm(data$trans ~ data$hgb + data$time + data$cd34 + data$sex + data$mc  + data$rec + data$banacha.co + data$age + data$ntrans     ))
+
+```{r plot}
+x=table(data$diag)>1
+x=x[x==TRUE]
+data[data[ , "diag"] == 1]
+plot(data)
+```
