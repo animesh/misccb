@@ -1,0 +1,23 @@
+```{r data}
+#setwd('L:/Elite/LARS/2014/desember/christiano/serum/')
+#file='W2H.txt'
+setwd('L:/Elite/LARS/2014/desember/christiano/plantaris/')
+file='W2C.txt'
+data <- read.table(file, sep = '\t', header = T)
+```
+
+```{r plot}
+#library('ggplot2')
+data[1,]
+Significance=data$X.Log.P.value.>-log10(0.05)&abs(data$Difference)>log2(1.5)
+sum(Significance)
+dsub <- subset(data, data$X.Log.P.value.==max(data$X.Log.P.value.)|data$Difference==max(abs(data$Difference)))
+dsub$Gene.names
+plot(data$Difference,data$X.Log.P.value.)
+qplot(Difference,X.Log.P.value.,data=data,color=X.Log.P.value.>-log10(0.05)&abs(Difference)>log2(1.5))
+g = ggplot(data,aes(Difference,X.Log.P.value.))
+gps<-g + geom_point(aes(color=Significance)) + theme_bw(base_size=10) + geom_text(data=dsub,aes(label=Gene.names),hjust=0, vjust=0) + xlab("Log2 Fold Change")  + ylab("-Log10 P-value") + ggtitle("Differentially expressed proteins") + scale_size_area()
+p=paste(file,proc.time()[3],".jpg")
+ggsave(filename=p, plot=gps)
+```
+

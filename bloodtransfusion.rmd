@@ -4,8 +4,9 @@ data <- read.table("L://Elite/kamila/BT/datam.txt", header = T)
 ```
 
 ```{r plot}
-install.packages('ggplot2')
-library('ggplot2')
+plot(data)
+#install.packages('ggplot2')
+#library('ggplot2')
 g = ggplot(data,aes(hgb,time))
 g+geom_point(aes(color=cd34))+geom_smooth(method="lm",se=FALSE,col="steel blue") +facet_grid(.~trans) +theme_bw(base_size=10) # ,base_family = "Courier") 
 
@@ -14,8 +15,6 @@ g+geom_point(aes(color=cd34))+geom_smooth(method="lm",se=FALSE,col="steel blue")
 qplot(trans,hgb,data=data,color=time)
 qplot(time,hgb,data=data,color=cd34)
 x=table(data$diag)>1
-x=x[x==TRUE]
-data[data[ , "diag"] == 1]
 plot(data)
 ```
 
