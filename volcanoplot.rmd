@@ -6,6 +6,20 @@ file='W2C.txt'
 data <- read.table(file, sep = '\t', header = T)
 ```
 
+```{r https://gist.github.com/dsparks/3710171}
+zp1 <- ggplot(data,
+              aes(x = X.Log.P.value., y = Difference, fill = Difference))
+zp1 <- zp1 + geom_tile()
+zp1 <- zp1 + scale_fill_gradientn(colours = myPalette(100))
+zp1 <- zp1 + scale_x_discrete(expand = c(0, 0))
+zp1 <- zp1 + scale_y_discrete(expand = c(0, 0))
+zp1 <- zp1 + coord_equal()
+zp1 <- zp1 + theme_bw()
+print(zp1)
+
+```
+
+
 ```{r plot}
 #library('ggplot2')
 data[1,]
@@ -20,4 +34,13 @@ gps<-g + geom_point(aes(color=Significance)) + theme_bw(base_size=10) + geom_tex
 p=paste(file,proc.time()[3],".jpg")
 ggsave(filename=p, plot=gps)
 ```
+
+```{r data}
+#heatmap(data$Difference)
+p <- ggplot(data,aes(Difference,X.Log.P.value.))
+p<-p + geom_tile(aes(fill=X.Log.P.value.)) + scale_fill_gradient(low="white", high="darkblue") + xlab("") + ylab("")
+f=paste(file,proc.time()[3],".jpg")
+ggsave(filename=f, plot=p)
+```
+
 
