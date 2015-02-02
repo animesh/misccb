@@ -6,8 +6,36 @@ file='W2C.txt'
 data <- read.table(file, sep = '\t', header = T)
 ```
 
+```{r http://stackoverflow.com/questions/17924828/differences-in-heatmap-clustering-defaults-in-r-heatplot-versus-heatmap-2}
+library(made4)
+data(khan)
+data <- as.matrix(khan$train[1:30,])
+```
+
+```{r http://sebastianraschka.com/Articles/heatmaps_in_r.html}
+data <- read.csv('http://sebastianraschka.com/data/datasets/heatmaps_in_r.csv',header=T)
+heatmap(as.numeric(unlist(data[3:12,2:4])))
+```
+
+```{r http://stackoverflow.com/questions/8406394/how-to-produce-a-heatmap-with-ggplot2}
+library(reshape)
+library(ggplot2)
+library(scales)
+library(plyr)
+getwd()
+dir()
+data <- read.csv("http://dl.dropbox.com/u/2505196/fruit.txt", head=TRUE, sep=",")
+ data.m = melt(data)
+ data.m <- ddply(data.m, .(variable), transform, rescale = rescale(value))
+ p <- ggplot(data.m, aes(variable, people)) + geom_tile(aes(fill = rescale), 
+                                                   colour =   "white") 
+ p + scale_fill_gradient(low = "white", high = "steelblue")
+```
+ 
+
 ```{r https://gist.github.com/dsparks/3710171}
-zp1 <- ggplot(data,
+dataa <- read.table(file, sep = '\t', header = T)
+zp1 <- ggplot(dataa,
               aes(x = X.Log.P.value., y = Difference, fill = Difference))
 zp1 <- zp1 + geom_tile()
 zp1 <- zp1 + scale_fill_gradientn(colours = myPalette(100))
@@ -41,6 +69,7 @@ p <- ggplot(data,aes(Difference,X.Log.P.value.))
 p<-p + geom_tile(aes(fill=X.Log.P.value.)) + scale_fill_gradient(low="white", high="darkblue") + xlab("") + ylab("")
 f=paste(file,proc.time()[3],".jpg")
 ggsave(filename=f, plot=p)
+print(p)
 ```
 
 
