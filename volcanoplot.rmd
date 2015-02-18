@@ -1,10 +1,63 @@
 ```{r data}
 #setwd('L:/Elite/LARS/2014/desember/christiano/serum/')
 #file='W2H.txt'
-setwd('L:/Elite/LARS/2014/desember/christiano/plantaris/')
-file='W2C.txt'
-data <- read.table(file, sep = '\t', header = T)
+#setwd('L:/Elite/LARS/2014/desember/christiano/plantaris/')
+#file='W2C.txt'
+#data <- read.table(file, sep = '\t', header = T)
+#data <- read.table('L:/Elite/LARS/2014/desember/christiano/serum/W2C.txt', sep = '\t', header = T)
+#data <- read.csv('L:/Elite/LARS/2015/january/Ishita/Copy of LFQmedTtestBHcorr.csv', header = T)
+data <- read.table('L:/Elite/LARS/2015/january/Ishita/Copy of LFQmedTtestBHcorr.txt', sep = '\t', header = T)
+
 ```
+
+```{r brassica}
+#library('ggplot2')
+data[1,]
+data <- subset(data, data$pvalueadjusted<1)
+data <- subset(data, data$pvalueadjusted>0)
+Significance=data$pvalueadjusted<0.05&abs(data$log2medDiff)>1
+sum(Significance)
+dsub <- subset(data, Significance==TRUE)
+dsub <- subset(dsub, pvalueadjusted<0.0003)
+#dsub$Protei
+plot(data$log2medDiff,-log10(data$pvalueadjusted))
+g = ggplot(data,aes(log2medDiff,-log10(pvalueadjusted)))
+gps<-g + geom_point(aes(color=Significance)) + theme_bw(base_size=10) + xlab("Log2 Fold Change")  + ylab("-Log10 P-value") + ggtitle("Differentially expressed proteins") + scale_size_area()  + geom_text(data=dsub,aes(label=Gene.names),hjust=0, vjust=0, size=4) 
+print(gps)
+#p=paste(file,proc.time()[3],".jpg")
+#ggsave(filename=p, plot=gps)
+```
+
+
+```{r brassica}
+#library('ggplot2')
+data[1,]
+Significance=data$t.test.p.value<0.05&abs(data$t.test.Difference)>1
+sum(Significance)
+dsub <- subset(data, data$t.test.p.value==max(data$t.test.p.value)|data$t.test.Difference==max(abs(data$t.test.Difference)))
+#dsub$Protei
+plot(data$t.test.Difference,-log10(data$t.test.p.value))
+g = ggplot(data,aes(t.test.Difference,-log10(t.test.p.value)))
+gps<-g + geom_point(aes(color=Significance)) + theme_bw(base_size=10) + geom_text(data=dsub,aes(label=Protei),hjust=0, vjust=0) + xlab("Log2 Fold Change")  + ylab("-Log10 P-value") + ggtitle("Differentially expressed proteins") + scale_size_area()
+print(gps)
+#p=paste(file,proc.time()[3],".jpg")
+#ggsave(filename=p, plot=gps)
+```
+
+```{r limma}
+#https://support.bioconductor.org/p/46747/
+design <- model.matrix(~ 0+factor(c(rep(1,6),rep(2,6))))
+colnames(design) <- c("mine", "wt")
+fit <- lmFit(norm_ctw, design)
+
+contrast.matrix <- makeContrasts(mine-wt,
+levels=design)
+fit2 <- contrasts.fit(fit, contrast.matrix)
+fit2 <- eBayes(fit2)
+
+topTable(fit2, coef=1, adjust="BH")
+```
+
 
 ```{r http://stackoverflow.com/questions/17924828/differences-in-heatmap-clustering-defaults-in-r-heatplot-versus-heatmap-2}
 library(made4)
@@ -59,8 +112,9 @@ plot(data$Difference,data$X.Log.P.value.)
 qplot(Difference,X.Log.P.value.,data=data,color=X.Log.P.value.>-log10(0.05)&abs(Difference)>log2(1.5))
 g = ggplot(data,aes(Difference,X.Log.P.value.))
 gps<-g + geom_point(aes(color=Significance)) + theme_bw(base_size=10) + geom_text(data=dsub,aes(label=Gene.names),hjust=0, vjust=0) + xlab("Log2 Fold Change")  + ylab("-Log10 P-value") + ggtitle("Differentially expressed proteins") + scale_size_area()
-p=paste(file,proc.time()[3],".jpg")
-ggsave(filename=p, plot=gps)
+print(gps)
+#p=paste(file,proc.time()[3],".jpg")
+#ggsave(filename=p, plot=gps)
 ```
 
 ```{r data}
