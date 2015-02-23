@@ -7,6 +7,35 @@
 #data <- read.table('L:/Elite/LARS/2014/desember/christiano/serum/W2C.txt', sep = '\t', header = T)
 #data <- read.csv('L:/Elite/LARS/2015/january/Ishita/Copy of LFQmedTtestBHcorr.csv', header = T)
 data <- read.table('L:/Elite/LARS/2015/january/Ishita/Copy of LFQmedTtestBHcorr.txt', sep = '\t', header = T)
+```
+
+```{r limma}
+source("http://bioconductor.org/biocLite.R")
+biocLite("limma")
+library('limma')
+install.packages('limma')
+#https://support.bioconductor.org/p/46747/
+class <- factor(c("mine","mine","mine","mine","mine","mine","wt","wt","wt","wt","wt","wt"))
+desmat <- model.matrix(~0 + class)
+colnames(desmat) <- class
+colnames(desmat) <- gsub("class","", colnames(desmat))
+fit <- lmFit(data[,8:19],desmat)
+contrast.matrix<-makeContrasts(mine-wt, levels=desmat)
+fit2<-contrasts.fit(fit,contrast.matrix)
+fit2<-eBayes(fit2)
+sel.diif<-p.adjust(fit2$F.p.value,method="fdr")<0.05
+deg<-data[,8:19][sel.diif,]
+topTable(fit2, coef=1, adjust="BH")
+plot(fit2$F.p.value,data$pvalueadjusted)
+
+#correction from Arnar
+biocLite('impute')
+library('impute')
+des <- model.matrix(~1 + class)
+X <- impute.knn(as.matrix(data[,8:19]))$data
+fit2 <- eBayes(lmFit(X, design=des))
+tab <- topTable(fit2, coef=2, genelist=data[,1:3], n=Inf, sort.by='none')
+plot(data$pvalueadjusted, tab$adj.P.Val)
 
 ```
 
@@ -42,20 +71,6 @@ gps<-g + geom_point(aes(color=Significance)) + theme_bw(base_size=10) + geom_tex
 print(gps)
 #p=paste(file,proc.time()[3],".jpg")
 #ggsave(filename=p, plot=gps)
-```
-
-```{r limma}
-#https://support.bioconductor.org/p/46747/
-design <- model.matrix(~ 0+factor(c(rep(1,6),rep(2,6))))
-colnames(design) <- c("mine", "wt")
-fit <- lmFit(norm_ctw, design)
-
-contrast.matrix <- makeContrasts(mine-wt,
-levels=design)
-fit2 <- contrasts.fit(fit, contrast.matrix)
-fit2 <- eBayes(fit2)
-
-topTable(fit2, coef=1, adjust="BH")
 ```
 
 
