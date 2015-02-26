@@ -6,8 +6,20 @@
 #data <- read.table(file, sep = '\t', header = T)
 #data <- read.table('L:/Elite/LARS/2014/desember/christiano/serum/W2C.txt', sep = '\t', header = T)
 #data <- read.csv('L:/Elite/LARS/2015/january/Ishita/Copy of LFQmedTtestBHcorr.csv', header = T)
-data <- read.table('L:/Elite/LARS/2015/january/Ishita/Copy of LFQmedTtestBHcorr.txt', sep = '\t', header = T)
+#data <- read.table('L:/Elite/LARS/2015/january/Ishita/Copy of LFQmedTtestBHcorr.txt', sep = '\t', header = T)
+data <- read.table('L:/Elite/LARS/2015/january/Ishita/uniprot-gomap-expression.txt', sep = '\t', header = T)
 ```
+
+```{r GOenrich}
+data$Gene.ontology..biological.process.
+x=matrix(c(11,101,146,3024),nrow=2,ncol=2)
+#http://www.wolframalpha.com/input/?i=%28112%21*3170%21*3125%21*157%21%29%2F%2811%21*146%21*3024%21*3282%21*101%21%29
+x=matrix(c(5,1,0,4),nrow=2,ncol=2)
+fisher.test(x)
+#http://mathworld.wolfram.com/FishersExactTest.html
+```
+
+
 
 ```{r limma}
 source("http://bioconductor.org/biocLite.R")

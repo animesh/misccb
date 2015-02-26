@@ -1,12 +1,16 @@
 use strict;
 use Text::ParseWords;
+#use bigint;
+use Math::BigInt;
+use Math::BigFloat;
 my %vh;
 my %nh;
 my $cntt;
-
+my $chkcnt;
 my $f1 = shift @ARGV;
 my $id = shift @ARGV;
 my $cat = shift @ARGV;
+my $check = shift @ARGV;
 if(!$cat){die "can't open \"$f1\": $! usage:perl category-counting.pl file-name id-column-number category--column-number";}
 open(F1,$f1);
 while (my $line = <F1>) {
@@ -15,7 +19,10 @@ while (my $line = <F1>) {
 		my @tmp=parse_line('\t',0,$line);
 		$tmp[$cat]=~s/\s+//g;
 		$tmp[$id]=~s/\s+//g;
-		if($tmp[$cat] eq ""){
+		if($tmp[$check] eq "+"){
+			$chkcnt++;
+		}
+		if($tmp[$check] ne "+"){
 					$nh{"NA"}++;
 					$vh{"NA"}.="$tmp[$id];";
 		}
@@ -32,20 +39,19 @@ while (my $line = <F1>) {
 }
 close F1;
 
-print "Categories\tcommonID(s)\tID1\tCount1\tID2\tCount2\tCommon\n";
-foreach my $k1 (keys %nh){
-	foreach my $k2 (keys %nh){
-		my @a1=split(/\;/,$vh{$k1});
-		my @a2=split(/\;/,$vh{$k2});
-		my %h1 = map {$_=>1} @a1;
-		my @common = grep { $h1{$_} } @a2; 
-		my $c=$#common+1;
-		print "$k1-$k2\t@common\t$vh{$k1}\t$nh{$k1}\t$vh{$k2}\t$nh{$k2}\t$c\n";
-		}
+print "Categories\t$chkcnt\n";
+foreach my $k1 (sort { $nh{$b} <=> $nh{$a} } keys %nh){
+		print "$k1\t$nh{$k1}\n";
 }
 
-__END__
 
+__END__
+my $val1=((Math::BigInt->bfac(112))*(Math::BigInt->bfac(3170))*(Math::BigInt->bfac(3125))*(Math::BigInt->bfac(157)));
+my $val2=((Math::BigInt->bfac(146))*(Math::BigInt->bfac(11))*(Math::BigInt->bfac(3024))*(Math::BigInt->bfac(3282))*(Math::BigInt->bfac(101)));
+my $val=Math::BigFloat->new($val1);
+$val/=$val2;
+print "$val\n";
+(112!*3170!*3125!*157!)/(11!*146!*3024!*3282!*101!)
 perl category-counting.pl /cygdrive/l/Qexactive/Linda/uniprot-tw283.txt 0 9 > t.txt
  
  
